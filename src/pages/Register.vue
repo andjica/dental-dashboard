@@ -154,28 +154,42 @@ const handleRegister = () => {
     valid = false;
   }
 
-  if (valid) {
-    // treba posle API poziv da se doda
-    const formData = {
+  fetch("http://localhost:8000/api/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
       email: email.value,
       password: password.value,
-    };
-
-    fetch("https://127.0.0.1/api/register", {});
-
-    localStorage.setItem("user", JSON.stringify(formData));
-    alert.message = "Registration successful!";
-    alert.type = "success";
-    console.log("Register is successfully:", {
-      email: email.value,
-      password: password.value,
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const formData = {
+        email: email.value,
+        password: password.value,
+      };
+      localStorage.setItem("userRegister", JSON.stringify(formData));
+      alert.message = "Registration successful!";
+      alert.type = "success";
+      console.log("Register is successfully:", {
+        email: email.value,
+        password: password.value,
+      });
+      email.value = "";
+      password.value = "";
+      passwordConfirm.value = "";
+    })
+    .catch((err) => {
+      alert.type = "error";
+      alert.message = "Please fix the errors in the form.";
     });
-    email.value = "";
-    password.value = "";
-    passwordConfirm.value = "";
-  } else {
-    alert.type = "error";
-    alert.message = "Please fix the errors in the form.";
-  }
 };
 </script>

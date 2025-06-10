@@ -1,5 +1,5 @@
 <template>
-<div class="mx-auto p-6 bg-white shadow rounded-lg mt-8">
+<div class="p-6 bg-white shadow rounded-lg mt-8">
     <h1 class="text-2xl font-semibold mb-6">Create a New Product</h1>
     
     <form @submit.prevent="handleSubmit" class="space-y-6">

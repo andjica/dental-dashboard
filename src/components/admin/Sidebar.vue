@@ -54,6 +54,11 @@
   width: 100%; /* proširi na celu širinu teksta */
   left: 0; /* animira se s levo na desno */
 }
+.text-white.underline-hover::after {
+  background-color: grey; /* ili tailwind siva boja po izboru, npr #6B7280 */
+  width: 100%; /* linija uvek prikazana kad je aktivan */
+  right: 0;
+}
 </style>
 
 <script setup>
