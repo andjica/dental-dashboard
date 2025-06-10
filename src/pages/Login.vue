@@ -46,7 +46,7 @@
         </div>
         <button
           type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          class="w-full bg-blue-600 text-white py-2 rounded cursor-pointer hover:bg-blue-700 transition"
         >
           Log In
         </button>
@@ -123,32 +123,11 @@ const handleLogin = () => {
     return;
   }
 
-  // treba posle API poziv da se doda
-  // Simulated login check
-  // if (email.value === 'admin@example.com' && password.value === 'admin123') {
-  //   localStorage.setItem('email', email.value)
-  //   localStorage.setItem('password', password.value)
-  //   localStorage.setItem('rola', '1') // Admin = 1
-  //   alert.type = 'success'
-  //   alert.message = 'Login successful! Redirecting...'
-  //   setTimeout(() => router.push('/admin'), 1500)
-  // } else if (email.value === 'user@example.com' && password.value === 'user123') {
-  //   localStorage.setItem('email', email.value)
-  //   localStorage.setItem('password', password.value)
-  //   localStorage.setItem('rola', '2') // User = 2
-  //   alert.type = 'success'
-  //   alert.message = 'Login successful! Redirecting...'
-  //   setTimeout(() => router.push('/dashboard'), 1500)
-  // } else {
-  //   alert.type = 'error'
-  //   alert.message = 'Incorrect email or password.'
-  // }
-
-  fetch("http://127.0.0.1/api/login", {
+  fetch("http://localhost:8000/api/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Accept": "application/json",
+      Accept: "application/json",
     },
     body: JSON.stringify({
       email: email.value,
@@ -157,29 +136,38 @@ const handleLogin = () => {
   })
     .then((response) => {
       if (!response.ok) {
-        // If server responds with error status
         throw new Error("Network response was not ok");
       }
-      return response.json(); // parse JSON response body
+      return response.json();
     })
     .then((data) => {
       console.log("DATA: ", data);
-      // Example: assuming API returns { success: true, role: 'admin' or 'user' }
       if (data.success) {
+        const roleName =
+          data.user.role_id === 1
+            ? "admin"
+            : data.user.role_id === 2
+            ? "company"
+            : data.user.role_id === 3
+            ? "customer"
+            : "unknown";
+
         const user = {
           email: email.value,
-          name: data.name, // assuming data.name comes from your API
-          role: data.role_id === 1 ? "admin" : "company",
-          isVerify: data.email_verified_at ? 1 : 0, // set as 0 initially
+          name: data.user.name,
+          role_id: data.user.role_id,
+          isVerify: data.user.email_verified_at ? 1 : 0,
         };
+
         localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", data.token);
         alert.type = "success";
         alert.message = "Login successful! Redirecting...";
         setTimeout(() => {
-          if (data.role_id === "admin") {
-            router.push("/admin");
-          } else {
-            router.push("/dashboard");
+          if (data.user.role_id === 1) {
+            router.push("/admin/dashboard");
+          } else if (data.user.role_id === 2) {
+            router.push("/company/dashboard");
           }
         }, 1500);
       } else {
@@ -188,7 +176,6 @@ const handleLogin = () => {
       }
     })
     .catch((error) => {
-      // Network or other error
       alert.type = "error";
       alert.message = `Login failed: ${error.message}`;
     });

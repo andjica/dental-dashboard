@@ -1,25 +1,32 @@
 import { createRouter, createWebHistory } from "vue-router";
+import {isAuthenticated, getUserRole, isEmailVerified } from "@/helper/auth";
 import Login from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
+import EmailVerify from "@/pages/VerifyEmail.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import CompanyLayout from "@layouts/CompanyLayout.vue";
+import CompanyLayout from "@/layouts/CompanyLayout.vue";
 
 const routes = [
   {
-    path: "/",
+    path: "/login",
     component: Login,
   },
   {
     path: "/register",
     component: Register,
   },
+  {
+    path: "/verify-email",
+    component: EmailVerify,
+  },
   // Admin
   {
     path: "/admin",
     component: AdminLayout,
+    meta: { requiresAuth: true, role: 1 },
     children: [
       {
-        path: "",
+        path: "dashboard",
         name: "admin.dashboard",
         component: () => import("@/pages/admin/Dashboard.vue"),
       },
@@ -27,6 +34,11 @@ const routes = [
         path: "users",
         name: "admin.users",
         component: () => import("@/pages/admin/User.vue"),
+      },
+      {
+        path: "settings",
+        name: "admin.settings",
+        component: () => import("@/pages/admin/Settings.vue"),
       },
       {
         path: "companies",
@@ -47,11 +59,12 @@ const routes = [
   },
   // Company
   {
-    path: "/dashboard",
+    path: "/company",
     component: CompanyLayout,
+    meta: { requiresAuth: true, role: 2 },
     children: [
       {
-        path: "",
+        path: "dashboard",
         name: "company.dashboard",
         component: () => import("@/pages/company/Dashboard.vue"),
       },
@@ -79,7 +92,29 @@ const routes = [
   },
 ];
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+// ✅ Middleware logika
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiredRole = to.meta.role;
+
+  if (requiresAuth && !isAuthenticated()) {
+    return next('/login');
+  }
+
+  if (requiredRole && getUserRole() !== requiredRole) {
+    return next('/login');
+  }
+
+  if (requiresAuth && !isEmailVerified() && to.path !== '/verify-email') {
+    return next('/verify-email');
+  }
+
+  next();
+});
+
+export default router;

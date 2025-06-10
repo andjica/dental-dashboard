@@ -2,10 +2,9 @@
   <div
     v-if="message"
     :class="[
-      'text-white px-6 py-4 border-0 rounded relative',
+      'text-white mb-4 px-6 py-4 border-0 rounded relative',
       type === 'success' ? 'bg-green-500' : 'bg-red-500'
     ]"
-    style=" top: 0; left: 0; right: 0; z-index: 1000;"
   >
     <span class="text-xl inline-block mr-5 align-middle">
       <i :class="type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>

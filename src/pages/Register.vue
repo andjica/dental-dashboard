@@ -1,13 +1,13 @@
 <template>
-  <!-- Alert Component -->
-  <Alert
-    v-if="alert.message"
-    :type="alert.type"
-    :message="alert.message"
-    @close="alert.message = ''"
-  />
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <!-- Alert Component -->
+      <Alert
+        v-if="alert.message"
+        :type="alert.type"
+        :message="alert.message"
+        @close="alert.message = ''"
+      />
       <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
       <form @submit.prevent="handleRegister" class="space-y-6">
         <!-- Email -->
@@ -70,14 +70,19 @@
         <!-- Submit -->
         <button
           type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          class="w-full bg-blue-600 text-white cursor-pointer py-2 rounded hover:bg-blue-700 transition"
         >
           Register
         </button>
       </form>
-      <p class="mt-4 text-center">If you did register, please go to <router-link  to="/"
-            class="inline-block font-medium text-blue-600 hover:underline"
-            >Login</router-link>.</p>
+      <p class="mt-4 text-center">
+        If you did register, please go to
+        <router-link
+          to="/login"
+          class="inline-block font-medium text-blue-600 hover:underline"
+          >Login</router-link
+        >.
+      </p>
     </div>
   </div>
 </template>
@@ -86,9 +91,9 @@
 import { ref, reactive, watch } from "vue";
 import Alert from "@/components/shared/Alert.vue";
 
-const email = ref("")
-const password = ref("")
-const passwordConfirm = ref("")
+const email = ref("");
+const password = ref("");
+const passwordConfirm = ref("");
 const errors = reactive({
   email: "",
   password: "",
@@ -156,7 +161,7 @@ const handleRegister = () => {
       password: password.value,
     };
 
-    fetch("https://127.0.0.1/api/register", {})
+    fetch("https://127.0.0.1/api/register", {});
 
     localStorage.setItem("user", JSON.stringify(formData));
     alert.message = "Registration successful!";

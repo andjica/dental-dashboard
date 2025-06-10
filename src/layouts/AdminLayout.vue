@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-screen">
-    <Sidebar v-if="verify" />
+    <Sidebar />
     <div class="flex-1 flex flex-col">
       <Topbar />
       <router-view class="flex-1 overflow-auto" />

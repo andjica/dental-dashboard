@@ -7,7 +7,7 @@
       <ul>
         <li class="mb-4">
           <router-link
-            to="/dashboard"
+            to="/company/dashboard"
             class="block px-4 py-2 rounded hover:bg-blue-700 font-medium"
             active-class="bg-blue-700"
           >
@@ -16,7 +16,16 @@
         </li>
         <li class="mb-4">
           <router-link
-            to="/dashboard/settings"
+            to="/company/products"
+            class="block px-4 py-2 rounded hover:bg-blue-700 font-medium"
+            active-class="bg-blue-700"
+          >
+            Products
+          </router-link>
+        </li>
+        <li class="mb-4">
+          <router-link
+            to="/company/settings"
             class="block px-4 py-2 rounded hover:bg-blue-700 font-medium"
             active-class="bg-blue-700"
           >
@@ -28,7 +37,7 @@
     <div class="sidebar-footer mt-auto text-center">
       <button
         @click="logout"
-        class="bg-red-400 hover:bg-red-600 text-white px-4 py-2 rounded font-bold transition"
+        class="bg-red-400 hover:bg-red-600 text-white cursor-pointer px-4 py-2 rounded font-bold transition"
       >
         Logout
       </button>
@@ -44,6 +53,6 @@ const router = useRouter()
 function logout() {
   alert('Logging out...');
   localStorage.clear();
-  router.push('/');
+  router.push('/login');
 }
 </script>

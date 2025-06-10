@@ -3,7 +3,7 @@
     <h1 class="text-xl font-semibold text-gray-800">Company Panel</h1>
     <button
       @click="logout"
-      class="bg-red-400 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-md transition-colors"
+      class="bg-red-400 hover:bg-red-600 text-white cursor-pointer font-medium px-4 py-2 rounded-md transition-colors"
     >
       Logout
     </button>
@@ -18,6 +18,6 @@ const router = useRouter()
 function logout() {
   alert('Logging out...');
   localStorage.clear();
-  router.push('/');
+  router.push('/login');
 }
 </script>
