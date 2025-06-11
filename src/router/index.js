@@ -8,7 +8,7 @@ import CompanyLayout from "@/layouts/CompanyLayout.vue";
 
 const routes = [
   {
-    path: "/login",
+    path: "/",
     component: Login,
   },
   {
@@ -103,11 +103,11 @@ router.beforeEach((to, from, next) => {
   const requiredRole = to.meta.role;
 
   if (requiresAuth && !isAuthenticated()) {
-    return next('/login');
+    return next('/');
   }
 
   if (requiredRole && getUserRole() !== requiredRole) {
-    return next('/login');
+    return next('/');
   }
 
   if (requiresAuth && !isEmailVerified() && to.path !== '/verify-email') {

@@ -10,6 +10,24 @@
       />
       <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
       <form @submit.prevent="handleRegister" class="space-y-6">
+        <!-- Name -->
+         <div>
+          <label
+            for="name"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Name</label
+          >
+          <input
+            v-model="name"
+            type="text"
+            id="nemaRegister"
+            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Your name"
+          />
+          <p v-if="errors.name" class="text-red-600 text-sm mt-1">
+            {{ errors.name }}
+          </p>
+        </div>
         <!-- Email -->
         <div>
           <label
@@ -78,7 +96,7 @@
       <p class="mt-4 text-center">
         If you did register, please go to
         <router-link
-          to="/login"
+          to="/"
           class="inline-block font-medium text-blue-600 hover:underline"
           >Login</router-link
         >.
@@ -89,16 +107,22 @@
 
 <script setup>
 import { ref, reactive, watch } from "vue";
+import { useRouter } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 
+const name = ref("");
 const email = ref("");
 const password = ref("");
 const passwordConfirm = ref("");
+const router = useRouter();
+
 const errors = reactive({
+  name: "",
   email: "",
   password: "",
   passwordConfirm: "",
 });
+
 const alert = reactive({
   type: "",
   message: "",
@@ -108,6 +132,11 @@ const alert = reactive({
 const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 
 // Clear errors while typing
+watch(name, (newVal) => {
+  if (errors.name) errors.name = "";
+});
+
+
 watch(email, (newVal) => {
   if (errors.email) errors.email = "";
 });
@@ -122,6 +151,7 @@ watch(passwordConfirm, (newVal) => {
 
 const handleRegister = () => {
   // Reset all errors
+  errors.name = "";
   errors.email = "";
   errors.password = "";
   errors.passwordConfirm = "";
@@ -129,6 +159,11 @@ const handleRegister = () => {
   alert.type = "";
 
   let valid = true;
+
+  if(!name.value) {
+    error.name = "Name is requred!";
+    valid = false;
+  }
 
   if (!email.value) {
     errors.email = "Email is required!";
@@ -173,19 +208,23 @@ const handleRegister = () => {
     })
     .then((data) => {
       const formData = {
+        name: name.value,
         email: email.value,
         password: password.value,
       };
-      localStorage.setItem("userRegister", JSON.stringify(formData));
-      alert.message = "Registration successful!";
+      localStorage.setItem("user", JSON.stringify(formData));
       alert.type = "success";
+      alert.message = "Registration successful!";
       console.log("Register is successfully:", {
+        name: name.value,
         email: email.value,
         password: password.value,
       });
+      name.value = "";
       email.value = "";
       password.value = "";
       passwordConfirm.value = "";
+      router.push("/verify-email")
     })
     .catch((err) => {
       alert.type = "error";
