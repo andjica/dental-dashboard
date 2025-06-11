@@ -95,6 +95,19 @@ const routes = [
       },
     ],
   },
+  // User
+  {
+    path: "/company",
+    component: CompanyLayout,
+    meta: { requiresAuth: true, role: 3 },
+    children: [
+      {
+        path: "dashboard",
+        name: "user.dashboard",
+        component: () => import("@/pages/user/Dashboard.vue"),
+      },
+    ]
+  }
 ];
 
 const router = createRouter({

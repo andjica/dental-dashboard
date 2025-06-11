@@ -5,7 +5,7 @@
       Your email: <span class="font-medium">{{ email }}</span>
     </p>
     <p class="mb-6 text-gray-600">You can now login with you acount</p>
-    <router-link to="/login">
+    <router-link to="/">
       <button class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded transition duration-300">
         Go to Login
       </button>
@@ -21,10 +21,5 @@ const route = useRoute();
 const router = useRouter();
 
 const email = route.query.email || null;
-
-onMounted(() => {
-  // Opcionalno, automatski redirect nakon 3 sekunde
-    router.push('/');
-});
 
 </script>

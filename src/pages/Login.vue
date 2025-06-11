@@ -161,7 +161,8 @@ const handleLogin = () => {
       if (data.success) {
         const user = {
           email: email.value,
-          name: data.user.name,
+          first_name: data.user.first_name,
+          last_name: data.user.last_name,
           role_id: data.user.role_id,
           isVerify: data.user.email_verified_at ? 1 : 0,
         };
@@ -177,6 +178,8 @@ const handleLogin = () => {
               router.push("/admin/dashboard");
             } else if (data.user.role_id === 2) {
               router.push("/company/dashboard");
+            } else {
+              router.push("/user/dashboard");
             }
           }, 1500);
         } else {

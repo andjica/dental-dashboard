@@ -2,44 +2,35 @@
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
       <!-- Alert Component -->
-      <Alert
-        v-if="alert.message"
-        :type="alert.type"
-        :message="alert.message"
-        @close="alert.message = ''"
-      />
+      <Alert v-if="alert.message" :type="alert.type" :message="alert.message" @close="alert.message = ''" />
       <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
       <form @submit.prevent="handleRegister" class="space-y-6">
-        <!-- Name -->
+        <!-- First Name -->
         <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 mb-1"
-            >Name</label
-          >
-          <input
-            v-model="name"
-            type="text"
-            id="nemaRegister"
+          <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+          <input v-model="firstName" type="text" id="firstNameRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your name"
-          />
-          <p v-if="errors.name" class="text-red-600 text-sm mt-1">
-            {{ errors.name }}
+            placeholder="Your name" />
+          <p v-if="errors.firstName" class="text-red-600 text-sm mt-1">
+            {{ errors.firstName }}
+          </p>
+        </div>
+        <!-- Last Name -->
+        <div>
+          <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+          <input v-model="lastName" type="text" id="lastNameRegister"
+            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Your name" />
+          <p v-if="errors.lastName" class="text-red-600 text-sm mt-1">
+            {{ errors.lastName }}
           </p>
         </div>
         <!-- Email -->
         <div>
-          <label
-            for="email"
-            class="block text-sm font-medium text-gray-700 mb-1"
-            >Email</label
-          >
-          <input
-            v-model="email"
-            type="email"
-            id="emailRegister"
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input v-model="email" type="email" id="emailRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="you@example.com"
-          />
+            placeholder="you@example.com" />
           <p v-if="errors.email" class="text-red-600 text-sm mt-1">
             {{ errors.email }}
           </p>
@@ -47,18 +38,10 @@
 
         <!-- Password -->
         <div>
-          <label
-            for="password"
-            class="block text-sm font-medium text-gray-700 mb-1"
-            >Password</label
-          >
-          <input
-            v-model="password"
-            type="password"
-            id="passwordRegister"
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input v-model="password" type="password" id="passwordRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your password"
-          />
+            placeholder="Your password" />
           <p v-if="errors.password" class="text-red-600 text-sm mt-1">
             {{ errors.password }}
           </p>
@@ -66,38 +49,45 @@
 
         <!-- Confirm Password -->
         <div>
-          <label
-            for="passwordConfirm"
-            class="block text-sm font-medium text-gray-700 mb-1"
-            >Confirm Password</label
-          >
-          <input
-            v-model="passwordConfirm"
-            type="password"
-            id="passwordConfirmRegister"
+          <label for="passwordConfirmRegister" class="block text-sm font-medium text-gray-700 mb-1">Confirm
+            Password</label>
+          <input v-model="passwordConfirm" type="password" id="passwordConfirmRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Confirm your password"
-          />
+            placeholder="Confirm your password" />
           <p v-if="errors.passwordConfirm" class="text-red-600 text-sm mt-1">
             {{ errors.passwordConfirm }}
           </p>
         </div>
-
+        <!-- Roles -->
+        <div>
+          <h4 class="mb-1 font-medium">Your role:</h4>
+          <div class="space-y-1">
+            <label class="flex items-center space-x-2">
+              <input type="radio" id="admin" value="1" v-model="role" />
+              <span>Admin</span>
+            </label>
+            <label class="flex items-center space-x-2">
+              <input type="radio" id="company" value="2" v-model="role" />
+              <span>Company</span>
+            </label>
+            <label class="flex items-center space-x-2">
+              <input type="radio" id="user" value="3" v-model="role" />
+              <span>User</span>
+            </label>
+          </div>
+          <p v-if="errors.role" class="text-red-600 text-sm mt-1">
+            {{ errors.role }}
+          </p>
+        </div>
         <!-- Submit -->
-        <button
-          type="submit"
-          class="w-full bg-blue-600 text-white cursor-pointer py-2 rounded hover:bg-blue-700 transition"
-        >
+        <button type="submit"
+          class="w-full bg-blue-600 text-white cursor-pointer py-2 rounded hover:bg-blue-700 transition">
           Register
         </button>
       </form>
       <p class="mt-4 text-center">
         If you did register, please go to
-        <router-link
-          to="/"
-          class="inline-block font-medium text-blue-600 hover:underline"
-          >Login</router-link
-        >.
+        <router-link to="/" class="inline-block font-medium text-blue-600 hover:underline">Login</router-link>.
       </p>
     </div>
   </div>
@@ -108,17 +98,22 @@ import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 
-const name = ref("");
+const firstName = ref("");
+const lastName = ref("");
 const email = ref("");
 const password = ref("");
 const passwordConfirm = ref("");
+const role = ref("");
+
 const router = useRouter();
 
 const errors = reactive({
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
   password: "",
   passwordConfirm: "",
+  role: "",
 });
 
 const alert = reactive({
@@ -130,35 +125,33 @@ const alert = reactive({
 const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 
 // Clear errors while typing
-watch(name, (newVal) => {
-  if (errors.name) errors.name = "";
-});
-
-watch(email, (newVal) => {
-  if (errors.email) errors.email = "";
-});
-
-watch(password, (newVal) => {
-  if (errors.password) errors.password = "";
-});
-
-watch(passwordConfirm, (newVal) => {
-  if (errors.passwordConfirm) errors.passwordConfirm = "";
+const fields = { firstName, lastName, email, password, passwordConfirm };
+Object.entries(fields).forEach(([key, refVar]) => {
+  watch(refVar, () => {
+    if (errors[key]) errors[key] = "";
+  });
 });
 
 const handleRegister = () => {
   // Reset all errors
-  errors.name = "";
+  errors.firstName = "";
+  errors.lastName = "";
   errors.email = "";
   errors.password = "";
   errors.passwordConfirm = "";
+  errors.role = "";
   alert.message = "";
   alert.type = "";
 
   let valid = true;
 
-  if (!name.value) {
-    errors.name = "Name is requred!";
+  if (!firstName.value) {
+    errors.firstName = "First Name is requred!";
+    valid = false;
+  }
+
+  if (!lastName.value) {
+    errors.lastName = "Last Name is requred!";
     valid = false;
   }
 
@@ -186,6 +179,10 @@ const handleRegister = () => {
     valid = false;
   }
 
+  if(!role.value) {
+    errors.role = "Select role."
+  }
+
   if (!valid) return;
 
   fetch("http://localhost:8000/api/register", {
@@ -195,8 +192,11 @@ const handleRegister = () => {
       Accept: "application/json",
     },
     body: JSON.stringify({
+      first_name: firstName.value,
+      last_name: lastName.value,
       email: email.value,
       password: password.value,
+      role_id: parseInt(role.value),
     }),
   })
     .then((response) => {
@@ -207,22 +207,22 @@ const handleRegister = () => {
     })
     .then((data) => {
       const formData = {
-        name: name.value,
+        first_name: firstName.value,
+        last_name	: lastName.value,
         email: email.value,
         password: password.value,
+        role_id: data.role_id,
       };
       localStorage.setItem("user", JSON.stringify(formData));
       alert.type = "success";
       alert.message = "Registration successful!";
-      console.log("Register is successfully:", {
-        name: name.value,
-        email: email.value,
-        password: password.value,
-      });
-      name.value = "";
+
+      firstName.value = "";
+      lastName.value = "";
       email.value = "";
       password.value = "";
       passwordConfirm.value = "";
+      role.value = "";
       router.push("/verify-email");
     })
     .catch(async (err) => {

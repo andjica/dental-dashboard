@@ -8,13 +8,13 @@
 
   <Loader v-if="loading" />
 
-  <div v-else class="verify-email-page" style="padding: 2rem; text-align: center">
+  <div v-else class="max-w-md mx-auto mt-32 p-6 bg-white rounded shadow-md text-center">
     <h2>Please verify your email</h2>
     <p>
       We have sent a verification email to your inbox. <br />
       You need to verify your email address before accessing the dashboard.
     </p>
-    <p>If you have already verified, please refresh the page.</p>
+
     <button
       type="button"
       class="w-full bg-blue-600 text-white py-2 rounded cursor-pointer hover:bg-blue-700 transition"
@@ -61,6 +61,8 @@ const goToNextRoute = () => {
             router.push("/admin/dashboard");
           } else if (role === 2) {
             router.push("/company/dashboard");
+          } else if (role === 3){
+            router.push("/user/dashboard");
           } else {
             router.push("/");
           }
