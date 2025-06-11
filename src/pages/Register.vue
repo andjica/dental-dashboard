@@ -11,10 +11,8 @@
       <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
       <form @submit.prevent="handleRegister" class="space-y-6">
         <!-- Name -->
-         <div>
-          <label
-            for="name"
-            class="block text-sm font-medium text-gray-700 mb-1"
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1"
             >Name</label
           >
           <input
@@ -136,7 +134,6 @@ watch(name, (newVal) => {
   if (errors.name) errors.name = "";
 });
 
-
 watch(email, (newVal) => {
   if (errors.email) errors.email = "";
 });
@@ -160,8 +157,8 @@ const handleRegister = () => {
 
   let valid = true;
 
-  if(!name.value) {
-    error.name = "Name is requred!";
+  if (!name.value) {
+    errors.name = "Name is requred!";
     valid = false;
   }
 
@@ -188,6 +185,8 @@ const handleRegister = () => {
     errors.passwordConfirm = "Passwords are not matching.";
     valid = false;
   }
+
+  if (!valid) return;
 
   fetch("http://localhost:8000/api/register", {
     method: "POST",
@@ -224,11 +223,16 @@ const handleRegister = () => {
       email.value = "";
       password.value = "";
       passwordConfirm.value = "";
-      router.push("/verify-email")
+      router.push("/verify-email");
     })
-    .catch((err) => {
+    .catch(async (err) => {
+      let errorMsg = "An error occurred.";
+      try {
+        const errorData = await err.response.json();
+        errorMsg = errorData.message || errorMsg;
+      } catch {}
       alert.type = "error";
-      alert.message = "Please fix the errors in the form.";
+      alert.message = errorMsg;
     });
 };
 </script>

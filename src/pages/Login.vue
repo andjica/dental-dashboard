@@ -1,6 +1,13 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <!-- Alert from route query -->
+      <div
+        v-if="$route.query.error === 'unauthenticated'"
+        class="mb-4 p-3 rounded bg-yellow-100 text-yellow-800 border border-yellow-300 text-sm"
+      >
+        ⚠ You must be logged in to access that page.
+      </div>
       <!-- Alert Component -->
       <Alert
         v-if="alert.message"
@@ -48,7 +55,7 @@
           type="submit"
           class="w-full bg-blue-600 text-white py-2 rounded cursor-pointer hover:bg-blue-700 transition"
         >
-          Log In
+          Logi In
         </button>
       </form>
       <p class="mt-4 text-center">
@@ -66,12 +73,13 @@
 
 <script setup>
 import { ref, reactive, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 
 const email = ref("");
 const password = ref("");
 const router = useRouter();
+const route = useRoute();
 
 const errors = reactive({
   email: "",
@@ -84,7 +92,15 @@ const alert = reactive({
 });
 
 const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-
+watch(
+  () => route.query.error,
+  (val) => {
+    if (!val && alert.message.includes("logged in")) {
+      alert.message = "";
+      alert.type = "";
+    }
+  }
+);
 // Clear errors when typing
 watch(email, () => {
   if (errors.email) errors.email = "";
@@ -136,22 +152,13 @@ const handleLogin = () => {
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error(response.statusText);
       }
       return response.json();
     })
     .then((data) => {
       console.log("DATA: ", data);
       if (data.success) {
-        const roleName =
-          data.user.role_id === 1
-            ? "admin"
-            : data.user.role_id === 2
-            ? "company"
-            : data.user.role_id === 3
-            ? "customer"
-            : "unknown";
-
         const user = {
           email: email.value,
           name: data.user.name,
@@ -163,19 +170,43 @@ const handleLogin = () => {
         localStorage.setItem("token", data.token);
         alert.type = "success";
         alert.message = "Login successful! Redirecting...";
-        setTimeout(() => {
-          if (data.user.role_id === 1) {
-            router.push("/admin/dashboard");
-          } else if (data.user.role_id === 2) {
-            router.push("/company/dashboard");
-          }
-        }, 1500);
+        
+        if (user.isVerify) {
+          setTimeout(() => {
+            if (data.user.role_id === 1) {
+              router.push("/admin/dashboard");
+            } else if (data.user.role_id === 2) {
+              router.push("/company/dashboard");
+            }
+          }, 1500);
+        } else {
+          router.push("/verify-email");
+          const token = localStorage.getItem("token");
+          fetch("http://localhost:8000/api/email/verification-notification", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ user: user }),
+          })
+            .then(() => {
+              // Idealno ovo ide u global store ili neki reactive alert sistem
+              console.log("Verification email has been resent.");
+            })
+            .catch((error) => {
+              console.error("Resend failed:", error.message);
+            });
+        }
       } else {
+        console.log("Poruka1: ", data.message);
         alert.type = "error";
         alert.message = data.message || "Incorrect email or password.";
       }
     })
     .catch((error) => {
+      console.log("Poruka2: ", error);
       alert.type = "error";
       alert.message = `Login failed: ${error.message}`;
     });

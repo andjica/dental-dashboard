@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
-import {isAuthenticated, getUserRole, isEmailVerified } from "@/helper/auth";
+import { isAuthenticated, getUserRole, isEmailVerified } from "@/helper/auth";
 import Login from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
 import EmailVerify from "@/pages/VerifyEmail.vue";
+import VerifySuccess from "@/pages/VerifySuccess.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import CompanyLayout from "@/layouts/CompanyLayout.vue";
 
@@ -18,6 +19,10 @@ const routes = [
   {
     path: "/verify-email",
     component: EmailVerify,
+  },
+  {
+    path: "/verify-success",
+    component: VerifySuccess,
   },
   // Admin
   {
@@ -99,22 +104,50 @@ const router = createRouter({
 
 // ✅ Middleware logika
 router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiredRole = to.meta.role;
 
   if (requiresAuth && !isAuthenticated()) {
-    return next('/');
+    return next({ path: "/", query: { error: "unauthenticated" } });
   }
 
   if (requiredRole && getUserRole() !== requiredRole) {
-    return next('/');
+    return next("/");
   }
 
-  if (requiresAuth && !isEmailVerified() && to.path !== '/verify-email') {
-    return next('/verify-email');
+  if (
+    requiresAuth &&
+    isAuthenticated() &&
+    !isEmailVerified() &&
+    to.path !== "/verify-email"
+  ) {
+    //dodati rutu resend mail
+    const user = localStorage.getItem("user");
+
+    fetch("http://localhost:8000/api/email/verification-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ user: user }),
+    })
+      .then(() => {
+        // Idealno ovo ide u global store ili neki reactive alert sistem
+        console.log("Verification email has been resent.");
+      })
+      .catch((error) => {
+        console.error("Resend failed:", error.message);
+      });
+
+    return next("/verify-email");
   }
 
-  next();
+  if (requiredRole && getUserRole() !== requiredRole) {
+    return next("/");
+  }
+
+  return next();
 });
 
 export default router;
