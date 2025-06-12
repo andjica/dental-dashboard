@@ -16,6 +16,7 @@
         @close="alert.message = ''"
       />
       <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
+      <!-- <Loader v-if="loading" /> -->
       <form @submit.prevent="handleLogin" class="space-y-6">
         <div>
           <label
@@ -75,9 +76,11 @@
 import { ref, reactive, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
+// import Loader from "@/components/shared/Loader.vue";
 
 const email = ref("");
 const password = ref("");
+// const loading = ref(false);
 const router = useRouter();
 const route = useRoute();
 
@@ -102,116 +105,169 @@ watch(
   }
 );
 // Clear errors when typing
-watch(email, () => {
-  if (errors.email) errors.email = "";
-  if (alert.message) alert.message = "";
-});
-watch(password, () => {
-  if (errors.password) errors.password = "";
-  if (alert.message) alert.message = "";
+const fields = { email, password };
+Object.entries(fields).forEach(([key, refVar]) => {
+  watch(refVar, () => {
+    if (errors[key]) errors[key] = "";
+  });
 });
 
-const handleLogin = () => {
-  // Reset errors and alert
+// iz ove funkcije treba da uzmem kolonu "is_finished_profile" da bih proverio, da li je korisnik update-ovao svoje podatake za kompaniju
+const fetchCompany = () => {
+  fetch("http://localhost:8000/api/company", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${data.token}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Something is wrong!");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log("Company data: ", data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+    });
+};
+
+const handleLogin = async () => {
+  // Resetuj validaciju i alert poruke
   errors.email = "";
   errors.password = "";
   alert.message = "";
   alert.type = "";
 
-  let valid = true;
+  // Validacija forme
+  let isValid = true;
 
   if (!email.value) {
     errors.email = "Email is required.";
-    valid = false;
+    isValid = false;
   } else if (!isValidEmail(email.value)) {
     errors.email = "Please enter a valid email.";
-    valid = false;
+    isValid = false;
   }
 
   if (!password.value) {
     errors.password = "Password is required.";
-    valid = false;
+    isValid = false;
   }
 
-  if (!valid) {
+  if (!isValid) {
     alert.type = "error";
     alert.message = "Please fix the errors in the form.";
     return;
   }
 
-  fetch("http://localhost:8000/api/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      email: email.value,
-      password: password.value,
-    }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log("DATA: ", data);
-      if (data.success) {
-        const user = {
-          email: email.value,
-          first_name: data.user.first_name,
-          last_name: data.user.last_name,
-          role_id: data.user.role_id,
-          isVerify: data.user.email_verified_at ? 1 : 0,
-        };
+  try {
+    // Login request
+    const loginResponse = await fetch("http://localhost:8000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
+    });
 
-        localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("token", data.token);
-        alert.type = "success";
-        alert.message = "Login successful! Redirecting...";
-        
-        if (user.isVerify) {
-          setTimeout(() => {
-            if (data.user.role_id === 1) {
-              router.push("/admin/dashboard");
-            } else if (data.user.role_id === 2) {
-              router.push("/company/dashboard");
-            } else {
-              router.push("/user/dashboard");
-            }
-          }, 1500);
-        } else {
-          router.push("/verify-email");
-          const token = localStorage.getItem("token");
-          fetch("http://localhost:8000/api/email/verification-notification", {
-            method: "POST",
+    if (!loginResponse.ok) throw new Error("Login request failed");
+
+    const loginData = await loginResponse.json();
+
+    if (!loginData.success) {
+      alert.type = "error";
+      alert.message = loginData.message || "Incorrect email or password.";
+      return;
+    }
+    console.log("!!!!!", loginData);
+    const token = loginData.token;
+    const baseUser = loginData.user;
+    const isVerified = !!baseUser.email_verified_at;
+
+    let fullUser = { ...baseUser, isVerify: isVerified };
+
+    // Ako je kompanija, uzmi dodatne podatke o profilu
+    if (baseUser.role_id === 2) {
+      try {
+        const companyResponse = await fetch(
+          "http://localhost:8000/api/company",
+          {
+            method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Accept: "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ user: user }),
-          })
-            .then(() => {
-              // Idealno ovo ide u global store ili neki reactive alert sistem
-              console.log("Verification email has been resent.");
-            })
-            .catch((error) => {
-              console.error("Resend failed:", error.message);
-            });
+          }
+        );
+
+        if (!companyResponse.ok) {
+          console.warn("Company info not found or error occurred");
+          fullUser.is_finished_profile = 0; // fallback ako nema podataka
+        } else {
+          const companyData = await companyResponse.json();
+          fullUser.is_finished_profile = companyData.is_finished_profile ?? 0;
         }
-      } else {
-        console.log("Poruka1: ", data.message);
-        alert.type = "error";
-        alert.message = data.message || "Incorrect email or password.";
+      } catch (error) {
+        console.error("Company fetch error:", error);
+        fullUser.is_finished_profile = 0;
       }
-    })
-    .catch((error) => {
-      console.log("Poruka2: ", error);
-      alert.type = "error";
-      alert.message = `Login failed: ${error.message}`;
-    });
+    }
+
+    // Sačuvaj korisnika i token
+    localStorage.setItem("user", JSON.stringify(fullUser));
+    localStorage.setItem("token", token);
+
+    alert.type = "success";
+    alert.message = "Login successful! Redirecting...";
+
+    setTimeout(() => {
+      if (!isVerified) {
+        router.push("/verify-email");
+
+        // Pošalji zahtev za verifikaciju emaila
+        fetch("http://localhost:8000/api/email/verification-notification", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ user_id: fullUser.id }),
+        }).catch((error) => {
+          console.error("Verification email resend failed:", error.message);
+        });
+
+        return;
+      }
+
+      // Redirekcija po roli
+      switch (fullUser.role_id) {
+        case 1:
+          router.push("/admin/dashboard");
+          break;
+        case 2:
+          fullUser.is_finished_profile
+            ? router.push("/company/dashboard")
+            : router.push("/company/settings/company");
+          break;
+        case 3:
+        default:
+          router.push("/user/dashboard");
+          break;
+      }
+    }, 1500);
+  } catch (error) {
+    alert.type = "error";
+    alert.message = `Login failed: ${error.message}`;
+    console.error("Login error:", error);
+  }
 };
 </script>

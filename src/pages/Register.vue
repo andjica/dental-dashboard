@@ -63,11 +63,7 @@
           <h4 class="mb-1 font-medium">Your role:</h4>
           <div class="space-y-1">
             <label class="flex items-center space-x-2">
-              <input type="radio" id="admin" value="1" v-model="role" />
-              <span>Admin</span>
-            </label>
-            <label class="flex items-center space-x-2">
-              <input type="radio" id="company" value="2" v-model="role" />
+              <input type="radio" id="company" value="2" v-model="role" checked/>
               <span>Company</span>
             </label>
             <label class="flex items-center space-x-2">
@@ -103,7 +99,7 @@ const lastName = ref("");
 const email = ref("");
 const password = ref("");
 const passwordConfirm = ref("");
-const role = ref("");
+const role = ref("2");
 
 const router = useRouter();
 
@@ -206,12 +202,13 @@ const handleRegister = () => {
       return response.json();
     })
     .then((data) => {
+      console.log("DATA: ",data);
       const formData = {
         first_name: firstName.value,
         last_name	: lastName.value,
         email: email.value,
         password: password.value,
-        role_id: data.role_id,
+        role_id: parseInt(role.value),
       };
       localStorage.setItem("user", JSON.stringify(formData));
       alert.type = "success";
@@ -230,9 +227,10 @@ const handleRegister = () => {
       try {
         const errorData = await err.response.json();
         errorMsg = errorData.message || errorMsg;
-      } catch {}
-      alert.type = "error";
-      alert.message = errorMsg;
+      } catch {
+        alert.type = "error";
+        alert.message = errorMsg;
+      }
     });
 };
 </script>

@@ -76,21 +76,20 @@ const form = ref({
   image: null,
 })
 
-function handleImageUpload(event) {
+const handleImageUpload = (event) => {
   const file = event.target.files[0]
   form.value.image = file
 }
 
-function handleSubmit() {
+const handleSubmit = ( ) => {
   console.log("Submitting product:", form.value)
   // You can send `form.value` to your API here (with FormData if uploading)
-  alert("Product created (fake alert for now)")
 
   // Example: redirect to product list
   router.push({ name: 'company.products' })
 }
 
-function cancel() {
-  router.back()
-}
+// const cancel = () =>  {
+//   router.back()
+// }
 </script>

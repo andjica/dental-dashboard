@@ -16,8 +16,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 function logout() {
-  alert('Logging out...');
   localStorage.clear();
-  router.push('/login');
+  router.push('/');
 }
 </script>
