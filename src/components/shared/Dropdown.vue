@@ -2,7 +2,7 @@
   <div class="relative inline-flex w-full flex-col">
     <button
       ref="btnDropdownRef"
-      @click="!disabled && toggleDropdown"
+      @click="handleClick"
       class="w-full text-left px-4 py-2 bg-blue-800 hover:bg-blue-700 rounded text-white font-medium flex justify-between items-center"
       :class="[
         disabled
@@ -72,8 +72,14 @@ export default {
   },
   methods: {
     toggleDropdown() {
+      console.log("Click");
       this.dropdownPopoverShow = !this.dropdownPopoverShow;
     },
+    handleClick(){
+      if(!this.disabled) {
+        this.toggleDropdown();
+      }
+    }
   },
 };
 </script>

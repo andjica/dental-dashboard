@@ -2,7 +2,7 @@
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4">Settings Company</h1>
     <div class="mb-16 p-6">
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
         <!-- Company Logo -->
         <div>
           <label class="block text-sm font-medium mb-1">Company Logo</label>
@@ -12,9 +12,10 @@
             accept="image/*"
             class="w-full"
           />
-          <div v-if="companyLogoPreview" class="mt-2">
+          <div v-if="companyLogoFile" class="mt-2">
             <img
-              :src="companyLogoPreview"
+            v-if="companyLogoFile"
+              :src="companyLogoFile"
               alt="Company Logo Preview"
               class="rounded border border-gray-300"
               style="width: 50px; height: 50px; object-fit: cover"
@@ -186,7 +187,8 @@ const companyEmail = ref("");
 const companyAddress = ref("");
 const companyTaxNumber = ref("");
 const companyRegisterNumber = ref("");
-const companyLogoPreview = ref(null);
+const companyLogoFile = ref(null);
+let logo = ref(null);
 const countries = ref([]);
 const selectedCountry = ref("");
 const cities = ref([]);
@@ -210,6 +212,7 @@ const errors = reactive({
 // Static data (replace with API calls as needed)
 onMounted(() => {
   fetchCountry();
+  fetchCompany();
 });
 
 // Filter cities based on selected country
@@ -240,6 +243,7 @@ const fields = {
   selectedCity,
   phoneNumber,
 };
+
 Object.entries(fields).forEach(([key, refVar]) => {
   watch(refVar, () => {
     if (errors[key]) errors[key] = "";
@@ -256,17 +260,18 @@ watch(selectedCountry, (newVal) => {
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file && file.size <= 4 * 1024 * 1024) {
-    companyLogoPreview.value = URL.createObjectURL(file);
+    companyLogoFile.value = URL.createObjectURL(file);
+    logo = file;
   } else {
     errors.logo = "Image must be 4MB or less.";
     event.target.value = null;
-    companyLogoPreview.value = null;
+    companyLogoFile.value = null;
   }
+  console.log("andjica",typeof(file));
 };
-
+// Fetch City
 const fetchCity = (countryId) => {
   if (!countryId) return;
-
   fetch(`http://localhost:8000/api/cities/${countryId}`, {
     method: "GET",
     headers: {
@@ -281,14 +286,13 @@ const fetchCity = (countryId) => {
       return res.json();
     })
     .then((data) => {
-      console.log("Cities data: ", data);
       cities.value = data.cities || [];
     })
     .catch((err) => {
       console.log("Errro throw fetching cities: ", err);
     });
 };
-
+// Fetch Country
 const fetchCountry = () => {
   fetch("http://localhost:8000/api/countries", {
     method: "GET",
@@ -305,7 +309,7 @@ const fetchCountry = () => {
       return res.json();
     })
     .then((data) => {
-      console.log("Country: ", data);
+      // const eurCountries = data.countries.filter((country) => country.currency === "EUR");
       countries.value = data.countries;
       if (data.countries.length > 0) {
         selectedCountry.value = data.countries[0].id;
@@ -316,7 +320,7 @@ const fetchCountry = () => {
       console.log("GRESKA je: ", err);
     });
 };
-
+// fetch phone code in dependent on selected country
 const fetchPhoneCode = (countryId) => {
   if (!countryId) return;
   fetch(`http://localhost:8000/api/country/${countryId}/phone-code`, {
@@ -331,8 +335,7 @@ const fetchPhoneCode = (countryId) => {
       return res.json();
     })
     .then((data) => {
-      console.log("Phone: ", data);
-      phoneCode.value = data.phoneCode; // očekujemo npr "+381"
+      phoneCode.value = data.phoneCode;
     })
     .catch((err) => {
       console.log("Phone code fetch error:", err);
@@ -342,7 +345,7 @@ const fetchPhoneCode = (countryId) => {
 // Form submit handler
 const handleSubmit = () => {
   let isValid = true;
-
+  const token = localStorage.getItem("token");
   // Reset errors
   for (const key in errors) errors[key] = "";
 
@@ -388,26 +391,92 @@ const handleSubmit = () => {
     errors.phoneNumber = "Phone number must be at least 6 digits.";
     isValid = false;
   } else if (phoneNumber.value.length !== 10) {
-  errors.phoneNumber = "Phone number must be exactly 10 digits.";
-  isValid = false;
-}
+    errors.phoneNumber = "Phone number must be exactly 10 digits.";
+    isValid = false;
+  }
 
   if (!isValid) return;
 
-  const companyData = {
-    name: companyName.value,
-    email: companyEmail.value,
-    address: companyAddress.value,
-    taxNumber: companyTaxNumber.value,
-    registerNumber: companyRegisterNumber.value,
-    logo: companyLogoPreview.value,
-    countryId: selectedCountry.value,
-    cityId: selectedCity.value,
-    phoneCode: phoneCode.value,
-    phoneNumber: phoneNumber.value,
-  };
+  const formData = new FormData();
+  formData.append('name', companyName.value);
+  formData.append('email', companyEmail.value);
+  formData.append('address', companyAddress.value);
+  formData.append('tax_number', companyTaxNumber.value);
+  formData.append('registration_number', companyRegisterNumber.value);
+  formData.append('country_id', selectedCountry.value);
+  formData.append('city_id', selectedCity.value);
+  formData.append('phone_code', phoneCode.value);
+  formData.append('postal_code', phoneNumber.value);
+  formData.append('is_finished_profile', 1);
 
-  localStorage.setItem("company", JSON.stringify(companyData));
+  if (logo) {
+    formData.append('logo', logo);
+  }
+
+
+  console.log("FINAL DATA: ",formData);
+  fetch("http://localhost:8000/api/company/update", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok!");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Server response:", data);
+      // Eventualno možeš dodati prikaz notifikacije ovde
+    })
+    .catch((error) => {
+      console.error("Error submitting company data:", error);
+      // Eventualno možeš prikazati grešku korisniku
+    });
+
+  // localStorage.setItem("company", JSON.stringify(companyData));
   console.log("Company data saved to localStorage.");
 };
+
+const fetchCompany = () => {
+  const token = localStorage.getItem("token");
+  fetch("http://localhost:8000/api/company", {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok!");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Company fetch:", data);
+      const company = data.data;
+        companyName.value = company.name || "";
+      companyEmail.value = company.email || "";
+      companyAddress.value = company.address || "";
+      companyTaxNumber.value = company.tax_number || "";
+      companyRegisterNumber.value = company.registration_number || "";
+      selectedCountry.value = company.country_id || "";
+      selectedCity.value = company.city_id || "";
+      phoneNumber.value = company.postal_code || "";
+      phoneCode.value = company.phone_code || "";
+
+      if (company.logo) {
+        companyLogoFile.value = `http://localhost:8000/${company.logo}`;
+      }
+    })
+    .catch((error) => {
+      console.error("Error submitting company data:", error);
+      // Eventualno možeš prikazati grešku korisniku
+    });
+}
 </script>
