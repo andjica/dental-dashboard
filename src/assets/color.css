@@ -1,0 +1,13 @@
+:root {
+  --green: #377762;
+  --brown: #dccab0;
+  --hover-gray: #64748b;
+}
+
+.green-custom {
+  color: var(--green);
+}
+
+.hover-light-gray:hover {
+  color: var(--hover-gray);
+}

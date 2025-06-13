@@ -3,3 +3,4 @@
 @tailwind utilities; */
 
 @import "tailwindcss";
+@import url('color.css');

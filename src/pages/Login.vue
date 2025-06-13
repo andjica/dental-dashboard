@@ -112,29 +112,6 @@ Object.entries(fields).forEach(([key, refVar]) => {
   });
 });
 
-// iz ove funkcije treba da uzmem kolonu "is_finished_profile" da bih proverio, da li je korisnik update-ovao svoje podatake za kompaniju
-const fetchCompany = () => {
-  fetch("http://localhost:8000/api/company", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${data.token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Something is wrong!");
-      }
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Company data: ", data);
-    })
-    .catch((error) => {
-      console.log("Error: ", error);
-    });
-};
-
 const handleLogin = async () => {
   // Resetuj validaciju i alert poruke
   errors.email = "";
@@ -187,11 +164,11 @@ const handleLogin = async () => {
       alert.message = loginData.message || "Incorrect email or password.";
       return;
     }
-    console.log("!!!!!", loginData);
+
     const token = loginData.token;
     const baseUser = loginData.user;
     const isVerified = !!baseUser.email_verified_at;
-
+    let isFinisheProfile = "";
     let fullUser = { ...baseUser, isVerify: isVerified };
 
     // Ako je kompanija, uzmi dodatne podatke o profilu
@@ -210,14 +187,14 @@ const handleLogin = async () => {
 
         if (!companyResponse.ok) {
           console.warn("Company info not found or error occurred");
-          fullUser.is_finished_profile = 0; // fallback ako nema podataka
+          isFinisheProfile = 0; // fallback ako nema podataka
         } else {
           const companyData = await companyResponse.json();
-          fullUser.is_finished_profile = companyData.is_finished_profile ?? 0;
+          isFinisheProfile = companyData.data.is_finished_profile;
         }
       } catch (error) {
         console.error("Company fetch error:", error);
-        fullUser.is_finished_profile = 0;
+        isFinisheProfile = 0;
       }
     }
 
@@ -254,7 +231,7 @@ const handleLogin = async () => {
           router.push("/admin/dashboard");
           break;
         case 2:
-          fullUser.is_finished_profile
+          isFinisheProfile
             ? router.push("/company/dashboard")
             : router.push("/company/settings/company");
           break;

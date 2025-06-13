@@ -1,105 +1,91 @@
 <template>
-  <aside class="w-60 bg-blue-900 text-white h-screen flex flex-col p-4">
-    <div class="sidebar-header mb-8 text-center select-none">
-      <h2 class="text-2xl font-bold">Company Panel</h2>
-    </div>
-    <nav class="sidebar-nav flex-1 overflow-y-auto">
-      <ul>
-        <li>
-          <!-- Kada je profil završen, koristi router-link -->
-          <router-link
-            v-if="profileFinished"
-            to="/company/dashboard"
-            class="w-full text-left px-4 py-2 bg-blue-800 hover:bg-blue-700 rounded text-white font-medium flex justify-between items-center"
-            active-class="bg-blue-700"
-          >
-            Dashboard
-          </router-link>
-
-          <!-- Kada nije, prikazuj neaktivni element -->
-          <div
-            v-else
-            class="w-full text-left px-4 py-2 bg-gray-600 rounded text-white/50 hover:bg-blue-700 font-medium flex justify-between items-center cursor-not-allowed"
-            title="Complete your company profile to unlock the dashboard"
-          >
-            Dashboard
-          </div>
-        </li>
-        <hr />
-        <Dropdown
-          v-for="(link, index) in dropdownLinks"
+  <!-- Sidebar -->
+  <transition name="slide">
+    <aside
+      v-show="isOpen || isDesktop"
+      class="fixed top-0 left-0 z-40 w-64 h-full bg-white shadow-xl text-black flex flex-col p-4 md:relative md:translate-x-0 transition-transform duration-300 ease-in-out"
+    >
+      <nav class="flex flex-col flex-grow">
+        <!-- Mobilni header -->
+        <div class="flex justify-between items-center px-4 py-3 bg-white shadow md:shadow-none">
+          <h1 class="text-left text-blueGray-600 font-bold uppercase text-sm">
+            Dental
+          </h1>
+          <button @click="props.toggleSidebar" class="md:hidden text-black focus:outline-none cursor-pointer">
+            <font-awesome-icon icon="xmark" />
+          </button>
+        </div>
+        <!-- Navigacija -->
+        <Navigation
+          v-for="(link, index) in menuLinks"
           :key="index"
           :title="link.title"
           :items="link.items"
-          :disabled="!profileFinished.value"
         />
-      </ul>
-    </nav>
-    <div class="sidebar-footer mt-auto text-center">
-      <button
-        @click="logout"
-        class="bg-red-400 hover:bg-red-600 text-white cursor-pointer px-4 py-2 rounded font-bold transition"
-      >
-        Logout
-      </button>
-    </div>
-  </aside>
+      </nav>
+    </aside>
+  </transition>
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-import { ref, onMounted } from "vue";
-import Dropdown from "@/components/shared/Dropdown.vue";
+import { ref, provide, onMounted, onBeforeUnmount } from "vue";
+import Navigation from "@/components/shared/Navigation.vue";
 
-const router = useRouter();
-const profileFinished = ref(true);
-
-console.log("Is finished",profileFinished);
-
-onMounted(async () => {
-  const token = localStorage.getItem("token");
-  console.log("Token Sidebar:", token);
-  try {
-    const companyResponse = await fetch("http://localhost:8000/api/company", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!companyResponse.ok) throw new Error("Failed to fetch");
-
-    const data = await companyResponse.json();
-    console.log("SIDEBAR data: ",data);
-    profileFinished.value = !!data?.data?.is_finished_profile;
-    console.log("profileFinished",profileFinished.value);
-  } catch (err) {
-    console.error("Failed to fetch company profile info", err);
-    profileFinished.value = false;
-  }
+const props = defineProps({
+  isOpen: Boolean,
+  toggleSidebar: Function
 });
 
-function logout() {
-  localStorage.clear();
-  router.push("/");
+const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
+
+function toggleSidebar() {
+  isSidebarOpen.value = !isSidebarOpen.value;
 }
 
-const dropdownLinks = [
+// ✅ Provide mora biti pozvan odmah, van funkcije:
+provide('toggleSidebar', toggleSidebar);
+
+function handleResize() {
+  isDesktop.value = window.innerWidth >= 768;
+}
+
+onMounted(() => {
+  handleResize();
+  window.addEventListener("resize", handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleResize);
+});
+
+const menuLinks = [
+  {
+    title: "Dashboard",
+    items: [{ label: "Home", to: "/company/dashboard", icon: "house" }],
+  },
   {
     title: "Products",
     items: [
-      { label: "All Products", to: "/company/products" },
-      { label: "Create Product", to: "/company/products/create" },
-      { label: "Edit Product 1", to: "/company/products/1/edit" },
+      { label: "All Products", to: "/company/products", icon: "shop" },
+      { label: "Create Product", to: "/company/products/create", icon: "cart-plus" },
     ],
   },
   {
     title: "Settings",
     items: [
-      { label: "Company", to: "/company/settings/company" },
-      { label: "Profile", to: "/company/settings/profile" },
+      { label: "Company", to: "/company/settings/company", icon: "gear" },
+      { label: "Profile", to: "/company/settings/profile", icon: "gear" },
     ],
   },
 ];
 </script>
+
+<style>
+/* Slide transition for sidebar */
+.slide-enter-active, .slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter-from, .slide-leave-to {
+  transform: translateX(-100%);
+}
+</style>
