@@ -16,6 +16,7 @@
                 ? 'text-white green-custom'
                 : 'text-blueGray-700 hover-light-gray hover:text-black',
             ]"
+            @click="handleClick"
           >
             <font-awesome-icon v-if="item.icon" :icon="item.icon" />
             <span>{{ item.label }}</span>
@@ -26,30 +27,23 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    title: String,
-    items: Array,
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
+<script setup>
+import { inject } from 'vue';
+
+const props = defineProps({
+  title: String,
+  items: Array,
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      dropdownPopoverShow: false,
-    };
-  },
-  methods: {
-    toggleDropdown() {
-      this.dropdownPopoverShow = !this.dropdownPopoverShow;
-    },
-    handleClick() {
-      if (!this.disabled) {
-        this.toggleDropdown();
-      }
-    },
-  },
-};
+});
+
+const toggleSidebar = inject('toggleSidebar');
+
+function handleClick() {
+  if (!props.disabled && window.innerWidth < 768 && toggleSidebar) {
+    toggleSidebar();
+  }
+}
 </script>

@@ -38,12 +38,8 @@ const props = defineProps({
 
 const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
 
-function toggleSidebar() {
-  isSidebarOpen.value = !isSidebarOpen.value;
-}
-
 // ✅ Provide mora biti pozvan odmah, van funkcije:
-provide('toggleSidebar', toggleSidebar);
+provide('toggleSidebar', props.toggleSidebar);
 
 function handleResize() {
   isDesktop.value = window.innerWidth >= 768;

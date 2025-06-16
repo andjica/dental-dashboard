@@ -1,4 +1,10 @@
 <template>
+  <Alert
+      v-if="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @close="showAlert = false"
+    />
   <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-md">
     <h1 class="text-2xl font-bold mb-6 ">Settings Company</h1>
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
@@ -163,6 +169,7 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from "vue";
 import { validateCompanyForm } from "@/helper/form-validation/company/company-update";
+import Alert from "@/components/shared/Alert.vue";
 
 // Fields
 const companyName = ref("");
@@ -180,6 +187,11 @@ const selectedCity = ref("");
 // za phone number
 const phoneCode = ref("");
 const phoneNumber = ref("");
+
+// za alert
+const showAlert = ref(false);
+const alertType = ref("success"); // ili 'error'
+const alertMessage = ref("");
 
 // Error handling
 const errors = reactive({
@@ -327,6 +339,11 @@ const fetchPhoneCode = (countryId) => {
     });
 };
 
+// To check if there is change in values
+const hasChange = () => {
+
+}
+
 // Form submit handler
 const handleSubmit = () => {
   const token = localStorage.getItem("token");
@@ -384,9 +401,15 @@ console.log("instanceof File:", logo.value instanceof File);
     })
     .then((data) => {
       console.log("Server response:", data);
+      alertType.value = "success";
+      alertMessage.value = "Company profile updated successfully!";
+      showAlert.value = true;
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);
+      alertType.value = "error";
+      alertMessage.value = "Failed to update company profile.";
+      showAlert.value = true;
     });
 };
 

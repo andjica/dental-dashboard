@@ -12,7 +12,7 @@
 
     <button
       @click="logout"
-      class="bg-red-400 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-md transition-colors md:block"
+      class="bg-red-400 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-md transition-colors cursor-pointer md:block"
     >
       Logout
     </button>
