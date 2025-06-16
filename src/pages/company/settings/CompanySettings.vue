@@ -1,239 +1,164 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Settings Company</h1>
-    <div class="mb-16">
-      <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-        <!-- Company Logo -->
-        <div>
-          <label class="block text-sm font-medium mb-1">Company Logo</label>
-          <input
-            @change="handleImageUpload"
-            type="file"
-            accept="image/*"
-            class="w-full"
+  <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6 ">Settings Company</h1>
+    <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
+      <!-- Company Logo -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Company Logo</label>
+        <input
+          @change="handleImageUpload"
+          type="file"
+          accept="image/*"
+          class="w-full"
+        />
+        <div v-if="companyLogoFile" class="mt-2">
+          <img
+            v-if="companyLogoFile"
+            :src="companyLogoFile"
+            alt="Company Logo Preview"
+            class="rounded border border-gray-300"
+            style="width: 50px; height: 50px; object-fit: cover"
           />
-          <div v-if="companyLogoFile" class="mt-2">
-            <img
-              v-if="companyLogoFile"
-              :src="companyLogoFile"
-              alt="Company Logo Preview"
-              class="rounded border border-gray-300"
-              style="width: 50px; height: 50px; object-fit: cover"
-            />
-          </div>
-          <p v-if="errors.logo" class="text-red-500 text-sm mt-1">
-            {{ errors.logo }}
-          </p>
         </div>
-        <!-- Company informacion -->
-        <div class="flex flex-wrap">
-          <div class="w-full lg:w-6/12 px-4">
-            <div class="realtive w-full mb-3">
-              <!-- Name -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Company Name</label
-              >
-              <input
-                v-model="companyName"
-                type="text"
-                placeholder="Enter company name"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              />
-              <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">
-                {{ errors.companyName }}
-              </p>
-            </div>
-          </div>
-          <div class="w-full lg:w-6/12 px-4">
-            <div class="realtive w-full mb-3">
-              <!-- Email -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Company Email</label
-              >
-              <input
-                v-model="companyEmail"
-                type="email"
-                placeholder="company@example.com"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              />
-              <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">
-                {{ errors.companyEmail }}
-              </p>
-            </div>
-          </div>
+        <p v-if="errors.logo" class="text-red-500 text-sm mt-1">
+          {{ errors.logo }}
+        </p>
+      </div>
+
+      <!-- Company Name -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+        <input
+          v-model="companyName"
+          type="text"
+          placeholder="Enter company name"
+          class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+        />
+        <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">{{ errors.companyName }}</p>
+      </div>
+
+      <!-- Company Email -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Email</label>
+        <input
+          v-model="companyEmail"
+          type="email"
+          placeholder="company@example.com"
+          class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+        />
+        <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">{{ errors.companyEmail }}</p>
+      </div>
+
+      <!-- Company Address -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
+        <input
+          v-model="companyAddress"
+          type="text"
+          placeholder="Enter company address"
+          class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+        />
+        <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">{{ errors.companyAddress }}</p>
+      </div>
+
+      <!-- Country / City / Post Number -->
+      <div class="flex flex-wrap -mx-2 mb-4">
+        <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+          <select
+            v-model="selectedCountry"
+            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+          >
+            <option disabled value="">Select country</option>
+            <option v-for="country in countries" :key="country.id" :value="country.id">
+              {{ country.name }}
+            </option>
+          </select>
+          <p v-if="errors.selectedCountry" class="text-red-500 text-sm mt-1">{{ errors.selectedCountry }}</p>
         </div>
-
-        <!-- Company adress -->
-        <div class="flex flex-wrap">
-          <div class="w-full lg:w-12/12 px-4">
-            <div class="relative w-full mb-3">
-              <!-- Address -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Company Address</label
-              >
-              <input
-                v-model="companyAddress"
-                type="text"
-                placeholder="Enter company address"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              />
-              <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">
-                {{ errors.companyAddress }}
-              </p>
-            </div>
-          </div>
-          <div class="w-full lg:w-4/12 px-4">
-            <div class="realtive w-full mb-3">
-              <!-- Country -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Country</label
-              >
-              <select
-                v-model="selectedCountry"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              >
-                <option disabled value="">Select country</option>
-                <option
-                  v-for="country in countries"
-                  :key="country.id"
-                  :value="country.id"
-                >
-                  {{ country.name }}
-                </option>
-              </select>
-              <p
-                v-if="errors.selectedCountry"
-                class="text-red-500 text-sm mt-1"
-              >
-                {{ errors.selectedCountry }}
-              </p>
-            </div>
-          </div>
-          <div class="w-full lg:w-4/12 px-4">
-            <div class="realtive w-full mb-3">
-              <!-- City -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >City</label
-              >
-              <select
-                v-model="selectedCity"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              >
-                <option disabled value="">Select city</option>
-                <option
-                  v-for="city in filteredCities"
-                  :key="city.id"
-                  :value="city.id"
-                >
-                  {{ city.name }}
-                </option>
-              </select>
-              <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">
-                {{ errors.selectedCity }}
-              </p>
-            </div>
-          </div>
-          <!-- Post number -->
-          <div class="w-full lg:w-4/12 px-4">
-            <div class="realtive w-full mb-3">
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Post Number</label
-              >
-              <input
-                v-model="companyPost"
-                type="text"
-                placeholder="Enter company name"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              />
-              <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">
-                {{ errors.companyPost }}
-              </p>
-            </div>
-          </div>
-          <div class="w-full lg:w-12/12 px-4">
-            <div class="relative w-full mb-3">
-              <!-- Phone Number -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Phone Number</label
-              >
-              <div class="flex gap-2">
-                <!-- Disabled prefix -->
-                <input
-                  :value="`+${phoneCode}`"
-                  type="text"
-                  disabled
-                  class="w-1/4 px-4 py-2 bg-gray-200 rounded-md border border-gray-300 text-gray-600"
-                />
-
-                <!-- User input -->
-                <input
-                  v-model="phoneNumber"
-                  @input="validatePhoneNumber"
-                  type="text"
-                  placeholder="Enter phone number"
-                  class="w-3/4 px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-                />
-              </div>
-              <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">
-                {{ errors.phoneNumber }}
-              </p>
-            </div>
-          </div>
+        <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
+          <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+          <select
+            v-model="selectedCity"
+            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+          >
+            <option disabled value="">Select city</option>
+            <option v-for="city in filteredCities" :key="city.id" :value="city.id">
+              {{ city.name }}
+            </option>
+          </select>
+          <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">{{ errors.selectedCity }}</p>
         </div>
-
-        <div class="flex flex-wrap">
-          <div class="w-full lg:w-6/12 px-4">
-            <div class="relative w-full mb-3">
-              <!-- Tax Number -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Tax Number</label
-              >
-              <input
-                v-model="companyTaxNumber"
-                type="text"
-                placeholder="Enter tax number"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              />
-              <p
-                v-if="errors.companyTaxNumber"
-                class="text-red-500 text-sm mt-1"
-              >
-                {{ errors.companyTaxNumber }}
-              </p>
-            </div>
-          </div>
-          <div class="w-full lg:w-6/12 px-4">
-            <div class="relative w-full mb-3">
-              <!-- Register Number -->
-              <label class="block text-sm font-medium text-gray-700 mb-2 mt-4"
-                >Register Number</label
-              >
-              <input
-                v-model="companyRegisterNumber"
-                type="text"
-                placeholder="Enter register number"
-                class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-              />
-              <p
-                v-if="errors.companyRegisterNumber"
-                class="text-red-500 text-sm mt-1"
-              >
-                {{ errors.companyRegisterNumber }}
-              </p>
-            </div>
-          </div>
+        <div class="w-full md:w-1/3 px-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Post Number</label>
+          <input
+            v-model="companyPost"
+            type="text"
+            placeholder="Enter post number"
+            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+          />
+          <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">{{ errors.companyPost }}</p>
         </div>
+      </div>
 
+      <!-- Phone Number -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+        <div class="flex gap-2">
+          <input
+            :value="`+${phoneCode}`"
+            type="text"
+            disabled
+            class="w-1/4 px-4 py-2 bg-gray-200 rounded-md border border-gray-300 text-gray-600"
+          />
+          <input
+            v-model="phoneNumber"
+            @input="validatePhoneNumber"
+            type="text"
+            placeholder="Enter phone number"
+            class="w-3/4 px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+          />
+        </div>
+        <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">{{ errors.phoneNumber }}</p>
+      </div>
+
+      <!-- Tax and Register Number -->
+      <div class="flex flex-wrap -mx-2">
+        <div class="w-full md:w-1/2 px-2 mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
+          <input
+            v-model="companyTaxNumber"
+            type="text"
+            placeholder="Enter tax number"
+            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+          />
+          <p v-if="errors.companyTaxNumber" class="text-red-500 text-sm mt-1">{{ errors.companyTaxNumber }}</p>
+        </div>
+        <div class="w-full md:w-1/2 px-2 mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Register Number</label>
+          <input
+            v-model="companyRegisterNumber"
+            type="text"
+            placeholder="Enter register number"
+            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
+          />
+          <p v-if="errors.companyRegisterNumber" class="text-red-500 text-sm mt-1">{{ errors.companyRegisterNumber }}</p>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-right">
         <button
           type="submit"
-          class="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 float-right"
+          class="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
         >
           Update
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from "vue";
@@ -246,7 +171,7 @@ const companyAddress = ref("");
 const companyTaxNumber = ref("");
 const companyRegisterNumber = ref("");
 const companyLogoFile = ref(null);
-let logo = ref(null);
+const logo = ref(null);
 const companyPost = ref("");
 const countries = ref([]);
 const selectedCountry = ref("");
@@ -320,7 +245,7 @@ const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file && file.size <= 4 * 1024 * 1024) {
     companyLogoFile.value = URL.createObjectURL(file);
-    logo = file;
+    logo.value = file;
   } else {
     errors.logo = "Image must be 4MB or less.";
     event.target.value = null;
@@ -441,7 +366,8 @@ const handleSubmit = () => {
   if (logo.value) {
     formData.append("logo", logo.value);
   }
-
+console.log("logo.value:", logo.value);
+console.log("instanceof File:", logo.value instanceof File);
   fetch("http://localhost:8000/api/company/update", {
     method: "POST",
     headers: {
