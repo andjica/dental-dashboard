@@ -76,11 +76,10 @@
 import { ref, reactive, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
-// import Loader from "@/components/shared/Loader.vue";
 
 const email = ref("");
 const password = ref("");
-// const loading = ref(false);
+
 const router = useRouter();
 const route = useRoute();
 
@@ -196,6 +195,30 @@ const handleLogin = async () => {
         console.error("Company fetch error:", error);
         isFinisheProfile = 0;
       }
+    } else {
+      try {
+        const userResponse = await fetch(
+          "http://localhost:8000/api/user-info",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if(!userResponse.ok){
+          console.warn("User info not found or error occurred");
+          isFinisheProfile = 0;
+        } else {
+          const userData = await userResponse.json();
+          isFinisheProfile = userData.data.is_finished_profile;
+        }
+      } catch(error) {
+        console.error("User fetch errror: ", error);
+        isFinisheProfile = 0;
+      }
     }
 
     // Sačuvaj korisnika i token
@@ -237,7 +260,9 @@ const handleLogin = async () => {
           break;
         case 3:
         default:
-          router.push("/user/dashboard");
+          isFinisheProfile
+          ? router.push("/user/dashboard")
+          : router.push("/user/settings/profile");
           break;
       }
     }, 1500);

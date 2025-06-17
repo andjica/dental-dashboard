@@ -6,15 +6,18 @@ import EmailVerify from "@/pages/VerifyEmail.vue";
 import VerifySuccess from "@/pages/VerifySuccess.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import CompanyLayout from "@/layouts/CompanyLayout.vue";
+import UserLayout from "../layouts/UserLayout.vue";
 
 const routes = [
   {
     path: "/",
     component: Login,
+    meta: { public: true },
   },
   {
     path: "/register",
     component: Register,
+    meta: { public: true },
   },
   {
     path: "/verify-email",
@@ -102,14 +105,19 @@ const routes = [
   },
   // User
   {
-    path: "/company",
-    component: CompanyLayout,
+    path: "/user",
+    component: UserLayout,
     meta: { requiresAuth: true, role: 3 },
     children: [
       {
         path: "dashboard",
         name: "user.dashboard",
         component: () => import("@/pages/user/Dashboard.vue"),
+      },
+      {
+        path: "settings/profile",
+        name: "user.settings.profile",
+        component: () => import("@/pages/user/settings/UserProfile.vue"),
       },
     ]
   }
@@ -123,13 +131,17 @@ const router = createRouter({
 // ✅ Middleware logika
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const requiredRole = to.meta.role;
+  const isPublic = to.matched.some((record) => record.meta.public);
+
+  if (isPublic) {
+    return next(); // Dozvoli javne stranice
+  }
 
   if (requiresAuth && !isAuthenticated()) {
     return next({ path: "/", query: { error: "unauthenticated" } });
   }
 
-  if (requiredRole && getUserRole() !== requiredRole) {
+  if (requiresAuth && isAuthenticated() && getUserRole() !== to.meta.role) {
     return next("/");
   }
 
@@ -139,7 +151,6 @@ router.beforeEach((to, from, next) => {
     !isEmailVerified() &&
     to.path !== "/verify-email"
   ) {
-    //dodati rutu resend mail
     const user = localStorage.getItem("user");
 
     fetch("http://localhost:8000/api/email/verification-notification", {
@@ -151,7 +162,6 @@ router.beforeEach((to, from, next) => {
       body: JSON.stringify({ user: user }),
     })
       .then(() => {
-        // Idealno ovo ide u global store ili neki reactive alert sistem
         console.log("Verification email has been resent.");
       })
       .catch((error) => {
@@ -159,10 +169,6 @@ router.beforeEach((to, from, next) => {
       });
 
     return next("/verify-email");
-  }
-
-  if (requiredRole && getUserRole() !== requiredRole) {
-    return next("/");
   }
 
   return next();

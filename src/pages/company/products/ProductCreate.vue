@@ -23,7 +23,65 @@
       <!-- Description -->
       <div>
         <label class="block text-sm font-medium mb-1">Description</label>
-        <Ckeditor v-model="description" />
+        <!-- TOOLBAR -->
+        <div class="flex flex-wrap items-center gap-2 mb-2 text-sm">
+          <button
+            @click="toggleBold"
+            :class="buttonClass(editor.isActive('bold'))"
+          >
+            B
+          </button>
+          <button
+            @click="toggleItalic"
+            :class="buttonClass(editor.isActive('italic'))"
+          >
+            <em>I</em>
+          </button>
+          <button
+            @click="toggleUnderline"
+            :class="buttonClass(editor.isActive('underline'))"
+          >
+            <u>U</u>
+          </button>
+          <button
+            @click="toggleStrike"
+            :class="buttonClass(editor.isActive('strike'))"
+          >
+            <s>S</s>
+          </button>
+
+          <button
+            @click="toggleHeading(1)"
+            :class="buttonClass(editor.isActive('heading', { level: 1 }))"
+          >
+            H1
+          </button>
+          <button
+            @click="toggleHeading(2)"
+            :class="buttonClass(editor.isActive('heading', { level: 2 }))"
+          >
+            H2
+          </button>
+
+          <button
+            @click="toggleBulletList"
+            :class="buttonClass(editor.isActive('bulletList'))"
+          >
+            • List
+          </button>
+          <button
+            @click="toggleOrderedList"
+            :class="buttonClass(editor.isActive('orderedList'))"
+          >
+            1. List
+          </button>
+        </div>
+        <!-- EDITOR -->
+        <EditorContent
+          :editor="editor"
+          class="border rounded p-3 min-h-[150px]"
+        />
+
         <p v-if="errors.productDesc" class="text-red-500 text-sm mt-1">
           {{ errors.productDesc }}
         </p>
@@ -35,6 +93,7 @@
         <input
           :value="displayPrice"
           @input="onPriceInput"
+          @keypress="allowOnlyNumbersAndDot"
           @blur="formatDisplayPrice"
           type="text"
           inputmode="numeric"
@@ -62,7 +121,23 @@
           {{ errors.productDesc }}
         </p>
       </div> -->
-
+      <!-- Sub-category -->
+      <!-- <div>
+        <label class="block text-sm font-medium mb-1">Sub-category</label>
+        <select
+          v-model="form.category"
+          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+        >
+          <option disabled value="">Select a subcategory</option>
+          <option>Electronics</option>
+          <option>Clothing</option>
+          <option>Books</option>
+          <option>Accessories</option>
+        </select>
+        <p v-if="errors.productDesc" class="text-red-500 text-sm mt-1">
+          {{ errors.productDesc }}
+        </p>
+      </div> -->
       <!-- Image -->
       <div>
         <label class="block text-sm font-medium mb-1">Product Image</label>
@@ -104,13 +179,68 @@
           </div>
         </div>
         <div v-if="form.image.length" class="mt-2 text-sm text-gray-600">
-            {{ form.image.length }} image{{ form.image.length > 1 ? 's' : '' }} selected
-          </div>
+          {{ form.image.length }} image{{ form.image.length > 1 ? "s" : "" }}
+          selected
+        </div>
         <p v-if="errors.productImages" class="text-red-500 text-sm mt-1">
           {{ errors.productImages }}
         </p>
       </div>
 
+      <div class="flex flex-wrap -mx-2 mb-4">
+        <div class="w-full md:w-1/3 px-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Length</label
+          >
+          <input
+          v-model="form.leght"
+          type="text"
+          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+        />
+        <p v-if="errors.productLength" class="text-red-500 text-sm mt-1">
+          {{ errors.productLength }}
+        </p>
+        </div>
+        <div class="w-full md:w-1/3 px-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Width</label
+          >
+          <input
+          v-model="form.width"
+          type="text"
+          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+        />
+        <p v-if="errors.productWidth" class="text-red-500 text-sm mt-1">
+          {{ errors.productWidth }}
+        </p>
+        </div>
+        <div class="w-full md:w-1/3 px-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Height</label
+          >
+          <input
+          v-model="form.height"
+          type="text"
+          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+        />
+        <p v-if="errors.productHeight" class="text-red-500 text-sm mt-1">
+          {{ errors.productHeight }}
+        </p>
+        </div>
+        <div class="w-full md:w-1/3 px-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Weight</label
+          >
+          <input
+          v-model="form.weight"
+          type="text"
+          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+        />
+        <p v-if="errors.productWeight" class="text-red-500 text-sm mt-1">
+          {{ errors.productWeight }}
+        </p>
+        </div>
+      </div>
       <!-- Stock -->
       <div>
         <label class="block text-sm font-medium mb-1">Stock Quantity</label>
@@ -152,12 +282,19 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount, computed } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
+import { Editor, EditorContent } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import Heading from "@tiptap/extension-heading";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+
 import { validateProductForm } from "@/helper/form-validation/product/product-create";
-import Ckeditor from "@/components/shared/Ckeditor.vue";
 
 const router = useRouter();
+const editor = ref(null);
 
 const form = ref({
   name: "",
@@ -167,11 +304,57 @@ const form = ref({
   stock: "",
   is_active: false,
   image: [],
+  length: "",
+  width: "",
+  height: "",
+  weight: ""
 });
 
 const imagePreviews = ref([]);
-const displayPrice = ref(""); 
+const displayPrice = ref("");
 const errors = ref({});
+
+editor.value = new Editor({
+  extensions: [
+    StarterKit,
+    Underline,
+    Heading.configure({ levels: [1, 2, 3] }),
+    BulletList,
+    OrderedList,
+  ],
+  editorProps: {
+    attributes: {
+      class: "min-h-[150px] focus:outline-none",
+      placeholder: "Write description of product...",
+    },
+  },
+  onUpdate({ editor }) {
+    form.value.description = editor.getHTML();
+  },
+});
+
+const toggleBold = () => editor.value.chain().focus().toggleBold().run();
+const toggleItalic = () => editor.value.chain().focus().toggleItalic().run();
+const toggleUnderline = () =>
+  editor.value.chain().focus().toggleUnderline().run();
+const toggleStrike = () => editor.value.chain().focus().toggleStrike().run();
+
+const toggleHeading = (level) =>
+  editor.value.chain().focus().toggleHeading({ level }).run();
+
+const toggleBulletList = () =>
+  editor.value.chain().focus().toggleBulletList().run();
+
+const toggleOrderedList = () =>
+  editor.value.chain().focus().toggleOrderedList().run();
+
+const buttonClass = (isActive) => {
+  return `px-2 py-1 rounded border ${
+    isActive
+      ? "bg-blue-600 text-white"
+      : "bg-white text-gray-800 hover:bg-gray-100"
+  }`;
+};
 
 const handleImageUpload = (event) => {
   const files = Array.from(event.target.files);
@@ -192,19 +375,36 @@ onBeforeUnmount(() => {
 });
 
 const onPriceInput = (e) => {
-  // Dozvoli samo brojeve (0–9)
-  const raw = e.target.value.replace(/\D/g, "");
-  displayPrice.value = raw;
-  form.value.price = raw ? parseFloat(raw).toFixed(2) : "";
+  // Ukloni sve osim cifara i tačke
+  let input = e.target.value.replace(/[^0-9.]/g, "");
+
+  // Samo prva tačka se dozvoljava (decimalna)
+  const parts = input.split(".");
+  if (parts.length > 2) {
+    input = parts[0] + "." + parts[1];
+  }
+
+  displayPrice.value = input;
+  form.value.price = input ? parseFloat(input).toFixed(2) : "";
 };
+
+const allowOnlyNumbersAndDot = (e) => {
+  const allowedChars = "0123456789.";
+  if (!allowedChars.includes(e.key)) {
+    e.preventDefault();
+  }
+};
+
 
 const formatDisplayPrice = () => {
   if (displayPrice.value !== "") {
-    const formatted = parseFloat(displayPrice.value).toFixed(2).replace('.', ',');
+    const formatted = parseFloat(displayPrice.value)
+      .toFixed(2)
+      .replace(".", ",");
     displayPrice.value = formatted;
   }
 };
-console.log("Form: ",form);
+console.log("Form: ", form);
 const handleSubmit = () => {
   const token = localStorage.getItem("token");
 
@@ -214,6 +414,10 @@ const handleSubmit = () => {
     productImages: form.value.image || [],
     productQuantity: form.value.stock,
     productPrice: form.value.price,
+    productLength: form.value.length,
+    productWidth: form.value.width,
+    productHeight: form.value.height,
+    productWeight: form.value.weight
   });
 
   errors.value = validationErrors;
@@ -230,16 +434,20 @@ const handleSubmit = () => {
     is_active: form.value.is_active,
     images: form.value.image.map((file) => file.name), // samo imena slika
     created_at: new Date().toISOString(),
+    length: form.value.length,
+    width: form.value.width,
+    height: form.value.height,
+    weight: form.value.weight
   };
 
   // Uzmi postojeci niz iz localStorage ili napravi prazan
-  const storedProducts = JSON.parse(localStorage.getItem("company")) || [];
+  const storedProducts = JSON.parse(localStorage.getItem("companyProduct")) || [];
 
   // Dodaj novi proizvod u niz
   storedProducts.push(productToStore);
 
   // Snimi ažurirani niz nazad u localStorage
-  localStorage.setItem("company", JSON.stringify(storedProducts));
+  localStorage.setItem("companyProduct", JSON.stringify(storedProducts));
 
   // (opciono) idi dalje
   console.log("Product locally saved:", productToStore);

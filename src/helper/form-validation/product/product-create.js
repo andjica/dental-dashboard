@@ -38,6 +38,22 @@ export const validateProductForm = (data) => {
     errors.productPrice = "Product price must be a number greater than 0.";
     isValid = false;
   }
+  if (!data.productLength) {
+    errors.productLength = "Product lenght is requred.";
+    isValid = false;
+  }
+  if (!data.productWidth) {
+    errors.productWidth = "Product width is requred.";
+    isValid = false;
+  }
+  if (!data.productHeight) {
+    errors.productHeight = "Product height is requred.";
+    isValid = false;
+  }
+  if (!data.productWeight) {
+    errors.productWeight = "Product weight is requred.";
+    isValid = false;
+  }
 
   return { isValid, errors };
 };

@@ -128,26 +128,21 @@ Object.entries(fields).forEach(([key, refVar]) => {
   });
 });
 
-const handleRegister = () => {
-  // Reset all errors
-  errors.firstName = "";
-  errors.lastName = "";
-  errors.email = "";
-  errors.password = "";
-  errors.passwordConfirm = "";
-  errors.role = "";
+const handleRegister = async () => {
+  // Reset errors and alert
+  Object.keys(errors).forEach(key => errors[key] = "");
   alert.message = "";
   alert.type = "";
 
   let valid = true;
 
   if (!firstName.value) {
-    errors.firstName = "First Name is requred!";
+    errors.firstName = "First Name is required!";
     valid = false;
   }
 
   if (!lastName.value) {
-    errors.lastName = "Last Name is requred!";
+    errors.lastName = "Last Name is required!";
     valid = false;
   }
 
@@ -155,7 +150,7 @@ const handleRegister = () => {
     errors.email = "Email is required!";
     valid = false;
   } else if (!isValidEmail(email.value)) {
-    errors.email = "Enter valid email.";
+    errors.email = "Enter a valid email.";
     valid = false;
   }
 
@@ -175,62 +170,64 @@ const handleRegister = () => {
     valid = false;
   }
 
-  if(!role.value) {
-    errors.role = "Select role."
+  if (!role.value) {
+    errors.role = "Select a role.";
+    valid = false;
   }
 
   if (!valid) return;
 
-  fetch("http://localhost:8000/api/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      first_name: firstName.value,
-      last_name: lastName.value,
-      email: email.value,
-      password: password.value,
-      role_id: parseInt(role.value),
-    }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log("DATA: ",data);
-      const formData = {
+  try {
+    const response = await fetch("http://localhost:8000/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
         first_name: firstName.value,
-        last_name	: lastName.value,
+        last_name: lastName.value,
         email: email.value,
         password: password.value,
         role_id: parseInt(role.value),
-      };
-      localStorage.setItem("user", JSON.stringify(formData));
-      alert.type = "success";
-      alert.message = "Registration successful!";
-
-      firstName.value = "";
-      lastName.value = "";
-      email.value = "";
-      password.value = "";
-      passwordConfirm.value = "";
-      role.value = "";
-      router.push("/verify-email");
-    })
-    .catch(async (err) => {
-      let errorMsg = "An error occurred.";
-      try {
-        const errorData = await err.response.json();
-        errorMsg = errorData.message || errorMsg;
-      } catch {
-        alert.type = "error";
-        alert.message = errorMsg;
-      }
+      }),
     });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert.type = "error";
+      alert.message = data.message || "Registration failed.";
+      return;
+    }
+
+    localStorage.setItem("user", JSON.stringify(data.user || {
+      first_name: firstName.value,
+      last_name: lastName.value,
+      email: email.value,
+      role_id: parseInt(role.value),
+    }));
+
+    alert.type = "success";
+    alert.message = "Registration successful! Redirecting...";
+    
+    // Clear form
+    firstName.value = "";
+    lastName.value = "";
+    email.value = "";
+    password.value = "";
+    passwordConfirm.value = "";
+    role.value = "2";
+
+    setTimeout(() => {
+      router.push("/verify-email");
+    }, 1500);
+
+  } catch (err) {
+    console.error("Registration error:", err);
+    alert.type = "error";
+    alert.message = "Unexpected error. Please try again.";
+  }
 };
+
 </script>
