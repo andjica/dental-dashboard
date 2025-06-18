@@ -37,7 +37,8 @@ const props = defineProps({
 });
 
 const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
-
+const companyUser = JSON.parse(localStorage.getItem("user") || "{}");
+const isFinishedProfile = companyUser?.is_finished_profile === 1;
 // ✅ Provide mora biti pozvan odmah, van funkcije:
 provide('toggleSidebar', props.toggleSidebar);
 
@@ -63,15 +64,15 @@ const menuLinks = [
     title: "Products",
     items: [
       { label: "All Products", to: "/company/products", icon: "shop" },
-      { label: "Create Product", to: "/company/products/create", icon: "cart-plus" },
+      { label: "Add Product", to: "/company/products/create", icon: "cart-plus" },
     ],
   },
   {
     title: "Settings",
-    items: [
+    items:[
       { label: "Company", to: "/company/settings/company", icon: "gear" },
       { label: "Profile", to: "/company/settings/profile", icon: "gear" },
-    ],
+  ],
   },
 ];
 </script>

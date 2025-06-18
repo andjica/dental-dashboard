@@ -20,30 +20,88 @@
         </p>
       </div>
 
+      <!-- Product main image -->
+      <div class="mt-4">
+        <label class="block text-sm font-medium mb-1">Main Image</label>
+        <label
+          for="mainImageInput"
+          class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition duration-200"
+        >
+          Upload Image
+        </label>
+
+        <!-- Hidden file input -->
+        <input
+          id="mainImageInput"
+          type="file"
+          accept="image/*"
+          @change="handleMainImageUpload"
+          class="hidden"
+        />
+        <div v-if="mainImagePreview" class="mt-2">
+          <img
+            :src="mainImagePreview"
+            alt="Preview"
+            class="relative w-34 h-34 border rounded overflow-hidden shadow-sm"
+          />
+        </div>
+        <p v-if="errors.productMainImage" class="text-red-500 text-sm mt-1">
+          {{ errors.productMainImage }}
+        </p>
+      </div>
+      <!-- Product Type -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Product type</label>
+        <div class="flex items-center space-x-4 mb-2">
+          <label class="inline-flex items-center">
+            <input
+              type="radio"
+              value="new"
+              v-model="form.type"
+              class="form-radio text-blue-600"
+            />
+            <span class="ml-2">New</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input
+              type="radio"
+              value="used"
+              v-model="form.type"
+              class="form-radio text-blue-600"
+            />
+            <span class="ml-2">Used</span>
+          </label>
+        </div>
+      </div>
+
       <!-- Description -->
       <div>
         <label class="block text-sm font-medium mb-1">Description</label>
         <!-- TOOLBAR -->
         <div class="flex flex-wrap items-center gap-2 mb-2 text-sm">
           <button
+          type="button"
             @click="toggleBold"
             :class="buttonClass(editor.isActive('bold'))"
           >
             B
           </button>
           <button
+          type="button"
             @click="toggleItalic"
             :class="buttonClass(editor.isActive('italic'))"
           >
             <em>I</em>
           </button>
           <button
+          type="button"
             @click="toggleUnderline"
             :class="buttonClass(editor.isActive('underline'))"
           >
             <u>U</u>
           </button>
           <button
+          type="button"
             @click="toggleStrike"
             :class="buttonClass(editor.isActive('strike'))"
           >
@@ -51,12 +109,14 @@
           </button>
 
           <button
+          type="button"
             @click="toggleHeading(1)"
             :class="buttonClass(editor.isActive('heading', { level: 1 }))"
           >
             H1
           </button>
           <button
+          type="button"
             @click="toggleHeading(2)"
             :class="buttonClass(editor.isActive('heading', { level: 2 }))"
           >
@@ -64,12 +124,14 @@
           </button>
 
           <button
+          type="button"
             @click="toggleBulletList"
             :class="buttonClass(editor.isActive('bulletList'))"
           >
             • List
           </button>
           <button
+          type="button"
             @click="toggleOrderedList"
             :class="buttonClass(editor.isActive('orderedList'))"
           >
@@ -87,12 +149,57 @@
         </p>
       </div>
 
+      <!-- Category -->
+      <div class="flex flex-wrap -mx-2 mb-4">
+        <div class="w-full md:w-1/3 px-2">
+          <label class="block text-sm font-medium mb-1">Product Category</label>
+          <select
+            v-model="form.category"
+            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+          >
+            <option disabled value="">Select a category</option>
+            <option
+              v-for="category in form.categories"
+              :key="category.id"
+              :value="category.id"
+            >
+              {{ category.name }}
+            </option>
+          </select>
+          <p v-if="errors.productCategory" class="text-red-500 text-sm mt-1">
+            {{ errors.productCategory }}
+          </p>
+        </div>
+        <!-- Sub-category -->
+        <div class="w-full md:w-1/3 px-2">
+          <label class="block text-sm font-medium mb-1"
+            >Product Sub-category</label
+          >
+          <select
+            v-model="form.subCategory"
+            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+          >
+            <option disabled value="">Select a subcategory</option>
+            <option
+              v-for="subCategory in form.subCategories"
+              :key="subCategory.id"
+              :value="subCategory.id"
+            >
+              {{ subCategory.name }}
+            </option>
+          </select>
+          <p v-if="errors.productSub" class="text-red-500 text-sm mt-1">
+            {{ errors.productSub }}
+          </p>
+        </div>
+      </div>
+
       <!-- Price -->
-      <div>
+      <div class="w-full md:w-1/3 md:pr-2 pr-0">
         <label class="block text-sm font-medium mb-1">Price ($)</label>
         <input
-          :value="displayPrice"
-          @input="onPriceInput"
+          :value="form.price"
+          @input="(e) => cleanNumberInput(e, 'price')"
           @keypress="allowOnlyNumbersAndDot"
           @blur="formatDisplayPrice"
           type="text"
@@ -104,43 +211,9 @@
         </p>
       </div>
 
-      <!-- Category -->
-      <!-- <div>
-        <label class="block text-sm font-medium mb-1">Category</label>
-        <select
-          v-model="form.category"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        >
-          <option disabled value="">Select a category</option>
-          <option>Electronics</option>
-          <option>Clothing</option>
-          <option>Books</option>
-          <option>Accessories</option>
-        </select>
-        <p v-if="errors.productDesc" class="text-red-500 text-sm mt-1">
-          {{ errors.productDesc }}
-        </p>
-      </div> -->
-      <!-- Sub-category -->
-      <!-- <div>
-        <label class="block text-sm font-medium mb-1">Sub-category</label>
-        <select
-          v-model="form.category"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        >
-          <option disabled value="">Select a subcategory</option>
-          <option>Electronics</option>
-          <option>Clothing</option>
-          <option>Books</option>
-          <option>Accessories</option>
-        </select>
-        <p v-if="errors.productDesc" class="text-red-500 text-sm mt-1">
-          {{ errors.productDesc }}
-        </p>
-      </div> -->
       <!-- Image -->
       <div>
-        <label class="block text-sm font-medium mb-1">Product Image</label>
+        <label class="block text-sm font-medium mb-1">Product Gallery</label>
         <div>
           <label
             for="imageUpload"
@@ -178,12 +251,17 @@
             </button>
           </div>
         </div>
-        <div v-if="form.image.length" class="mt-2 text-sm text-gray-600">
-          {{ form.image.length }} image{{ form.image.length > 1 ? "s" : "" }}
+        <div
+          v-if="form.image_gallery.length"
+          class="mt-2 text-sm text-gray-600"
+        >
+          {{ form.image_gallery.length }} image{{
+            form.image_gallery.length > 1 ? "s" : ""
+          }}
           selected
         </div>
-        <p v-if="errors.productImages" class="text-red-500 text-sm mt-1">
-          {{ errors.productImages }}
+        <p v-if="errors.productGallery" class="text-red-500 text-sm mt-1">
+          {{ errors.productGallery }}
         </p>
       </div>
 
@@ -193,56 +271,64 @@
             >Length</label
           >
           <input
-          v-model="form.leght"
-          type="text"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        />
-        <p v-if="errors.productLength" class="text-red-500 text-sm mt-1">
-          {{ errors.productLength }}
-        </p>
+            v-model="form.leght"
+            @input="(e) => cleanNumberInput(e, 'length')"
+            @keypress="allowOnlyNumbersAndDot"
+            type="text"
+            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+          />
+          <p v-if="errors.productLength" class="text-red-500 text-sm mt-1">
+            {{ errors.productLength }}
+          </p>
         </div>
-        <div class="w-full md:w-1/3 px-2">
+        <div class="w-full md:w-1/3 md:mt-0 mt-2 px-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
             >Width</label
           >
           <input
-          v-model="form.width"
-          type="text"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        />
-        <p v-if="errors.productWidth" class="text-red-500 text-sm mt-1">
-          {{ errors.productWidth }}
-        </p>
+            v-model="form.width"
+            @input="(e) => cleanNumberInput(e, 'width')"
+            @keypress="allowOnlyNumbersAndDot"
+            type="text"
+            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+          />
+          <p v-if="errors.productWidth" class="text-red-500 text-sm mt-1">
+            {{ errors.productWidth }}
+          </p>
         </div>
-        <div class="w-full md:w-1/3 px-2">
+        <div class="w-full md:w-1/3 md:mt-0 mt-2 px-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
             >Height</label
           >
           <input
-          v-model="form.height"
-          type="text"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        />
-        <p v-if="errors.productHeight" class="text-red-500 text-sm mt-1">
-          {{ errors.productHeight }}
-        </p>
+            v-model="form.height"
+            @input="(e) => cleanNumberInput(e, 'height')"
+            @keypress="allowOnlyNumbersAndDot"
+            type="text"
+            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+          />
+          <p v-if="errors.productHeight" class="text-red-500 text-sm mt-1">
+            {{ errors.productHeight }}
+          </p>
         </div>
-        <div class="w-full md:w-1/3 px-2">
+        <div class="w-full md:w-1/3 px-2 mt-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Weight</label
+            >Weight (kg)</label
           >
           <input
-          v-model="form.weight"
-          type="text"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        />
-        <p v-if="errors.productWeight" class="text-red-500 text-sm mt-1">
-          {{ errors.productWeight }}
-        </p>
+            v-model="form.weight"
+            @input="(e) => cleanNumberInput(e, 'weight')"
+            @keypress="allowOnlyNumbersAndDot"
+            type="text"
+            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+          />
+          <p v-if="errors.productWeight" class="text-red-500 text-sm mt-1">
+            {{ errors.productWeight }}
+          </p>
         </div>
       </div>
       <!-- Stock -->
-      <div>
+      <div class="w-full md:w-1/3 md:pr-2 pr-0">
         <label class="block text-sm font-medium mb-1">Stock Quantity</label>
         <input
           v-model="form.stock"
@@ -282,7 +368,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from "vue";
+import { ref, onBeforeUnmount, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
@@ -298,21 +384,31 @@ const editor = ref(null);
 
 const form = ref({
   name: "",
+  image_main: null,
+  type: "new",
   description: "",
   price: "",
   category: "",
+  categories: [],
+  subCategory: "",
+  subCategories: [],
   stock: "",
   is_active: false,
-  image: [],
+  image_gallery: [],
   length: "",
   width: "",
   height: "",
-  weight: ""
+  weight: "",
 });
 
+const mainImagePreview = ref(null);
 const imagePreviews = ref([]);
-const displayPrice = ref("");
 const errors = ref({});
+
+// for alert
+const showAlert = ref(false);
+const alertType = ref(["success"]); // or 'error'
+const alertMessage = ref("");
 
 editor.value = new Editor({
   extensions: [
@@ -359,22 +455,55 @@ const buttonClass = (isActive) => {
 const handleImageUpload = (event) => {
   const files = Array.from(event.target.files);
   files.forEach((file) => {
-    form.value.image.push(file);
+    form.value.image_gallery.push(file);
     imagePreviews.value.push(URL.createObjectURL(file));
   });
 };
 
+const handleMainImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    form.value.image_main = file; // poveži sa formom
+
+    // Kreiraj preview URL
+    mainImagePreview.value = URL.createObjectURL(file);
+  } else {
+    mainImagePreview.value = null;
+    form.value.image_main = "";
+  }
+};
+
 const removeImage = (index) => {
-  form.value.image.splice(index, 1);
+  form.value.image_gallery.splice(index, 1);
   const url = imagePreviews.value.splice(index, 1)[0];
   URL.revokeObjectURL(url); // očisti memoriju
 };
 
-onBeforeUnmount(() => {
-  imagePreviews.value.forEach((url) => URL.revokeObjectURL(url));
+onMounted(() => {
+  fetchCategory();
 });
 
-const onPriceInput = (e) => {
+watch(
+  () => form.value.category,
+  (newCategoryId) => {
+    if (newCategoryId) {
+      form.value.subCategory = ""; // reset subcategory
+      fetchSubcategory(newCategoryId);
+    } else {
+      form.value.subCategories = [];
+      form.value.subCategory = "";
+    }
+  }
+);
+
+onBeforeUnmount(() => {
+  imagePreviews.value.forEach((url) => URL.revokeObjectURL(url));
+  if (mainImagePreview.value) {
+    URL.revokeObjectURL(mainImagePreview.value);
+  }
+});
+
+const cleanNumberInput = (e, field) => {
   // Ukloni sve osim cifara i tačke
   let input = e.target.value.replace(/[^0-9.]/g, "");
 
@@ -384,8 +513,7 @@ const onPriceInput = (e) => {
     input = parts[0] + "." + parts[1];
   }
 
-  displayPrice.value = input;
-  form.value.price = input ? parseFloat(input).toFixed(2) : "";
+  form.value[field] = input;
 };
 
 const allowOnlyNumbersAndDot = (e) => {
@@ -395,29 +523,77 @@ const allowOnlyNumbersAndDot = (e) => {
   }
 };
 
-
 const formatDisplayPrice = () => {
-  if (displayPrice.value !== "") {
-    const formatted = parseFloat(displayPrice.value)
-      .toFixed(2)
-      .replace(".", ",");
-    displayPrice.value = formatted;
+  if (form.value.price !== "") {
+    const formatted = parseFloat(form.value.price).toFixed(2).replace(".", ",");
+    form.value.price = formatted;
   }
 };
-console.log("Form: ", form);
+
+const fetchCategory = () => {
+  const token = localStorage.getItem("token");
+  return fetch("http://localhost:8000/api/categories", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch cities");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      form.value.categories = data.data || [];
+    })
+    .catch((err) => {
+      console.log("Errro throw fetching category: ", err);
+    });
+};
+
+const fetchSubcategory = (categoryId) => {
+  const token = localStorage.getItem("token");
+  return fetch(`http://localhost:8000/api/sub-categories/${categoryId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch sub category");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      form.value.subCategories = data.data || [];
+    })
+    .catch((err) => {
+      console.log("Errro throw fetching sub-category: ", err);
+    });
+};
 const handleSubmit = () => {
   const token = localStorage.getItem("token");
 
   const { isValid, errors: validationErrors } = validateProductForm({
     productName: form.value.name,
+    productMainImage: form.value.image_main,
+    productType: form.value.type,
     productDesc: form.value.description,
-    productImages: form.value.image || [],
+    productCategory: form.value.category,
+    productSub: form.value.subCategory,
+    productGallery: form.value.image_gallery || [],
     productQuantity: form.value.stock,
     productPrice: form.value.price,
     productLength: form.value.length,
     productWidth: form.value.width,
     productHeight: form.value.height,
-    productWeight: form.value.weight
+    productWeight: form.value.weight,
   });
 
   errors.value = validationErrors;
@@ -427,31 +603,69 @@ const handleSubmit = () => {
   // Napravi objekat koji se može sačuvati i da pazim kako sa backe-a se zovu kolone
   const productToStore = {
     name: form.value.name,
+    mainImage: form.value.image_main,
+    type: form.value.type,
     description: form.value.description,
     price: form.value.price,
     category: form.value.category,
+    subCategory: form.value.subCategory,
     stock: form.value.stock,
     is_active: form.value.is_active,
-    images: form.value.image.map((file) => file.name), // samo imena slika
+    gallery: form.value.image_gallery.map((file) => file.name), // samo imena slika
     created_at: new Date().toISOString(),
     length: form.value.length,
     width: form.value.width,
     height: form.value.height,
-    weight: form.value.weight
+    weight: form.value.weight,
   };
 
-  // Uzmi postojeci niz iz localStorage ili napravi prazan
-  const storedProducts = JSON.parse(localStorage.getItem("companyProduct")) || [];
+  const formData = new FormData();
+  formData.append("name", form.value.name);
+  formData.append("description", form.value.description);
+  formData.append("main_image", form.value.image_main);
+  formData.append("product_type", form.value.type);
+  formData.append("category_id", form.value.category);
+  formData.append("sub_category_id", form.value.subCategory);
+  formData.append("base_price", form.value.price);
+  formData.append("sku","1241254");
+  formData.append("barcode","11114444");
+  formData.append("images.*", form.value.image_gallery);
+  formData.append("quantity", form.value.stock);
+  formData.append("length", form.value.length);
+  formData.append("width", form.value.width);
+  formData.append("height", form.value.height);
+  formData.append("weight", form.value.weight);
+  formData.append("in_stock", form.value.is_active);
 
-  // Dodaj novi proizvod u niz
-  storedProducts.push(productToStore);
-
-  // Snimi ažurirani niz nazad u localStorage
-  localStorage.setItem("companyProduct", JSON.stringify(storedProducts));
-
+  fetch("http://localhost:8000/api/products", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok!");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Server response:", data);
+      alertType.value = "success";
+      alertMessage.value = "Product is create successfully!";
+      showAlert.value = true;
+      router.push({ name: "company.products" });
+    })
+    .catch((error) => {
+      console.error("Error submitting company data:", error);
+      alertType.value = "error";
+      alertMessage.value = "Failed to create product.";
+      showAlert.value = true;
+    });
   // (opciono) idi dalje
-  console.log("Product locally saved:", productToStore);
-  router.push({ name: "company.products" });
+  console.log("Product locally saved:", formData);
 };
 
 // const cancel = () =>  {

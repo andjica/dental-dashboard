@@ -1,12 +1,18 @@
 <template>
   <Alert
-      v-if="showAlert"
-      :type="alertType"
-      :message="alertMessage"
-      @close="showAlert = false"
-    />
+    v-if="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @close="showAlert = false"
+  />
+  <!-- <p
+    v-if="Number(isFinishedProfile) !== 1"
+    class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
+  >
+    ⚠️ You must finish settings before you have access to other pages!
+  </p> -->
   <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-md">
-    <h1 class="text-2xl font-bold mb-6 ">Settings Company</h1>
+    <h1 class="text-2xl font-bold mb-6">Settings Company</h1>
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <!-- Company Logo -->
       <div class="mb-4">
@@ -33,83 +39,117 @@
 
       <!-- Company Name -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Company Name</label
+        >
         <input
           v-model="companyName"
           type="text"
           placeholder="Enter company name"
           class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
         />
-        <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">{{ errors.companyName }}</p>
+        <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">
+          {{ errors.companyName }}
+        </p>
       </div>
 
       <!-- Company Email -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Company Email</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Company Email</label
+        >
         <input
           v-model="companyEmail"
           type="email"
           placeholder="company@example.com"
           class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
         />
-        <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">{{ errors.companyEmail }}</p>
+        <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">
+          {{ errors.companyEmail }}
+        </p>
       </div>
 
       <!-- Company Address -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Company Address</label
+        >
         <input
           v-model="companyAddress"
           type="text"
           placeholder="Enter company address"
           class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
         />
-        <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">{{ errors.companyAddress }}</p>
+        <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">
+          {{ errors.companyAddress }}
+        </p>
       </div>
 
       <!-- Country / City / Post Number -->
       <div class="flex flex-wrap -mx-2 mb-4">
         <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Country</label
+          >
           <select
             v-model="selectedCountry"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           >
             <option disabled value="">Select country</option>
-            <option v-for="country in countries" :key="country.id" :value="country.id">
+            <option
+              v-for="country in countries"
+              :key="country.id"
+              :value="country.id"
+            >
               {{ country.name }}
             </option>
           </select>
-          <p v-if="errors.selectedCountry" class="text-red-500 text-sm mt-1">{{ errors.selectedCountry }}</p>
+          <p v-if="errors.selectedCountry" class="text-red-500 text-sm mt-1">
+            {{ errors.selectedCountry }}
+          </p>
         </div>
         <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-          <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >City</label
+          >
           <select
             v-model="selectedCity"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           >
             <option disabled value="">Select city</option>
-            <option v-for="city in filteredCities" :key="city.id" :value="city.id">
+            <option
+              v-for="city in filteredCities"
+              :key="city.id"
+              :value="city.id"
+            >
               {{ city.name }}
             </option>
           </select>
-          <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">{{ errors.selectedCity }}</p>
+          <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">
+            {{ errors.selectedCity }}
+          </p>
         </div>
         <div class="w-full md:w-1/3 px-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Post Number</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Post Number</label
+          >
           <input
             v-model="companyPost"
             type="text"
             placeholder="Enter post number"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
-          <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">{{ errors.companyPost }}</p>
+          <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">
+            {{ errors.companyPost }}
+          </p>
         </div>
       </div>
 
       <!-- Phone Number -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1"
+          >Phone Number</label
+        >
         <div class="flex gap-2">
           <input
             :value="`+${phoneCode}`"
@@ -125,30 +165,43 @@
             class="w-3/4 px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
         </div>
-        <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">{{ errors.phoneNumber }}</p>
+        <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">
+          {{ errors.phoneNumber }}
+        </p>
       </div>
 
       <!-- Tax and Register Number -->
       <div class="flex flex-wrap -mx-2">
         <div class="w-full md:w-1/2 px-2 mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Tax Number</label
+          >
           <input
             v-model="companyTaxNumber"
             type="text"
             placeholder="Enter tax number"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
-          <p v-if="errors.companyTaxNumber" class="text-red-500 text-sm mt-1">{{ errors.companyTaxNumber }}</p>
+          <p v-if="errors.companyTaxNumber" class="text-red-500 text-sm mt-1">
+            {{ errors.companyTaxNumber }}
+          </p>
         </div>
         <div class="w-full md:w-1/2 px-2 mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Register Number</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Register Number</label
+          >
           <input
             v-model="companyRegisterNumber"
             type="text"
             placeholder="Enter register number"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
-          <p v-if="errors.companyRegisterNumber" class="text-red-500 text-sm mt-1">{{ errors.companyRegisterNumber }}</p>
+          <p
+            v-if="errors.companyRegisterNumber"
+            class="text-red-500 text-sm mt-1"
+          >
+            {{ errors.companyRegisterNumber }}
+          </p>
         </div>
       </div>
 
@@ -164,7 +217,6 @@
     </form>
   </div>
 </template>
-
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from "vue";
@@ -184,15 +236,17 @@ const countries = ref([]);
 const selectedCountry = ref("");
 const cities = ref([]);
 const selectedCity = ref("");
-// za phone number
+// for phone number
 const phoneCode = ref("");
 const phoneNumber = ref("");
 
-// za alert
+// for alert
 const showAlert = ref(false);
-const alertType = ref("success"); // ili 'error'
+const alertType = ref(["success", "info"]); // or 'error'
 const alertMessage = ref("");
 
+const originalValues = ref({});
+const isFinishedProfile = ref(0);
 // Error handling
 const errors = reactive({
   logo: "",
@@ -211,6 +265,12 @@ const errors = reactive({
 onMounted(() => {
   fetchCountry();
   fetchCompany();
+
+  const userData = localStorage.getItem("user");
+  if (userData) {
+    const user = JSON.parse(userData);
+    isFinishedProfile.value = Number(user.is_finished_profile); // konvertuj u broj za svaki slučaj
+  }
 });
 
 // Filter cities based on selected country
@@ -219,7 +279,7 @@ const filteredCities = computed(() =>
 );
 
 const validatePhoneNumber = () => {
-  // Ukloni sve osim brojeva
+  // Remove only speciale character
   phoneNumber.value = phoneNumber.value.replace(/\D/g, "");
 
   // Ograniči dužinu na 10 cifara
@@ -299,7 +359,6 @@ const fetchCountry = () => {
     },
   })
     .then((res) => {
-      console.log("Responses ", res);
       if (!res.ok) {
         throw new Error("Something is wrong!");
       }
@@ -314,7 +373,7 @@ const fetchCountry = () => {
       }
     })
     .catch((err) => {
-      console.log("GRESKA je: ", err);
+      console.log("Errro throw fetching country: ", err);
     });
 };
 // fetch phone code in dependent on selected country
@@ -341,8 +400,20 @@ const fetchPhoneCode = (countryId) => {
 
 // To check if there is change in values
 const hasChange = () => {
-
-}
+  return (
+    companyName.value !== originalValues.value.companyName ||
+    companyEmail.value !== originalValues.value.companyEmail ||
+    companyAddress.value !== originalValues.value.companyAddress ||
+    companyTaxNumber.value !== originalValues.value.companyTaxNumber ||
+    companyRegisterNumber.value !==
+      originalValues.value.companyRegisterNumber ||
+    selectedCountry.value !== originalValues.value.selectedCountry ||
+    selectedCity.value !== originalValues.value.selectedCity ||
+    phoneNumber.value !== originalValues.value.phoneNumber ||
+    companyPost.value !== originalValues.value.companyPost ||
+    (logo.value && logo.value instanceof File) // ako se uploaduje novi logo
+  );
+};
 
 // Form submit handler
 const handleSubmit = () => {
@@ -383,8 +454,8 @@ const handleSubmit = () => {
   if (logo.value) {
     formData.append("logo", logo.value);
   }
-console.log("logo.value:", logo.value);
-console.log("instanceof File:", logo.value instanceof File);
+  console.log("logo.value:", logo.value);
+  console.log("instanceof File:", logo.value instanceof File);
   fetch("http://localhost:8000/api/company/update", {
     method: "POST",
     headers: {
@@ -401,6 +472,19 @@ console.log("instanceof File:", logo.value instanceof File);
     })
     .then((data) => {
       console.log("Server response:", data);
+      const userData = localStorage.getItem("user");
+      let user = userData ? JSON.parse(userData) : {};
+      user.is_finished_profile = 1;
+      isFinishedProfile.value = user.is_finished_profile;
+      localStorage.setItem("user", JSON.stringify(user));
+
+      if (!hasChange()) {
+        alertType.value = "info";
+        alertMessage.value = "No changes detected in company profile.";
+        showAlert.value = true;
+        return;
+      }
+
       alertType.value = "success";
       alertMessage.value = "Company profile updated successfully!";
       showAlert.value = true;
@@ -448,6 +532,18 @@ const fetchCompany = () => {
       if (company.logo) {
         companyLogoFile.value = `http://localhost:8000/${company.logo}`;
       }
+
+      originalValues.value = {
+        companyName: company.name || "",
+        companyEmail: company.email || "",
+        companyAddress: company.address || "",
+        companyTaxNumber: company.tax_number || "",
+        companyRegisterNumber: company.registration_number || "",
+        selectedCountry: company.country_id || "",
+        selectedCity: company.city_id || "",
+        phoneNumber: company.phone_code || "",
+        companyPost: company.postal_code || "",
+      };
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);

@@ -16,7 +16,10 @@ import {
   faShop,
   faCartPlus,
   faBars,
-  faXmark
+  faXmark,
+  faEllipsisVertical,
+  faEye,
+  faPenToSquare
 } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -32,7 +35,10 @@ library.add(
   faShop,
   faCartPlus,
   faBars,
-  faXmark
+  faXmark,
+  faEllipsisVertical,
+  faEye,
+  faPenToSquare
 );
 
 const app = createApp(App);

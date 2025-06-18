@@ -7,11 +7,16 @@
     >
       <nav class="flex flex-col flex-grow">
         <!-- Mobilni header -->
-        <div class="flex justify-between items-center px-4 py-3 bg-white shadow md:shadow-none">
+        <div
+          class="flex justify-between items-center px-4 py-3 bg-white shadow md:shadow-none"
+        >
           <h1 class="text-left text-blueGray-600 font-bold uppercase text-sm">
             Dental
           </h1>
-          <button @click="props.toggleSidebar" class="md:hidden text-black focus:outline-none cursor-pointer">
+          <button
+            @click="props.toggleSidebar"
+            class="md:hidden text-black focus:outline-none cursor-pointer"
+          >
             <font-awesome-icon icon="xmark" />
           </button>
         </div>
@@ -33,13 +38,13 @@ import Navigation from "@/components/shared/Navigation.vue";
 
 const props = defineProps({
   isOpen: Boolean,
-  toggleSidebar: Function
+  toggleSidebar: Function,
 });
 
 const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
 
 // ✅ Provide mora biti pozvan odmah, van funkcije:
-provide('toggleSidebar', props.toggleSidebar);
+provide("toggleSidebar", props.toggleSidebar);
 
 function handleResize() {
   isDesktop.value = window.innerWidth >= 768;
@@ -61,8 +66,13 @@ const menuLinks = [
   },
   {
     title: "Settings",
+    items: [{ label: "Profile", to: "/user/settings/profile", icon: "gear" }],
+  },
+  {
+    title: "Product",
     items: [
-      { label: "Profile", to: "/user/settings/profile", icon: "gear" },
+      { label: "All Products", to: "/user/products", icon: "shop" },
+      { label: "Add Product", to: "/user/products/create", icon: "cart-plus" },
     ],
   },
 ];
@@ -70,10 +80,12 @@ const menuLinks = [
 
 <style>
 /* Slide transition for sidebar */
-.slide-enter-active, .slide-leave-active {
+.slide-enter-active,
+.slide-leave-active {
   transition: transform 0.3s ease;
 }
-.slide-enter-from, .slide-leave-to {
+.slide-enter-from,
+.slide-leave-to {
   transform: translateX(-100%);
 }
 </style>

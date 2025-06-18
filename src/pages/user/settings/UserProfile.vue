@@ -7,7 +7,6 @@
     @close="showAlert = false"
   />
   <div
-    v-else
     class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-md"
   >
     <h1 class="text-2xl font-bold mb-6">User Profile</h1>

@@ -1,4 +1,5 @@
 export const validateProductForm = (data) => {
+  console.log("DATA validation: ",data);
   const errors = {};
   let isValid = true;
 
@@ -7,16 +8,31 @@ export const validateProductForm = (data) => {
     isValid = false;
   }
 
+  if(!(data.productMainImage instanceof File)) {
+    errors.productMainImage = "Select main image for product.";
+    isValid = false;
+  }
+
   if (!data.productDesc) {
     errors.productDesc = "Description of product is requred.";
     isValid = false;
   }
 
-  if (!data.productImages || data.productImages.length === 0) {
-    errors.productImages = "Product images is required.";
+  if(!data.productCategory) {
+    errors.productCategory = "Select category.";
     isValid = false;
-  } else if (data.productImages.length > 5) {
-    errors.productImages = "You can upload a maximum of 5 images.";
+  }
+
+  if(!data.productSub) {
+    errors.productSub = "Select sub category.";
+    isValid = false;
+  }
+
+  if (!data.productGallery || data.productGallery.length === 0) {
+    errors.productGallery = "Product images is required.";
+    isValid = false;
+  } else if (data.productGallery.length > 5) {
+    errors.productGallery = "You must upload a maximum of 5 images.";
     isValid = false;
   }
 
@@ -32,24 +48,27 @@ export const validateProductForm = (data) => {
 
   if (
     !data.productPrice ||
-    isNaN(data.productPrice) ||
-    Number(data.productPrice) <= 0
+    data.productPrice <= 0
   ) {
     errors.productPrice = "Product price must be a number greater than 0.";
     isValid = false;
   }
+
   if (!data.productLength) {
     errors.productLength = "Product lenght is requred.";
     isValid = false;
   }
+
   if (!data.productWidth) {
     errors.productWidth = "Product width is requred.";
     isValid = false;
   }
+
   if (!data.productHeight) {
     errors.productHeight = "Product height is requred.";
     isValid = false;
   }
+
   if (!data.productWeight) {
     errors.productWeight = "Product weight is requred.";
     isValid = false;

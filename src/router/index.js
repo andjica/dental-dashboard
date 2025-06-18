@@ -119,6 +119,16 @@ const routes = [
         name: "user.settings.profile",
         component: () => import("@/pages/user/settings/UserProfile.vue"),
       },
+      {
+        path: "products",
+        name: "user.products",
+        component: () => import("@/pages/company/products/Products.vue"),
+      },
+      {
+        path: "products/create",
+        name: "user.product.create",
+        component: () => import("@/pages/company/products/ProductCreate.vue"),
+      },
     ]
   }
 ];

@@ -4,7 +4,7 @@
       v-show="visible"
       :class="[
         'text-white mb-4 px-6 py-4 border-0 rounded relative',
-        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-orange-500' : 'bg-red-500'
       ]"
     >
       <span class="text-xl inline-block mr-5 align-middle">
