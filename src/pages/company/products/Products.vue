@@ -45,7 +45,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="product in products.value" :key="product.id">
+                <tr v-for="product in products" :key="product.id">
                   <th
                     class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center"
                   >
@@ -171,7 +171,7 @@ const fetchProducts = () => {
   const userId = user.id;
   const token = localStorage.getItem("token");
 
-  fetch(`http://localhost:8000/api/product/${userId}`, {
+  fetch(`http://localhost:8000/api/products/${userId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -187,7 +187,7 @@ const fetchProducts = () => {
     })
     .then((data) => {
       console.log("Products data: ", data.data);
-      products.value = data.data;
+      products.value = data;
     })
     .catch((err) => {
       console.log("Error throw fetching products: ", err);
@@ -197,7 +197,7 @@ const fetchProducts = () => {
 const confirmDelete = () => {
   const token = localStorage.getItem("token");
 
-  // fetch(`http://localhost:8000/api/product/${productToDelete.value.id}`, {
+  // fetch(`http://localhost:8000/api/products/${userId}`, {
   //   method: "DELETE",
   //   headers: {
   //     Accept: "application/json",

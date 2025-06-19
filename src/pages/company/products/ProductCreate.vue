@@ -619,6 +619,7 @@ const handleSubmit = () => {
     weight: form.value.weight,
   };
 
+
   const formData = new FormData();
   formData.append("name", form.value.name);
   formData.append("description", form.value.description);
@@ -629,13 +630,15 @@ const handleSubmit = () => {
   formData.append("base_price", form.value.price);
   formData.append("sku","1241254");
   formData.append("barcode","11114444");
-  formData.append("images.*", form.value.image_gallery);
+  formData.append("images", form.value.image_gallery);
   formData.append("quantity", form.value.stock);
   formData.append("length", form.value.length);
   formData.append("width", form.value.width);
   formData.append("height", form.value.height);
   formData.append("weight", form.value.weight);
   formData.append("in_stock", form.value.is_active);
+
+
 
   fetch("http://localhost:8000/api/products", {
     method: "POST",
