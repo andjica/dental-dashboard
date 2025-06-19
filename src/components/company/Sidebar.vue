@@ -68,10 +68,17 @@ const menuLinks = [
     ],
   },
   {
+    title: "Order",
+    items: [
+      {label: "View", to: "/company/order/view", icon: "eye"}
+    ]
+  },
+  {
     title: "Settings",
     items:[
       { label: "Company", to: "/company/settings/company", icon: "gear" },
       { label: "Profile", to: "/company/settings/profile", icon: "gear" },
+      { label: "Payment", to:"/company/settings/payment", icon:"money-bill"}
   ],
   },
 ];

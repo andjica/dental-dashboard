@@ -19,7 +19,8 @@ import {
   faXmark,
   faEllipsisVertical,
   faEye,
-  faPenToSquare
+  faPenToSquare,
+  faMoneyBill
 } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -38,7 +39,8 @@ library.add(
   faXmark,
   faEllipsisVertical,
   faEye,
-  faPenToSquare
+  faPenToSquare,
+  faMoneyBill
 );
 
 const app = createApp(App);

@@ -65,14 +65,24 @@ const menuLinks = [
     items: [{ label: "Home", to: "/user/dashboard", icon: "house" }],
   },
   {
-    title: "Settings",
-    items: [{ label: "Profile", to: "/user/settings/profile", icon: "gear" }],
-  },
-  {
     title: "Product",
     items: [
       { label: "All Products", to: "/user/products", icon: "shop" },
       { label: "Add Product", to: "/user/products/create", icon: "cart-plus" },
+    ],
+  },
+  {
+    title: "Order",
+    items: [
+      {label: "View", to: "/user/order/view", icon: "eye"}
+    ]
+  },
+  {
+    title: "Settings",
+    items: [
+      { label: "Company", to: "/user/settings/company", icon: "gear" },
+      { label: "Profile", to: "/user/settings/profile", icon: "gear" },
+      { label: "Payment", to:"/user/settings/payment", icon:"money-bill"}
     ],
   },
 ];

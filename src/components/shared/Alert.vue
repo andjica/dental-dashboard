@@ -3,8 +3,8 @@
     <div
       v-show="visible"
       :class="[
-        'text-white mb-4 px-6 py-4 border-0 rounded relative',
-        type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-orange-500' : 'bg-red-500'
+        'mb-4 px-6 py-4 border-0 rounded relative',
+        type === 'success' ? 'text-green-700 bg-green-100 border border-green-300' : type === 'info' ? 'text-orange-700 bg-orange-100 border border-orange-300' : 'text-red-700 bg-red-100 border border-red-300'
       ]"
     >
       <span class="text-xl inline-block mr-5 align-middle">

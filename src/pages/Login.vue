@@ -168,7 +168,11 @@ const handleLogin = async () => {
     const baseUser = loginData.user;
     const isVerified = !!baseUser.email_verified_at;
     let isFinisheProfile = "";
-    let fullUser = { ...baseUser, isVerify: isVerified };
+    let fullUser = {
+      ...baseUser,
+      isVerify: isVerified,
+      is_finished_profile: isFinisheProfile,
+    };
 
     // Ako je kompanija, uzmi dodatne podatke o profilu
     if (baseUser.role_id === 2) {
@@ -208,14 +212,14 @@ const handleLogin = async () => {
           }
         );
 
-        if(!userResponse.ok){
+        if (!userResponse.ok) {
           console.warn("User info not found or error occurred");
           isFinisheProfile = 0;
         } else {
           const userData = await userResponse.json();
           isFinisheProfile = userData.data.is_finished_profile;
         }
-      } catch(error) {
+      } catch (error) {
         console.error("User fetch errror: ", error);
         isFinisheProfile = 0;
       }
@@ -261,8 +265,8 @@ const handleLogin = async () => {
         case 3:
         default:
           isFinisheProfile
-          ? router.push("/user/dashboard")
-          : router.push("/user/settings/profile");
+            ? router.push("/user/dashboard")
+            : router.push("/user/settings/profile");
           break;
       }
     }, 1500);

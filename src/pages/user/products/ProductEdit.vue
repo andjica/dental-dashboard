@@ -200,12 +200,16 @@
         </div>
         <div class="flex flex-wrap gap-4 mt-4">
           <div
-            v-for="(img, index) in form.image_gallery "
+            v-for="(img, index) in form.image_gallery"
             :key="index"
             class="relative w-24 h-24 border rounded overflow-hidden shadow-sm"
           >
             <img
-              :src="typeof img === 'string' ? getImageUrl(img) : URL.createObjectURL(img)"
+              :src="
+                typeof img === 'string'
+                  ? getImageUrl(img)
+                  : URL.createObjectURL(img)
+              "
               alt="Selected Image"
               class="object-cover w-full h-full"
             />
@@ -232,7 +236,7 @@
       <div class="flex flex-wrap -mx-2 mb-4">
         <div class="w-full md:w-1/3 px-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Length  (cm)</label
+            >Length (cm)</label
           >
           <input
             v-model="form.length"
@@ -284,7 +288,7 @@
       <div class="w-full md:w-1/3 md:pr-2 pr-0">
         <label class="block text-sm font-medium mb-1">Stock Quantity</label>
         <input
-          v-model="product.quantity"
+          v-model="form.quantity"
           type="number"
           min="0"
           class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
@@ -292,7 +296,7 @@
       </div>
       <!-- Active -->
       <div class="flex items-center space-x-2">
-        <input v-model="product.in_stock" type="checkbox" id="is_active" />
+        <input v-model="form.in_stock" type="checkbox" id="is_active" />
         <label for="is_active" class="text-sm">Active</label>
       </div>
       <!-- Buttons -->
@@ -386,7 +390,7 @@ const fetchProduct = () => {
       return res.json();
     })
     .then((data) => {
-      console.log("Compnay Product data: ", data);
+      console.log("User Product data: ", data);
       product.value = data.data;
 
       form.value.productName = product.value.name;
@@ -473,7 +477,6 @@ const fetchSubcategory = (categoryId) => {
 };
 
 editor.value = new Editor({
-  content: "",
   extensions: [
     StarterKit,
     Underline,
@@ -530,7 +533,6 @@ const removeImage = (index) => {
 };
 
 const getImageUrl = (path) => {
-  console.log("PATH: ", path);
   return `http://localhost:8000/storage/${path}`;
 };
 

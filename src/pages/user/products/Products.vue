@@ -2,11 +2,11 @@
   <Loader v-if="isLoading" />
   <div class="px-4 mt-5 md:px-10 mx-auto w-full relative">
     <p
-    v-if="products.length === 0"
-    class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
-  >
-    ⚠️ You don't products in your store!
-  </p>
+      v-if="products.length === 0"
+      class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
+    >
+      ⚠️ You don't products in your store!
+    </p>
   </div>
   <div class="px-4 mt-5 md:px-10 mx-auto w-full -m-24">
     <div class="flex flex-wrap mt-4">
@@ -182,7 +182,6 @@ const isLoading = ref(true);
 onMounted(async () => {
   isLoading.value = true;
   await fetchProducts();
-  
 });
 
 const handleView = (product) => {
@@ -192,7 +191,7 @@ const handleView = (product) => {
 
 const handleEdit = (product) => {
   console.log("Edit product", product);
-  router.push({ name: "company.product.edit", params: { id: product.id } });
+  router.push({ name: "user.product.edit", params: { id: product.id } });
 };
 
 const openDeleteModal = (product) => {
@@ -245,7 +244,7 @@ const confirmDelete = () => {
   //   .then((data) => {
   //     console.log("Deleted:", data);
   //     // Emit event or reload list
- //         showDeleteModal.value = false;
+  //         showDeleteModal.value = false;
   //     showDeleteModal.value = false;
   //   })
   //   .catch((err) => {

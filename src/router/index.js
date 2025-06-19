@@ -101,6 +101,11 @@ const routes = [
         name: "company.product.edit",
         component: () => import("@/pages/company/products/ProductEdit.vue"),
       },
+      {
+        path: "order/view",
+        name: "company.order.view",
+        component: () => import("@/pages/company/order/OrderView.vue"),
+      }
     ],
   },
   // User
@@ -115,6 +120,11 @@ const routes = [
         component: () => import("@/pages/user/Dashboard.vue"),
       },
       {
+        path: "settings/company",
+        name: "user.settings.company",
+        component: () => import("@/pages/user/settings/UserCompany.vue"),
+      },
+      {
         path: "settings/profile",
         name: "user.settings.profile",
         component: () => import("@/pages/user/settings/UserProfile.vue"),
@@ -122,13 +132,23 @@ const routes = [
       {
         path: "products",
         name: "user.products",
-        component: () => import("@/pages/company/products/Products.vue"),
+        component: () => import("@/pages/user/products/Products.vue"),
       },
       {
         path: "products/create",
         name: "user.product.create",
-        component: () => import("@/pages/company/products/ProductCreate.vue"),
+        component: () => import("@/pages/user/products/ProductCreate.vue"),
       },
+      {
+        path: "products/:id/edit",
+        name: "user.product.edit",
+        component: () => import("@/pages/user/products/ProductEdit.vue"),
+      },
+      {
+        path: "order/view",
+        name: "user.order.view",
+        component: () => import("@/pages/user/order/OrderView.vue"),
+      }
     ]
   }
 ];

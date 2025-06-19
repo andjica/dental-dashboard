@@ -80,28 +80,28 @@
         <!-- TOOLBAR -->
         <div class="flex flex-wrap items-center gap-2 mb-2 text-sm">
           <button
-          type="button"
+            type="button"
             @click="toggleBold"
             :class="buttonClass(editor.isActive('bold'))"
           >
             B
           </button>
           <button
-          type="button"
+            type="button"
             @click="toggleItalic"
             :class="buttonClass(editor.isActive('italic'))"
           >
             <em>I</em>
           </button>
           <button
-          type="button"
+            type="button"
             @click="toggleUnderline"
             :class="buttonClass(editor.isActive('underline'))"
           >
             <u>U</u>
           </button>
           <button
-          type="button"
+            type="button"
             @click="toggleStrike"
             :class="buttonClass(editor.isActive('strike'))"
           >
@@ -109,14 +109,14 @@
           </button>
 
           <button
-          type="button"
+            type="button"
             @click="toggleHeading(1)"
             :class="buttonClass(editor.isActive('heading', { level: 1 }))"
           >
             H1
           </button>
           <button
-          type="button"
+            type="button"
             @click="toggleHeading(2)"
             :class="buttonClass(editor.isActive('heading', { level: 2 }))"
           >
@@ -124,14 +124,14 @@
           </button>
 
           <button
-          type="button"
+            type="button"
             @click="toggleBulletList"
             :class="buttonClass(editor.isActive('bulletList'))"
           >
             • List
           </button>
           <button
-          type="button"
+            type="button"
             @click="toggleOrderedList"
             :class="buttonClass(editor.isActive('orderedList'))"
           >
@@ -196,7 +196,7 @@
 
       <!-- Price -->
       <div class="w-full md:w-1/3 md:pr-2 pr-0">
-        <label class="block text-sm font-medium mb-1">Price ($)</label>
+        <label class="block text-sm font-medium mb-1">Price (€)</label>
         <input
           :value="form.price"
           @input="(e) => cleanNumberInput(e, 'price')"
@@ -211,7 +211,7 @@
         </p>
       </div>
 
-      <!-- Image -->
+      <!-- Images -->
       <div>
         <label class="block text-sm font-medium mb-1">Product Gallery</label>
         <div>
@@ -223,6 +223,7 @@
           </label>
           <input
             id="imageUpload"
+            name="images[]"
             @change="handleImageUpload"
             type="file"
             multiple
@@ -268,7 +269,7 @@
       <div class="flex flex-wrap -mx-2 mb-4">
         <div class="w-full md:w-1/3 px-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Length</label
+            >Length (cm)</label
           >
           <input
             v-model="form.leght"
@@ -283,7 +284,7 @@
         </div>
         <div class="w-full md:w-1/3 md:mt-0 mt-2 px-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Width</label
+            >Width (cm)</label
           >
           <input
             v-model="form.width"
@@ -298,7 +299,7 @@
         </div>
         <div class="w-full md:w-1/3 md:mt-0 mt-2 px-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Height</label
+            >Height (cm)</label
           >
           <input
             v-model="form.height"
@@ -319,6 +320,7 @@
             v-model="form.weight"
             @input="(e) => cleanNumberInput(e, 'weight')"
             @keypress="allowOnlyNumbersAndDot"
+            placeholder="example 1.5"
             type="text"
             class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
           />
@@ -504,10 +506,8 @@ onBeforeUnmount(() => {
 });
 
 const cleanNumberInput = (e, field) => {
-  // Ukloni sve osim cifara i tačke
   let input = e.target.value.replace(/[^0-9.]/g, "");
 
-  // Samo prva tačka se dozvoljava (decimalna)
   const parts = input.split(".");
   if (parts.length > 2) {
     input = parts[0] + "." + parts[1];
@@ -600,26 +600,6 @@ const handleSubmit = () => {
   console.log(errors.value);
   if (!isValid) return;
 
-  // Napravi objekat koji se može sačuvati i da pazim kako sa backe-a se zovu kolone
-  const productToStore = {
-    name: form.value.name,
-    mainImage: form.value.image_main,
-    type: form.value.type,
-    description: form.value.description,
-    price: form.value.price,
-    category: form.value.category,
-    subCategory: form.value.subCategory,
-    stock: form.value.stock,
-    is_active: form.value.is_active,
-    gallery: form.value.image_gallery.map((file) => file.name), // samo imena slika
-    created_at: new Date().toISOString(),
-    length: form.value.length,
-    width: form.value.width,
-    height: form.value.height,
-    weight: form.value.weight,
-  };
-
-
   const formData = new FormData();
   formData.append("name", form.value.name);
   formData.append("description", form.value.description);
@@ -628,17 +608,16 @@ const handleSubmit = () => {
   formData.append("category_id", form.value.category);
   formData.append("sub_category_id", form.value.subCategory);
   formData.append("base_price", form.value.price);
-  formData.append("sku","1241254");
-  formData.append("barcode","11114444");
-  formData.append("images", form.value.image_gallery);
+  formData.append("barcode", "11114444");
+  form.value.image_gallery.forEach((file) => {
+    formData.append("images[]", file);
+  });
   formData.append("quantity", form.value.stock);
   formData.append("length", form.value.length);
   formData.append("width", form.value.width);
   formData.append("height", form.value.height);
   formData.append("weight", form.value.weight);
   formData.append("in_stock", form.value.is_active);
-
-
 
   fetch("http://localhost:8000/api/products", {
     method: "POST",
