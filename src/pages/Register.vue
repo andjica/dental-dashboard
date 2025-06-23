@@ -206,9 +206,8 @@ const handleRegister = async () => {
       last_name: lastName.value,
       email: email.value,
       role_id: parseInt(role.value),
-      is_finished_profile: 0,
     }));
-
+    localStorage.setItem("is_finished_profile", 0);
     alert.type = "success";
     alert.message = "Registration successful! Redirecting...";
     

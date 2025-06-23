@@ -3,7 +3,7 @@
     <div
       v-show="visible"
       :class="[
-        'mb-4 px-6 py-4 border-0 rounded relative',
+        'mb-4 px-6 py-4 border-0 rounded absolute w-full top-0',
         type === 'success' ? 'text-green-700 bg-green-100 border border-green-300' : type === 'info' ? 'text-orange-700 bg-orange-100 border border-orange-300' : 'text-red-700 bg-red-100 border border-red-300'
       ]"
     >

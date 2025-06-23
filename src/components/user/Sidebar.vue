@@ -3,7 +3,7 @@
   <transition name="slide">
     <aside
       v-show="isOpen || isDesktop"
-      class="fixed top-0 left-0 z-40 w-64 h-full bg-white shadow-xl text-black flex flex-col p-4 md:relative md:translate-x-0 transition-transform duration-300 ease-in-out"
+      class="fixed top-0 left-0 z-40 w-64 h-screen overflow-y-auto bg-white shadow-xl text-black flex flex-col p-4 md:relative md:translate-x-0 transition-transform duration-300 ease-in-out"
     >
       <nav class="flex flex-col flex-grow">
         <!-- Mobilni header -->

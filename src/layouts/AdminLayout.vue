@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-screen">
-    <Sidebar />
+    <Sidebar :is-open="isSidebarOpen" :toggle-sidebar="toggleSidebar" />
     <div class="flex-1 flex flex-col">
       <Topbar />
       <router-view class="flex-1 overflow-auto" />
@@ -9,11 +9,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, provide, onMounted } from 'vue'
 import Sidebar from '@/components/admin/Sidebar.vue'
 import Topbar from '@/components/admin/Topbar.vue'
 
 const verify = ref(true)
+
+const isSidebarOpen = ref(false);
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+provide('toggleSidebar', toggleSidebar);
+provide('isSidebarOpen', isSidebarOpen);
 
 // Example: fetch verify status on mount
 onMounted(async () => {

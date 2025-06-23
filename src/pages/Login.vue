@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md relative">
       <!-- Alert from route query -->
       <div
         v-if="$route.query.error === 'unauthenticated'"
@@ -16,7 +16,6 @@
         @close="alert.message = ''"
       />
       <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
-      <!-- <Loader v-if="loading" /> -->
       <form @submit.prevent="handleLogin" class="space-y-6">
         <div>
           <label
@@ -173,9 +172,9 @@ const handleLogin = async () => {
       isVerify: isVerified,
       is_finished_profile: isFinisheProfile,
     };
-
+    console.log("Ko se ulogovao: ", baseUser);
     // Ako je kompanija, uzmi dodatne podatke o profilu
-    if (baseUser.role_id === 2) {
+    if (baseUser.role_id === 2 || baseUser.role_id === 1) {
       try {
         const companyResponse = await fetch(
           "http://localhost:8000/api/company",
@@ -193,7 +192,9 @@ const handleLogin = async () => {
           isFinisheProfile = 0; // fallback ako nema podataka
         } else {
           const companyData = await companyResponse.json();
+          console.log("Compnay ili Admin: ",companyData);
           isFinisheProfile = companyData.data.is_finished_profile;
+          localStorage.setItem("is_finished_profile", isFinisheProfile);
         }
       } catch (error) {
         console.error("Company fetch error:", error);
@@ -210,14 +211,16 @@ const handleLogin = async () => {
               Authorization: `Bearer ${token}`,
             },
           }
-        );
+        );  
 
         if (!userResponse.ok) {
           console.warn("User info not found or error occurred");
           isFinisheProfile = 0;
         } else {
           const userData = await userResponse.json();
+          console.log("User: ", userData);
           isFinisheProfile = userData.data.is_finished_profile;
+          localStorage.setItem("is_finished_profile", isFinisheProfile);
         }
       } catch (error) {
         console.error("User fetch errror: ", error);
@@ -255,7 +258,9 @@ const handleLogin = async () => {
       // Redirekcija po roli
       switch (fullUser.role_id) {
         case 1:
-          router.push("/admin/dashboard");
+          isFinisheProfile
+          ? router.push("/admin/dashboard")
+          : router.push("/admin/settings");
           break;
         case 2:
           isFinisheProfile

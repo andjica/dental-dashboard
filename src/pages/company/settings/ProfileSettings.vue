@@ -1,5 +1,6 @@
 <template>
-<div class="p-6">
+  <ButtonBack />
+<div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
     <h1 class="text-2xl font-bold mb-4">Settings Profile</h1>
     <div class="p-6">
     <div class="mb-16">
@@ -73,7 +74,7 @@
       <span
         class="inline-block px-3 py-1 bg-green-100 text-green-600 text-sm rounded"
       >
-        Admin
+        Company
       </span>
     </div>
   </div>
@@ -81,5 +82,5 @@
 </template>
 
 <script>
-
+import ButtonBack from "@/components/shared/ButtonBack.vue";
 </script>

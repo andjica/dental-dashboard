@@ -1,4 +1,5 @@
 <template>
+  <ButtonBack />
   <div class="p-6 bg-white shadow rounded-lg mt-8">
     <h1 class="text-2xl font-semibold mb-6">Edit Product</h1>
     <form class="space-y-6" enctype="multipart/form-data">
@@ -320,14 +321,15 @@
 </template>
 
 <script setup>
+import ButtonBack from "@/components/shared/ButtonBack.vue";
+import BulletList from "@tiptap/extension-bullet-list";
+import Heading from "@tiptap/extension-heading";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Underline from "@tiptap/extension-underline";
+import StarterKit from "@tiptap/starter-kit";
+import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Editor, EditorContent } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import Heading from "@tiptap/extension-heading";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
 
 const token = localStorage.getItem("token");
 

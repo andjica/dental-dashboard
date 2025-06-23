@@ -20,7 +20,10 @@ import {
   faEllipsisVertical,
   faEye,
   faPenToSquare,
-  faMoneyBill
+  faMoneyBill,
+  faUsers,
+  faBuilding,
+  faArrowLeft
 } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -40,7 +43,10 @@ library.add(
   faEllipsisVertical,
   faEye,
   faPenToSquare,
-  faMoneyBill
+  faMoneyBill,
+  faUsers,
+  faBuilding,
+  faArrowLeft
 );
 
 const app = createApp(App);

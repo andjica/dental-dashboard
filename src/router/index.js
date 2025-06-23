@@ -41,27 +41,47 @@ const routes = [
       {
         path: "users",
         name: "admin.users",
-        component: () => import("@/pages/admin/User.vue"),
-      },
-      {
-        path: "settings",
-        name: "admin.settings",
-        component: () => import("@/pages/admin/Settings.vue"),
+        component: () => import("@/pages/admin/users/Users.vue"),
       },
       {
         path: "companies",
         name: "admin.companies",
-        component: () => import("@/pages/admin/Companies.vue"),
+        component: () => import("@/pages/admin/companies/Companies.vue"),
       },
       {
         path: "products",
         name: "admin.products",
-        component: () => import("@/pages/admin/Products.vue"),
+        component: () => import("@/pages/admin/product/Products.vue"),
+      },
+      {
+        path: "products/create",
+        name: "admin.product.create",
+        component: () => import("@/pages/admin/product/ProductCreate.vue"),
       },
       {
         path: "products/:id/edit",
         name: "admin.product.edit",
-        component: () => import("@/pages/admin/ProductEdit.vue"),
+        component: () => import("@/pages/admin/product/ProductEdit.vue"),
+      },
+      {
+        path: "order/view",
+        name: "admin.order.view",
+        component: () => import("@/pages/admin/order/OrderView.vue"),
+      },
+      {
+        path: "settings/company",
+        name: "admin.settings",
+        component: () => import("@/pages/admin/settings/Settings.vue"),
+      },
+      {
+        path: "settings/profile",
+        name: "admin.profile",
+        component: () => import("@/pages/admin/settings/Profile.vue"),
+      },
+      {
+        path: "settings/payment",
+        name: "admin.payment",
+        component: () => import("@/pages/admin/settings/Payment.vue"),
       },
     ],
   },
@@ -105,7 +125,7 @@ const routes = [
         path: "order/view",
         name: "company.order.view",
         component: () => import("@/pages/company/order/OrderView.vue"),
-      }
+      },
     ],
   },
   // User
@@ -148,9 +168,9 @@ const routes = [
         path: "order/view",
         name: "user.order.view",
         component: () => import("@/pages/user/order/OrderView.vue"),
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

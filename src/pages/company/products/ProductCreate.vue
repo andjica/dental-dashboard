@@ -140,7 +140,7 @@
         </div>
         <!-- EDITOR -->
         <EditorContent
-          :editor="editor"
+          :editor="editor.value"
           class="border rounded p-3 min-h-[150px]"
         />
 
@@ -376,8 +376,6 @@ import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Heading from "@tiptap/extension-heading";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
 
 import { validateProductForm } from "@/helper/form-validation/product/product-create";
 
@@ -412,25 +410,6 @@ const showAlert = ref(false);
 const alertType = ref(["success"]); // or 'error'
 const alertMessage = ref("");
 
-editor.value = new Editor({
-  extensions: [
-    StarterKit,
-    Underline,
-    Heading.configure({ levels: [1, 2, 3] }),
-    BulletList,
-    OrderedList,
-  ],
-  editorProps: {
-    attributes: {
-      class: "min-h-[150px] focus:outline-none",
-      placeholder: "Write description of product...",
-    },
-  },
-  onUpdate({ editor }) {
-    form.value.description = editor.getHTML();
-  },
-});
-
 const toggleBold = () => editor.value.chain().focus().toggleBold().run();
 const toggleItalic = () => editor.value.chain().focus().toggleItalic().run();
 const toggleUnderline = () =>
@@ -441,10 +420,10 @@ const toggleHeading = (level) =>
   editor.value.chain().focus().toggleHeading({ level }).run();
 
 const toggleBulletList = () =>
-  editor.value.chain().focus().toggleBulletList().run();
+  editor.chain().focus().toggleBulletList().run();
 
 const toggleOrderedList = () =>
-  editor.value.chain().focus().toggleOrderedList().run();
+  editor.chain().focus().toggleOrderedList().run();
 
 const buttonClass = (isActive) => {
   return `px-2 py-1 rounded border ${
@@ -483,6 +462,23 @@ const removeImage = (index) => {
 
 onMounted(() => {
   fetchCategory();
+
+  editor.value = new Editor({
+  extensions: [
+    StarterKit,
+    Underline,
+    Heading.configure({ levels: [1, 2, 3] }),
+  ],
+  editorProps: {
+    attributes: {
+      class: "min-h-[150px] focus:outline-none",
+      placeholder: "Write description of product...",
+    },
+  },
+  onUpdate({ editor }) {
+    form.value.description = editor.getHTML();
+  },
+});
 });
 
 watch(
@@ -617,7 +613,7 @@ const handleSubmit = () => {
   formData.append("width", form.value.width);
   formData.append("height", form.value.height);
   formData.append("weight", form.value.weight);
-  formData.append("in_stock", form.value.is_active);
+  formData.append("in_stock", form.value.is_active ? "1" : "0");
 
   fetch("http://localhost:8000/api/products", {
     method: "POST",

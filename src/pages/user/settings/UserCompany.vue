@@ -235,6 +235,9 @@ const errors = reactive({
   zipCode: "",
 });
 
+
+
+
 watch(selectedCountry, (newVal) => {
   selectedCity.value = ""; // reset selected city
   fetchCity(newVal);
@@ -333,6 +336,12 @@ onMounted(async () => {
   isLoading.value = true;
   await fetchCountry();
   await fetchUser();
+
+  const userIsFinished = localStorage.getItem("is_finished_profile");
+  if (userIsFinished) {
+    isFinishedProfile.value = Number(userIsFinished); // konvertuj u broj za svaki slučaj
+  }
+  
   isLoading.value = false;
 });
 

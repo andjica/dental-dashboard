@@ -1,6 +1,6 @@
 <template>
   <ButtonBack />
-  <div class="p-6 bg-white shadow rounded-lg mt-8">
+  <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
     <h1 class="text-2xl font-semibold mb-6">Create a New Product</h1>
 
     <form
@@ -380,7 +380,6 @@ import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-
 import { validateProductForm } from "@/helper/form-validation/product/product-create";
 
 const router = useRouter();
@@ -621,8 +620,9 @@ const handleSubmit = () => {
   formData.append("width", form.value.width);
   formData.append("height", form.value.height);
   formData.append("weight", form.value.weight);
-  formData.append("in_stock", form.value.is_active ? "1" : "0");
-
+  formData.append("is_active", form.value.is_active ? "1" : "0");
+  console.log("Sta mi pokazuje",form.value.is_active);
+  console.log("Zvanicni podaci su: ",formData);
   fetch("http://localhost:8000/api/products", {
     method: "POST",
     headers: {
@@ -638,10 +638,12 @@ const handleSubmit = () => {
       return response.json();
     })
     .then((data) => {
+      console.log(data);
+      console.log("Form data:",formData);
       alertType.value = "success";
       alertMessage.value = "Product is create successfully!";
       showAlert.value = true;
-      router.push({ name: "user.products" });
+      router.push({ name: "admin.products", query: { created: "1" } });
     })
     .catch((error) => {
       alertType.value = "error";

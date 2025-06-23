@@ -66,8 +66,6 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Heading from "@tiptap/extension-heading";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
 
 const editor = ref(null);
 
@@ -76,8 +74,6 @@ editor.value = new Editor({
     StarterKit,
     Underline,
     Heading.configure({ levels: [1, 2, 3] }),
-    BulletList,
-    OrderedList,
   ],
   editorProps: {
     attributes: {

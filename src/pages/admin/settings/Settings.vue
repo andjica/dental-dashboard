@@ -1,4 +1,5 @@
 <template>
+  <ButtonBack />
   <Alert
     v-if="showAlert"
     :type="alertType"
@@ -11,7 +12,9 @@
   >
     ⚠️ You must finish settings before you have access to other pages!
   </p>
-  <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-md">
+  <div
+    class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto"
+  >
     <h1 class="text-2xl font-bold mb-6">Settings Company</h1>
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <!-- Company Logo -->
@@ -219,9 +222,11 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, watch, onMounted } from "vue";
-import { validateCompanyForm } from "@/helper/form-validation/company/company-update";
 import Alert from "@/components/shared/Alert.vue";
+import ButtonBack from "@/components/shared/ButtonBack.vue";
+import { validateCompanyForm } from "@/helper/form-validation/company/company-update";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 // Fields
 const companyName = ref("");
@@ -239,15 +244,14 @@ const selectedCity = ref("");
 // for phone number
 const phoneCode = ref("");
 const phoneNumber = ref("");
-
+const router = useRouter();
 // for alert
 const showAlert = ref(false);
 const alertType = ref(["success", "info"]); // or 'error'
 const alertMessage = ref("");
 
 const originalValues = ref({});
-const isFinishedProfile = ref("");
-console.log(isFinishedProfile);
+const isFinishedProfile = ref(0);
 // Error handling
 const errors = reactive({
   logo: "",
@@ -471,7 +475,6 @@ const handleSubmit = () => {
       return response.json();
     })
     .then((data) => {
-      console.log("Server response:", data);
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
       user.is_finished_profile = 1;
@@ -488,6 +491,8 @@ const handleSubmit = () => {
       alertType.value = "success";
       alertMessage.value = "Company profile updated successfully!";
       showAlert.value = true;
+
+      router.push({ path: "/admin/dashboard", query: { profileUpdated: "1" } });
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);
