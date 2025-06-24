@@ -1,11 +1,13 @@
 <template>
   <ButtonBack />
-  <Alert
+  <div class="relative">
+    <Alert
     v-if="showAlert"
     :type="alertType"
     :message="alertMessage"
     @close="showAlert = false"
   />
+  </div>
   <p
     v-if="isFinishedProfile !== 1"
     class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
@@ -18,13 +20,22 @@
     <h1 class="text-2xl font-bold mb-6">Settings Company</h1>
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <!-- Company Logo -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Company Logo</label>
+      <div class="mt-4">
+        <label class="block text-sm font-medium mb-1">Image</label>
+        <label
+          for="mainImageInput"
+          class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition duration-200"
+        >
+          Upload Company Image
+        </label>
+
+        <!-- Hidden file input -->
         <input
-          @change="handleImageUpload"
+          id="mainImageInput"
           type="file"
           accept="image/*"
-          class="w-full"
+          @change="handleImageUpload"
+          class="hidden"
         />
         <div v-if="companyLogoFile" class="mt-2">
           <img
@@ -35,8 +46,8 @@
             style="width: 50px; height: 50px; object-fit: cover"
           />
         </div>
-        <p v-if="errors.logo" class="text-red-500 text-sm mt-1">
-          {{ errors.logo }}
+        <p v-if="errors.productMainImage" class="text-red-500 text-sm mt-1">
+          {{ errors.productMainImage }}
         </p>
       </div>
 

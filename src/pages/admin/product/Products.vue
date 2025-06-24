@@ -1,19 +1,21 @@
 <template>
+  <div class="relative">
+        <Alert   v-if="showSuccessAlert"
+        type="success"
+        message="✅ Product was successfully created!"
+        class="mb-4"/>
+    </div>
       <ButtonBack />
-  <Alert   v-if="showSuccessAlert"
-  type="success"
-  message="✅ Product was successfully created!"
-  class="mb-4"/>
   <Loader v-if="isLoading" />
-  <div class="px-4 mt-5 md:px-10 mx-auto w-full relative">
+  <div v-if="products.length === 0" class="px-4 mt-5 md:px-10 mx-auto w-full relative">
     <p
-    v-if="products.length === 0"
+    
     class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
   >
     ⚠️ You don't have products in your store!
   </p>
   </div>
-  <div class="px-4 mt-5 md:px-10 mx-auto -m-24">
+  <div v-else class="px-4 mt-5 md:px-10 mx-auto -m-24">
     <div class="flex flex-wrap mt-4">
       <div class="w-full mb-12 px-4">
         <div

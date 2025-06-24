@@ -109,7 +109,7 @@
             <s>S</s>
           </button>
 
-          <button
+          <!-- <button
           type="button"
             @click="toggleHeading(1)"
             :class="buttonClass(editor.isActive('heading', { level: 1 }))"
@@ -137,7 +137,7 @@
             :class="buttonClass(editor.isActive('orderedList'))"
           >
             1. List
-          </button>
+          </button> -->
         </div>
         <!-- EDITOR -->
         <EditorContent
@@ -372,14 +372,13 @@
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
-import BulletList from "@tiptap/extension-bullet-list";
 import Heading from "@tiptap/extension-heading";
-import OrderedList from "@tiptap/extension-ordered-list";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+
 import { validateProductForm } from "@/helper/form-validation/product/product-create";
 
 const router = useRouter();
@@ -418,8 +417,6 @@ editor.value = new Editor({
     StarterKit,
     Underline,
     Heading.configure({ levels: [1, 2, 3] }),
-    BulletList,
-    OrderedList,
   ],
   editorProps: {
     attributes: {
@@ -438,14 +435,14 @@ const toggleUnderline = () =>
   editor.value.chain().focus().toggleUnderline().run();
 const toggleStrike = () => editor.value.chain().focus().toggleStrike().run();
 
-const toggleHeading = (level) =>
-  editor.value.chain().focus().toggleHeading({ level }).run();
+// const toggleHeading = (level) =>
+//   editor.value.chain().focus().toggleHeading({ level }).run();
 
-const toggleBulletList = () =>
-  editor.value.chain().focus().toggleBulletList().run();
+// const toggleBulletList = () =>
+//   editor.value.chain().focus().toggleBulletList().run();
 
-const toggleOrderedList = () =>
-  editor.value.chain().focus().toggleOrderedList().run();
+// const toggleOrderedList = () =>
+//   editor.value.chain().focus().toggleOrderedList().run();
 
 const buttonClass = (isActive) => {
   return `px-2 py-1 rounded border ${
@@ -620,9 +617,8 @@ const handleSubmit = () => {
   formData.append("width", form.value.width);
   formData.append("height", form.value.height);
   formData.append("weight", form.value.weight);
-  formData.append("is_active", form.value.is_active ? "1" : "0");
-  console.log("Sta mi pokazuje",form.value.is_active);
-  console.log("Zvanicni podaci su: ",formData);
+  formData.append("in_stock", form.value.is_active ? "1" : "0");
+
   fetch("http://localhost:8000/api/products", {
     method: "POST",
     headers: {
@@ -638,12 +634,11 @@ const handleSubmit = () => {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
-      console.log("Form data:",formData);
+      console.log("User product: ",data);
       alertType.value = "success";
       alertMessage.value = "Product is create successfully!";
       showAlert.value = true;
-      router.push({ name: "admin.products", query: { created: "1" } });
+      router.push({ name: "admin.products" });
     })
     .catch((error) => {
       alertType.value = "error";

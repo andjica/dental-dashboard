@@ -12,10 +12,10 @@
       </thead>
       <tbody>
         <tr class="border-t" v-for="(item, index) in props.data" :key="index">
-          <td class="py-2 px-4">{{ item.name }}</td>
-          <td class="py-2 px-4">{{ item.country }}</td>
-          <td class="py-2 px-4">{{ item.city }}</td>
-          <td class="py-2 px-4">{{ item.active }}</td>
+          <td class="py-2 px-4">{{ item?.name || item?.user?.first_name + " " + item?.user?.last_name}}</td>
+          <td class="py-2 px-4">{{ item.country.name }}</td>
+          <td class="py-2 px-4">{{ item.city.name }}</td>
+          <td class="py-2 px-4">{{ item?.active || item?.user?.active_products_count }}</td>
           <td class="py-2 px-4 flex gap-2">
             <button class="text-blue-600 hover:underline cursor-pointer">
               <font-awesome-icon icon="eye" />

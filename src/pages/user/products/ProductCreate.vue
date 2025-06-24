@@ -109,7 +109,7 @@
             <s>S</s>
           </button>
 
-          <button
+          <!-- <button
           type="button"
             @click="toggleHeading(1)"
             :class="buttonClass(editor.isActive('heading', { level: 1 }))"
@@ -137,7 +137,7 @@
             :class="buttonClass(editor.isActive('orderedList'))"
           >
             1. List
-          </button>
+          </button> -->
         </div>
         <!-- EDITOR -->
         <EditorContent
@@ -372,9 +372,7 @@
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
-import BulletList from "@tiptap/extension-bullet-list";
 import Heading from "@tiptap/extension-heading";
-import OrderedList from "@tiptap/extension-ordered-list";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
@@ -419,8 +417,6 @@ editor.value = new Editor({
     StarterKit,
     Underline,
     Heading.configure({ levels: [1, 2, 3] }),
-    BulletList,
-    OrderedList,
   ],
   editorProps: {
     attributes: {
@@ -439,14 +435,14 @@ const toggleUnderline = () =>
   editor.value.chain().focus().toggleUnderline().run();
 const toggleStrike = () => editor.value.chain().focus().toggleStrike().run();
 
-const toggleHeading = (level) =>
-  editor.value.chain().focus().toggleHeading({ level }).run();
+// const toggleHeading = (level) =>
+//   editor.value.chain().focus().toggleHeading({ level }).run();
 
-const toggleBulletList = () =>
-  editor.value.chain().focus().toggleBulletList().run();
+// const toggleBulletList = () =>
+//   editor.value.chain().focus().toggleBulletList().run();
 
-const toggleOrderedList = () =>
-  editor.value.chain().focus().toggleOrderedList().run();
+// const toggleOrderedList = () =>
+//   editor.value.chain().focus().toggleOrderedList().run();
 
 const buttonClass = (isActive) => {
   return `px-2 py-1 rounded border ${
@@ -638,6 +634,7 @@ const handleSubmit = () => {
       return response.json();
     })
     .then((data) => {
+      console.log("User product: ",data);
       alertType.value = "success";
       alertMessage.value = "Product is create successfully!";
       showAlert.value = true;

@@ -108,7 +108,7 @@
             <s>S</s>
           </button>
 
-          <button
+          <!-- <button
             type="button"
             @click="toggleHeading(1)"
             :class="buttonClass(editor.isActive('heading', { level: 1 }))"
@@ -136,11 +136,11 @@
             :class="buttonClass(editor.isActive('orderedList'))"
           >
             1. List
-          </button>
+          </button> -->
         </div>
         <!-- EDITOR -->
         <EditorContent
-          :editor="editor.value"
+          :editor="editor"
           class="border rounded p-3 min-h-[150px]"
         />
 
@@ -410,20 +410,37 @@ const showAlert = ref(false);
 const alertType = ref(["success"]); // or 'error'
 const alertMessage = ref("");
 
+editor.value = new Editor({
+  extensions: [
+    StarterKit,
+    Underline,
+    Heading.configure({ levels: [1, 2, 3] }),
+  ],
+  editorProps: {
+    attributes: {
+      class: "min-h-[150px] focus:outline-none",
+      placeholder: "Write description of product...",
+    },
+  },
+  onUpdate({ editor }) {
+    form.value.description = editor.getHTML();
+  },
+});
+
 const toggleBold = () => editor.value.chain().focus().toggleBold().run();
 const toggleItalic = () => editor.value.chain().focus().toggleItalic().run();
 const toggleUnderline = () =>
   editor.value.chain().focus().toggleUnderline().run();
 const toggleStrike = () => editor.value.chain().focus().toggleStrike().run();
 
-const toggleHeading = (level) =>
-  editor.value.chain().focus().toggleHeading({ level }).run();
+// const toggleHeading = (level) =>
+//   editor.value.chain().focus().toggleHeading({ level }).run();
 
-const toggleBulletList = () =>
-  editor.chain().focus().toggleBulletList().run();
+// const toggleBulletList = () =>
+//   editor.value.chain().focus().toggleBulletList().run();
 
-const toggleOrderedList = () =>
-  editor.chain().focus().toggleOrderedList().run();
+// const toggleOrderedList = () =>
+//   editor.value.chain().focus().toggleOrderedList().run();
 
 const buttonClass = (isActive) => {
   return `px-2 py-1 rounded border ${
