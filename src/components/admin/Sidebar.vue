@@ -42,7 +42,9 @@ const props = defineProps({
 });
 
 const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
-const isFinishedProfile = JSON.parse(localStorage.getItem("is_finished_profile") || "{}");
+const isFinishedProfile = JSON.parse(
+  localStorage.getItem("is_finished_profile") || "{}"
+);
 provide("toggleSidebar", props.toggleSidebar);
 
 function handleResize() {
@@ -80,7 +82,7 @@ const menuLinks = isFinishedProfile
         items: [
           { label: "Companies", to: "/admin/companies", icon: "building" },
           { label: "Users", to: "/admin/users", icon: "users" },
-        ]
+        ],
       },
       {
         title: "Order",
@@ -88,16 +90,17 @@ const menuLinks = isFinishedProfile
       },
       {
         title: "Settings",
-        items: [{ label: "Company", to: "/admin/settings/company", icon: "gear" },
+        items: [
+          { label: "Company", to: "/admin/settings/company", icon: "gear" },
           { label: "Profile", to: "/admin/settings/profile", icon: "gear" },
-          { label: "Payment", to: "/admin/settings/payment", icon: "gear" }
+          { label: "Payment", to: "/admin/settings/payment", icon: "money-bill" },
         ],
       },
     ]
   : [
       {
         title: "Settings",
-        items: [{ label: "Setting", to: "/admin/settings", icon: "gear" }],
+        items: [{ label: "Setting", to: "/admin/settings/company", icon: "gear" }],
       },
     ];
 </script>

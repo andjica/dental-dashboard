@@ -55,7 +55,8 @@
           type="submit"
           class="w-full bg-blue-600 text-white py-2 rounded cursor-pointer hover:bg-blue-700 transition"
         >
-          Logi In
+        <LoaderIcon v-if="isLoading" />
+        <span v-else>Log In</span>
         </button>
       </form>
       <p class="mt-4 text-center">
@@ -75,9 +76,11 @@
 import { ref, reactive, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
+import LoaderIcon from "@/components/shared/LoaderIcon.vue";
 
 const email = ref("");
 const password = ref("");
+const isLoading = ref(false);
 
 const router = useRouter();
 const route = useRoute();
@@ -111,6 +114,7 @@ Object.entries(fields).forEach(([key, refVar]) => {
 });
 
 const handleLogin = async () => {
+  isLoading.value = true;
   // Resetuj validaciju i alert poruke
   errors.email = "";
   errors.password = "";
@@ -153,7 +157,10 @@ const handleLogin = async () => {
       }),
     });
 
-    if (!loginResponse.ok) throw new Error("Login request failed");
+    console.log(loginResponse);
+    if ([401, 404].includes(loginResponse.status)) {
+      throw new Error(loginResponse.statusText);
+    }
 
     const loginData = await loginResponse.json();
 
@@ -192,7 +199,7 @@ const handleLogin = async () => {
           isFinisheProfile = 0; // fallback ako nema podataka
         } else {
           const companyData = await companyResponse.json();
-          console.log("Compnay ili Admin: ",companyData);
+          console.log("Compnay ili Admin: ", companyData);
           isFinisheProfile = companyData.data.is_finished_profile;
           localStorage.setItem("is_finished_profile", isFinisheProfile);
         }
@@ -211,7 +218,7 @@ const handleLogin = async () => {
               Authorization: `Bearer ${token}`,
             },
           }
-        );  
+        );
 
         if (!userResponse.ok) {
           console.warn("User info not found or error occurred");
@@ -259,8 +266,8 @@ const handleLogin = async () => {
       switch (fullUser.role_id) {
         case 1:
           isFinisheProfile
-          ? router.push("/admin/dashboard")
-          : router.push("/admin/settings");
+            ? router.push("/admin/dashboard")
+            : router.push("/admin/settings/company");
           break;
         case 2:
           isFinisheProfile
@@ -271,14 +278,15 @@ const handleLogin = async () => {
         default:
           isFinisheProfile
             ? router.push("/user/dashboard")
-            : router.push("/user/settings/profile");
+            : router.push("/user/settings/user");
           break;
       }
     }, 1500);
   } catch (error) {
     alert.type = "error";
     alert.message = `Login failed: ${error.message}`;
-    console.error("Login error:", error);
+  } finally {
+    isLoading.value = false; // ⬅️ stop loader
   }
 };
 </script>

@@ -1,36 +1,65 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md relative">
       <!-- Alert Component -->
-      <Alert v-if="alert.message" :type="alert.type" :message="alert.message" @close="alert.message = ''" />
+      <Alert
+        v-if="alert.message"
+        :type="alert.type"
+        :message="alert.message"
+        @close="alert.message = ''"
+      />
       <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
       <form @submit.prevent="handleRegister" class="space-y-6">
         <!-- First Name -->
         <div>
-          <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-          <input v-model="firstName" type="text" id="firstNameRegister"
+          <label
+            for="firstName"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >First Name</label
+          >
+          <input
+            v-model="firstName"
+            type="text"
+            id="firstNameRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your name" />
+            placeholder="Your name"
+          />
           <p v-if="errors.firstName" class="text-red-600 text-sm mt-1">
             {{ errors.firstName }}
           </p>
         </div>
         <!-- Last Name -->
         <div>
-          <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-          <input v-model="lastName" type="text" id="lastNameRegister"
+          <label
+            for="lastName"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Last Name</label
+          >
+          <input
+            v-model="lastName"
+            type="text"
+            id="lastNameRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your name" />
+            placeholder="Your name"
+          />
           <p v-if="errors.lastName" class="text-red-600 text-sm mt-1">
             {{ errors.lastName }}
           </p>
         </div>
         <!-- Email -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input v-model="email" type="email" id="emailRegister"
+          <label
+            for="email"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Email</label
+          >
+          <input
+            v-model="email"
+            type="email"
+            id="emailRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="you@example.com" />
+            placeholder="you@example.com"
+          />
           <p v-if="errors.email" class="text-red-600 text-sm mt-1">
             {{ errors.email }}
           </p>
@@ -38,10 +67,18 @@
 
         <!-- Password -->
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input v-model="password" type="password" id="passwordRegister"
+          <label
+            for="password"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Password</label
+          >
+          <input
+            v-model="password"
+            type="password"
+            id="passwordRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your password" />
+            placeholder="Your password"
+          />
           <p v-if="errors.password" class="text-red-600 text-sm mt-1">
             {{ errors.password }}
           </p>
@@ -49,11 +86,18 @@
 
         <!-- Confirm Password -->
         <div>
-          <label for="passwordConfirmRegister" class="block text-sm font-medium text-gray-700 mb-1">Confirm
-            Password</label>
-          <input v-model="passwordConfirm" type="password" id="passwordConfirmRegister"
+          <label
+            for="passwordConfirmRegister"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Confirm Password</label
+          >
+          <input
+            v-model="passwordConfirm"
+            type="password"
+            id="passwordConfirmRegister"
             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Confirm your password" />
+            placeholder="Confirm your password"
+          />
           <p v-if="errors.passwordConfirm" class="text-red-600 text-sm mt-1">
             {{ errors.passwordConfirm }}
           </p>
@@ -63,7 +107,13 @@
           <h4 class="mb-1 font-medium">Your role:</h4>
           <div class="space-y-1">
             <label class="flex items-center space-x-2">
-              <input type="radio" id="company" value="2" v-model="role" checked/>
+              <input
+                type="radio"
+                id="company"
+                value="2"
+                v-model="role"
+                checked
+              />
               <span>Company</span>
             </label>
             <label class="flex items-center space-x-2">
@@ -76,14 +126,21 @@
           </p>
         </div>
         <!-- Submit -->
-        <button type="submit"
-          class="w-full bg-blue-600 text-white cursor-pointer py-2 rounded hover:bg-blue-700 transition">
-          Register
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white cursor-pointer py-2 rounded hover:bg-blue-700 transition"
+        >
+          <LoaderIcon v-if="isLoading" />
+          <span v-else>Register</span>
         </button>
       </form>
       <p class="mt-4 text-center">
         If you did register, please go to
-        <router-link to="/" class="inline-block font-medium text-blue-600 hover:underline">Login</router-link>.
+        <router-link
+          to="/"
+          class="inline-block font-medium text-blue-600 hover:underline"
+          >Login</router-link
+        >.
       </p>
     </div>
   </div>
@@ -93,6 +150,7 @@
 import { ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
+import LoaderIcon from "@/components/shared/LoaderIcon.vue";
 
 const firstName = ref("");
 const lastName = ref("");
@@ -100,6 +158,7 @@ const email = ref("");
 const password = ref("");
 const passwordConfirm = ref("");
 const role = ref("2");
+const isLoading = ref(false);
 
 const router = useRouter();
 
@@ -130,54 +189,59 @@ Object.entries(fields).forEach(([key, refVar]) => {
 
 const handleRegister = async () => {
   // Reset errors and alert
-  Object.keys(errors).forEach(key => errors[key] = "");
+  Object.keys(errors).forEach((key) => (errors[key] = ""));
   alert.message = "";
   alert.type = "";
 
-  let valid = true;
+  let isValid = true;
 
   if (!firstName.value) {
     errors.firstName = "First Name is required!";
-    valid = false;
+    isValid = false;
   }
 
   if (!lastName.value) {
     errors.lastName = "Last Name is required!";
-    valid = false;
+    isValid = false;
   }
 
   if (!email.value) {
     errors.email = "Email is required!";
-    valid = false;
+    isValid = false;
   } else if (!isValidEmail(email.value)) {
     errors.email = "Enter a valid email.";
-    valid = false;
+    isValid = false;
   }
 
   if (!password.value) {
     errors.password = "Password is required!";
-    valid = false;
+    isValid = false;
   } else if (password.value.length < 6) {
     errors.password = "Password must have at least 6 characters.";
-    valid = false;
+    isValid = false;
   }
 
   if (!passwordConfirm.value) {
     errors.passwordConfirm = "Confirm password is required.";
-    valid = false;
+    isValid = false;
   } else if (password.value !== passwordConfirm.value) {
     errors.passwordConfirm = "Passwords are not matching.";
-    valid = false;
+    isValid = false;
   }
 
   if (!role.value) {
     errors.role = "Select a role.";
-    valid = false;
+    isValid = false;
   }
 
-  if (!valid) return;
+  if (!isValid) {
+    alert.type = "error";
+    alert.message = "Please fix the errors in the form.";
+    return;
+  }
 
   try {
+    isLoading.value = true;
     const response = await fetch("http://localhost:8000/api/register", {
       method: "POST",
       headers: {
@@ -193,6 +257,10 @@ const handleRegister = async () => {
       }),
     });
 
+    if ([422, 500].includes(response.status)) {
+      throw new Error(response.statusText);
+    }
+
     const data = await response.json();
 
     if (!response.ok) {
@@ -201,16 +269,21 @@ const handleRegister = async () => {
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify(data.user || {
-      first_name: firstName.value,
-      last_name: lastName.value,
-      email: email.value,
-      role_id: parseInt(role.value),
-    }));
+    localStorage.setItem(
+      "user",
+      JSON.stringify(
+        data.user || {
+          first_name: firstName.value,
+          last_name: lastName.value,
+          email: email.value,
+          role_id: parseInt(role.value),
+        }
+      )
+    );
     localStorage.setItem("is_finished_profile", 0);
     alert.type = "success";
     alert.message = "Registration successful! Redirecting...";
-    
+
     // Clear form
     firstName.value = "";
     lastName.value = "";
@@ -222,12 +295,12 @@ const handleRegister = async () => {
     setTimeout(() => {
       router.push("/verify-email");
     }, 1500);
-
-  } catch (err) {
-    console.error("Registration error:", err);
+  } catch (error) {
     alert.type = "error";
-    alert.message = "Unexpected error. Please try again.";
+    alert.message = `Unexpected error.${error.message}`;
+  } finally {
+    console.log("finally");
+    isLoading.value = false;
   }
 };
-
 </script>

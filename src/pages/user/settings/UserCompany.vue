@@ -1,38 +1,24 @@
 <template>
   <Loader v-if="isLoading" />
+  <div v-else
+     class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto relative"
+  >
+  <p
+    v-if="isFinishedProfile !== 1"
+    class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
+  >
+    ⚠️ You must finish settings before you have access to other pages!
+  </p>
+
+  <div class="relative">
   <Alert
     v-if="showAlert"
     :type="alertType"
     :message="alertMessage"
     @close="showAlert = false"
   />
-  <div
-    class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-md"
-  >
-    <h1 class="text-2xl font-bold mb-6">User Profile</h1>
+  <h1 class="text-2xl font-bold mb-6">User Profile</h1>
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-      <!-- User Profile -->
-      <!-- <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">User Profile</label>
-        <input
-          @change="handleImageUpload"
-          type="file"
-          accept="image/*"
-          class="w-full"
-        />
-        <div v-if="userProfile.profileImage" class="mt-2">
-          <img
-            v-if="userProfile.profileImage"
-            :src="userProfile.profileImage"
-            alt="Company Logo Preview"
-            class="rounded border border-gray-300"
-            style="width: 50px; height: 50px; object-fit: cover"
-          />
-        </div>
-        <p v-if="errors.profileImage" class="text-red-500 text-sm mt-1">
-          {{ errors.profileImage }}
-        </p>
-      </div> -->
       <!-- User Name -->
       <div class="flex flex-wrap -mx-2 mb-4">
         <div class="w-full md:w-1/3 px-2">
@@ -190,6 +176,7 @@
       </div>
     </form>
   </div>
+  </div>
 </template>
 
 <script setup>
@@ -204,8 +191,6 @@ const alertType = ref("success"); // ili 'error'
 const alertMessage = ref("");
 
 const userProfile = reactive({
-  //   profileImage: null,
-  //   _profileImageFile: null,
   userFirstName: "",
   userLastName: "",
   userEmail: "",
@@ -223,6 +208,7 @@ const phoneCode = ref("");
 const phoneNumber = ref("");
 
 const isLoading = ref(true);
+const isFinishedProfile = ref(0);
 
 const errors = reactive({
   //   image: "",
@@ -235,25 +221,11 @@ const errors = reactive({
   zipCode: "",
 });
 
-
-
-
 watch(selectedCountry, (newVal) => {
   selectedCity.value = ""; // reset selected city
   fetchCity(newVal);
   fetchPhoneCode(newVal);
 });
-
-// const handleImageUpload = (event) => {
-//   const file = event.target.files[0];
-//   if (file && file.size <= 4 * 1024 * 1024) {
-//     userProfile.profileImage = URL.createObjectURL(file);
-//     userProfile._profileImageFile = file;
-//   } else {
-//     errors.image = "Image must be 4MB or less.";
-//     userProfile.profileImage = null;
-//   }
-// };
 
 const fetchCity = (countryId) => {
   if (!countryId) return Promise.resolve();
@@ -293,7 +265,6 @@ const fetchCountry = () => {
       return res.json();
     })
     .then((data) => {
-      console.log("Countries: ", data);
       countries.value = data.countries;
       if (data.countries.length > 0) {
         selectedCountry.value = data.countries[0].id;
@@ -334,15 +305,18 @@ watch(
 
 onMounted(async () => {
   isLoading.value = true;
-  await fetchCountry();
-  await fetchUser();
-
-  const userIsFinished = localStorage.getItem("is_finished_profile");
-  if (userIsFinished) {
-    isFinishedProfile.value = Number(userIsFinished); // konvertuj u broj za svaki slučaj
+  try {
+    await fetchCountry();
+    await fetchUser();
+    const userIsFinished = localStorage.getItem("is_finished_profile");
+    if (userIsFinished) {
+      isFinishedProfile.value = Number(userIsFinished);
+    }
+  } catch (error) {
+    console.error("Greška u onMounted:", error);
+  } finally {
+    isLoading.value = false; // ✅ loader sigurno gasiš
   }
-  
-  isLoading.value = false;
 });
 
 const filteredCities = computed(() =>
@@ -372,7 +346,6 @@ const handleSubmit = () => {
   const token = localStorage.getItem("token");
 
   const { isValid, errors: validationErrors } = validateUserForm({
-    // userImage: userProfile._profileImageFile,
     userFirstName: userProfile.userFirstName,
     userLastName: userProfile.userLastName,
     userEmail: userProfile.userEmail,
@@ -399,10 +372,6 @@ const handleSubmit = () => {
   formData.append("zip_code", userProfile.zipCode);
   formData.append("is_finished_profile", 1);
 
-  //   if(userProfile._profileImageFile){
-  //     formData.append("image",userProfile._profileImageFile);
-  //   }
-
   fetch("http://localhost:8000/api/user-info", {
     method: "POST",
     headers: {
@@ -418,9 +387,20 @@ const handleSubmit = () => {
       return response.json();
     })
     .then((data) => {
-      console.log("User update data: ", data);
+      console.log("DATA USER UPLOAD: ",data);
+      const userData = localStorage.getItem("user");
+      let user = userData ? JSON.parse(userData) : {};
+      user.is_finished_profile = 1;
+      isFinishedProfile.value = user.is_finished_profile;
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("is_finished_profile", isFinishedProfile.value);
+
       alertType.value = "success";
       alertMessage.value = "User profile update successfully!";
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     })
     .catch((error) => {
       console.error("Error submitting user data:", error);
@@ -429,7 +409,6 @@ const handleSubmit = () => {
       showAlert.value = true;
     });
 
-  localStorage.setItem("userProfile", JSON.stringify(formData));
   alertMessage.value = "Profile successfully saved!";
   alertType.value = "success";
   showAlert.value = true;

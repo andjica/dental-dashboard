@@ -140,14 +140,19 @@ const routes = [
         component: () => import("@/pages/user/Dashboard.vue"),
       },
       {
-        path: "settings/company",
-        name: "user.settings.company",
+        path: "settings/user",
+        name: "user.settings.user",
         component: () => import("@/pages/user/settings/UserCompany.vue"),
       },
       {
         path: "settings/profile",
         name: "user.settings.profile",
         component: () => import("@/pages/user/settings/UserProfile.vue"),
+      },
+      {
+        path: "settings/payment",
+        name: "user.settings.payment",
+        component: () => import("@/pages/user/settings/UserPayment.vue"),
       },
       {
         path: "products",

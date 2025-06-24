@@ -42,8 +42,9 @@ const props = defineProps({
 });
 
 const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
-
-// ✅ Provide mora biti pozvan odmah, van funkcije:
+const isFinishedProfile = JSON.parse(
+  localStorage.getItem("is_finished_profile") || "{}"
+);
 provide("toggleSidebar", props.toggleSidebar);
 
 function handleResize() {
@@ -59,7 +60,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", handleResize);
 });
 
-const menuLinks = [
+const menuLinks = isFinishedProfile ? [
   {
     title: "Dashboard",
     items: [{ label: "Home", to: "/user/dashboard", icon: "house" }],
@@ -80,12 +81,19 @@ const menuLinks = [
   {
     title: "Settings",
     items: [
-      { label: "Company", to: "/user/settings/company", icon: "gear" },
+      { label: "User", to: "/user/settings/user", icon: "gear" },
       { label: "Profile", to: "/user/settings/profile", icon: "gear" },
       { label: "Payment", to:"/user/settings/payment", icon:"money-bill"}
     ],
   },
-];
+] : [
+  {
+    title: "Settings",
+    items: [
+      { label: "User", to: "/user/settings/user", icon: "gear" },
+    ],
+  },
+  ];
 </script>
 
 <style>

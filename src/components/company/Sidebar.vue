@@ -7,11 +7,16 @@
     >
       <nav class="flex flex-col flex-grow">
         <!-- Mobilni header -->
-        <div class="flex justify-between items-center px-4 py-3 bg-white shadow md:shadow-none">
+        <div
+          class="flex justify-between items-center px-4 py-3 bg-white shadow md:shadow-none"
+        >
           <h1 class="text-left text-blueGray-600 font-bold uppercase text-sm">
             Dental
           </h1>
-          <button @click="props.toggleSidebar" class="md:hidden text-black focus:outline-none cursor-pointer">
+          <button
+            @click="props.toggleSidebar"
+            class="md:hidden text-black focus:outline-none cursor-pointer"
+          >
             <font-awesome-icon icon="xmark" />
           </button>
         </div>
@@ -33,14 +38,14 @@ import Navigation from "@/components/shared/Navigation.vue";
 
 const props = defineProps({
   isOpen: Boolean,
-  toggleSidebar: Function
+  toggleSidebar: Function,
 });
 
 const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
-const companyUser = JSON.parse(localStorage.getItem("user") || "{}");
-const isFinishedProfile = companyUser?.is_finished_profile === 1;
-// ✅ Provide mora biti pozvan odmah, van funkcije:
-provide('toggleSidebar', props.toggleSidebar);
+const isFinishedProfile = JSON.parse(
+  localStorage.getItem("is_finished_profile") || "{}"
+);
+provide("toggleSidebar", props.toggleSidebar);
 
 function handleResize() {
   isDesktop.value = window.innerWidth >= 768;
@@ -55,7 +60,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", handleResize);
 });
 
-const menuLinks = [
+const menuLinks = isFinishedProfile ? [
   {
     title: "Dashboard",
     items: [{ label: "Home", to: "/company/dashboard", icon: "house" }],
@@ -64,32 +69,41 @@ const menuLinks = [
     title: "Products",
     items: [
       { label: "All Products", to: "/company/products", icon: "shop" },
-      { label: "Add Product", to: "/company/products/create", icon: "cart-plus" },
+      {
+        label: "Add Product",
+        to: "/company/products/create",
+        icon: "cart-plus",
+      },
     ],
   },
   {
     title: "Order",
-    items: [
-      {label: "View", to: "/company/order/view", icon: "eye"}
-    ]
+    items: [{ label: "View", to: "/company/order/view", icon: "eye" }],
   },
   {
     title: "Settings",
-    items:[
+    items: [
       { label: "Company", to: "/company/settings/company", icon: "gear" },
       { label: "Profile", to: "/company/settings/profile", icon: "gear" },
-      { label: "Payment", to:"/company/settings/payment", icon:"money-bill"}
-  ],
+      { label: "Payment", to: "/company/settings/payment", icon: "money-bill" },
+    ],
   },
+] : [
+  {
+        title: "Settings",
+        items: [{ label: "Company", to: "/company/settings/company", icon: "gear" }],
+      },
 ];
 </script>
 
 <style>
 /* Slide transition for sidebar */
-.slide-enter-active, .slide-leave-active {
+.slide-enter-active,
+.slide-leave-active {
   transition: transform 0.3s ease;
 }
-.slide-enter-from, .slide-leave-to {
+.slide-enter-from,
+.slide-leave-to {
   transform: translateX(-100%);
 }
 </style>

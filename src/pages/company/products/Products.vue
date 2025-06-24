@@ -5,7 +5,7 @@
     v-if="products.length === 0"
     class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
   >
-    ⚠️ You don't products in your store!
+    ⚠️ You don't have products in your store!
   </p>
   </div>
   <div class="px-4 mt-5 md:px-10 mx-auto w-full -m-24">

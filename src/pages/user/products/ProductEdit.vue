@@ -1,6 +1,6 @@
 <template>
   <ButtonBack />
-  <div class="p-6 bg-white shadow rounded-lg mt-8">
+  <div  class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
     <h1 class="text-2xl font-semibold mb-6">Edit Product</h1>
     <form class="space-y-6" enctype="multipart/form-data">
       <div>

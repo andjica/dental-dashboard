@@ -479,7 +479,7 @@ const handleSubmit = () => {
       let user = userData ? JSON.parse(userData) : {};
       user.is_finished_profile = 1;
       isFinishedProfile.value = user.is_finished_profile;
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("is_finished_profile", isFinishedProfile.value);
 
       if (!hasChange()) {
         alertType.value = "info";
@@ -487,6 +487,10 @@ const handleSubmit = () => {
         showAlert.value = true;
         return;
       }
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
 
       alertType.value = "success";
       alertMessage.value = "Company profile updated successfully!";
