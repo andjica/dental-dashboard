@@ -2,12 +2,18 @@
   <div class="w-full mb-4">
     <hr class="my-4 md:min-w-full" />
     <h3
-      class="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline"
+      class="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4"
     >
       {{ title }}
     </h3>
     <ul class="md:flex-col md:min-w-full flex flex-col list-none">
-      <li v-for="(item, index) in items" :key="index">
+      <li
+        v-for="(item, index) in items"
+        :key="index"
+        :class="{
+          'opacity-50 cursor-not-allowed pointer-events-none': item.disabled,
+        }"
+      >
         <router-link :to="item.to" v-slot="{ isActive }">
           <div
             :class="[
@@ -16,7 +22,7 @@
                 ? 'text-white green-custom'
                 : 'text-blueGray-700 hover-light-gray hover:text-black',
             ]"
-            @click="handleClick"
+            @click="() => handleClick(item)"
           >
             <font-awesome-icon v-if="item.icon" :icon="item.icon" />
             <span>{{ item.label }}</span>
@@ -28,21 +34,19 @@
 </template>
 
 <script setup>
-import { inject } from 'vue';
+import { inject } from "vue";
 
 const props = defineProps({
   title: String,
   items: Array,
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-const toggleSidebar = inject('toggleSidebar');
+const toggleSidebar = inject("toggleSidebar");
 
-function handleClick() {
-  if (!props.disabled && window.innerWidth < 768 && toggleSidebar) {
+function handleClick(item) {
+  if (item.disabled) return; // Ne reaguje ako je disabled
+
+  if (window.innerWidth < 768 && toggleSidebar) {
     toggleSidebar();
   }
 }

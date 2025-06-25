@@ -387,20 +387,20 @@ const handleSubmit = () => {
       return response.json();
     })
     .then((data) => {
-      console.log("DATA USER UPLOAD: ",data);
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
       user.is_finished_profile = 1;
       isFinishedProfile.value = user.is_finished_profile;
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("is_finished_profile", isFinishedProfile.value);
-
-      alertType.value = "success";
-      alertMessage.value = "User profile update successfully!";
 
       setTimeout(() => {
         window.location.reload();
       }, 1000);
+
+      router.push({ path: "/user/dashboard", query: { profileUpdated: "1" } });
+
+      alertType.value = "success";
+      alertMessage.value = "User profile update successfully!";
+      showAlert.value = true;
     })
     .catch((error) => {
       console.error("Error submitting user data:", error);
@@ -409,9 +409,9 @@ const handleSubmit = () => {
       showAlert.value = true;
     });
 
-  alertMessage.value = "Profile successfully saved!";
-  alertType.value = "success";
-  showAlert.value = true;
+  // alertMessage.value = "Profile successfully saved!";
+  // alertType.value = "success";
+  // showAlert.value = true;
 };
 
 const fetchUser = () => {

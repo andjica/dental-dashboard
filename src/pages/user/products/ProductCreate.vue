@@ -501,6 +501,8 @@ onBeforeUnmount(() => {
   if (mainImagePreview.value) {
     URL.revokeObjectURL(mainImagePreview.value);
   }
+
+  editor.value.destroy();
 });
 
 const cleanNumberInput = (e, field) => {

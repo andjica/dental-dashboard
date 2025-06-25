@@ -1,17 +1,19 @@
 <template>
-  <Alert
-    v-if="showAlert"
-    :type="alertType"
-    :message="alertMessage"
-    @close="showAlert = false"
-  />
+  <ButtonBack />
+  <Loader v-if="isLoading" />
   <p
     v-if="isFinishedProfile !== 1"
     class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
   >
     ⚠️ You must finish settings before you have access to other pages!
   </p>
-  <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
+  <div class="p-6 mb-8 ml-3 max-w-4xl bg-white relative rounded-lg shadow-2xl overflow-y-auto">
+      <Alert
+    v-if="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @close="showAlert = false"
+  />
     <h1 class="text-2xl font-bold mb-6">Settings Company</h1>
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <!-- Company Logo -->
@@ -231,6 +233,8 @@
 import { ref, computed, reactive, watch, onMounted } from "vue";
 import { validateCompanyForm } from "@/helper/form-validation/company/company-update";
 import Alert from "@/components/shared/Alert.vue";
+import Loader from "@/components/shared/Loader.vue";
+import ButtonBack from "@/components/shared/ButtonBack.vue";
 
 // Fields
 const companyName = ref("");
@@ -271,10 +275,13 @@ const errors = reactive({
   phoneNumber: "",
 });
 
+const isLoading = ref(true);
+
 // Static data (replace with API calls as needed)
-onMounted(() => {
-  fetchCountry();
-  fetchCompany();
+onMounted(async () => {
+  isLoading.value = true;
+  await fetchCountry();
+  await fetchCompany();
 
   const userIsFinished = localStorage.getItem("is_finished_profile");
   if (userIsFinished) {
@@ -463,8 +470,7 @@ const handleSubmit = () => {
   if (logo.value) {
     formData.append("logo", logo.value);
   }
-  console.log("logo.value:", logo.value);
-  console.log("instanceof File:", logo.value instanceof File);
+
   fetch("http://localhost:8000/api/company/update", {
     method: "POST",
     headers: {
@@ -480,7 +486,7 @@ const handleSubmit = () => {
       return response.json();
     })
     .then((data) => {
-      console.log("Server response:", data);
+      console.log("Company response:", data);
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
       user.is_finished_profile = 1;
@@ -502,6 +508,8 @@ const handleSubmit = () => {
       alertType.value = "success";
       alertMessage.value = "Company profile updated successfully!";
       showAlert.value = true;
+
+      router.push({ path: "/company/dashboard", query: { profileUpdated: "1" } });
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);
@@ -556,6 +564,8 @@ const fetchCompany = () => {
         phoneNumber: company.phone_code || "",
         companyPost: company.postal_code || "",
       };
+
+      isLoading.value = false;
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);

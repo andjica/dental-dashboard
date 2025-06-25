@@ -501,6 +501,8 @@ onBeforeUnmount(() => {
   if (mainImagePreview.value) {
     URL.revokeObjectURL(mainImagePreview.value);
   }
+
+  editor.value.destroy();
 });
 
 const cleanNumberInput = (e, field) => {
@@ -638,9 +640,11 @@ const handleSubmit = () => {
       alertType.value = "success";
       alertMessage.value = "Product is create successfully!";
       showAlert.value = true;
+
       router.push({ name: "admin.products" });
     })
     .catch((error) => {
+      console.error("Error submitting company data:", error);
       alertType.value = "error";
       alertMessage.value = error;
       showAlert.value = true;

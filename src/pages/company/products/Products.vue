@@ -1,4 +1,5 @@
 <template>
+  <ButtonBack />
   <Loader v-if="isLoading" />
   <div v-if="products.length === 0"class="px-4 mt-5 md:px-10 mx-auto w-full relative">
     <p
@@ -167,6 +168,7 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import Loader from "@/components/shared/Loader.vue";
+import ButtonBack from "@/components/shared/ButtonBack.vue";
 
 const products = ref([]);
 const user = JSON.parse(localStorage.getItem("user"));
@@ -181,7 +183,6 @@ const isLoading = ref(true);
 onMounted(async () => {
   isLoading.value = true;
   await fetchProducts();
-  
 });
 
 const handleView = (product) => {

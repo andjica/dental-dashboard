@@ -1,5 +1,6 @@
 <template>
-  <div class="p-6 bg-white shadow rounded-lg mt-8">
+  <ButtonBack />
+  <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
     <h1 class="text-2xl font-semibold mb-6">Create a New Product</h1>
 
     <form
@@ -107,36 +108,6 @@
           >
             <s>S</s>
           </button>
-
-          <!-- <button
-            type="button"
-            @click="toggleHeading(1)"
-            :class="buttonClass(editor.isActive('heading', { level: 1 }))"
-          >
-            H1
-          </button>
-          <button
-            type="button"
-            @click="toggleHeading(2)"
-            :class="buttonClass(editor.isActive('heading', { level: 2 }))"
-          >
-            H2
-          </button>
-
-          <button
-            type="button"
-            @click="toggleBulletList"
-            :class="buttonClass(editor.isActive('bulletList'))"
-          >
-            • List
-          </button>
-          <button
-            type="button"
-            @click="toggleOrderedList"
-            :class="buttonClass(editor.isActive('orderedList'))"
-          >
-            1. List
-          </button> -->
         </div>
         <!-- EDITOR -->
         <EditorContent
@@ -370,12 +341,13 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
-import { Editor, EditorContent } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
+import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Heading from "@tiptap/extension-heading";
+import Underline from "@tiptap/extension-underline";
+import StarterKit from "@tiptap/starter-kit";
+import { Editor, EditorContent } from "@tiptap/vue-3";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import { validateProductForm } from "@/helper/form-validation/product/product-create";
 
@@ -479,23 +451,6 @@ const removeImage = (index) => {
 
 onMounted(() => {
   fetchCategory();
-
-  editor.value = new Editor({
-  extensions: [
-    StarterKit,
-    Underline,
-    Heading.configure({ levels: [1, 2, 3] }),
-  ],
-  editorProps: {
-    attributes: {
-      class: "min-h-[150px] focus:outline-none",
-      placeholder: "Write description of product...",
-    },
-  },
-  onUpdate({ editor }) {
-    form.value.description = editor.getHTML();
-  },
-});
 });
 
 watch(
@@ -516,6 +471,8 @@ onBeforeUnmount(() => {
   if (mainImagePreview.value) {
     URL.revokeObjectURL(mainImagePreview.value);
   }
+
+  editor.value.destroy();
 });
 
 const cleanNumberInput = (e, field) => {
@@ -651,6 +608,7 @@ const handleSubmit = () => {
       alertType.value = "success";
       alertMessage.value = "Product is create successfully!";
       showAlert.value = true;
+      
       router.push({ name: "company.products" });
     })
     .catch((error) => {

@@ -1,8 +1,22 @@
 <template>
   <ButtonBack />
-  <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-md">
+  <div class="relative">
+    <Alert
+      v-if="alert.message"
+      :type="alert.type"
+      :message="alert.message"
+      @close="alert.message = ''"
+    />
+  </div>
+  <div
+    class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl relative overflow-y-auto"
+  >
     <h1 class="text-2xl font-semibold mb-6">Edit Product</h1>
-    <form class="space-y-6" enctype="multipart/form-data">
+    <form
+      @submit.prevent="handleEdit"
+      class="space-y-6"
+      enctype="multipart/form-data"
+    >
       <div>
         <label class="block text-sm font-medium mb-1">Product Name</label>
         <input
@@ -31,6 +45,13 @@
         <div v-if="!mainImagePreview && form.image_main" class="mt-2">
           <img
             :src="getImageUrl(form.image_main)"
+            alt="Preview"
+            class="relative w-34 h-34 border rounded overflow-hidden shadow-sm"
+          />
+        </div>
+        <div v-if="mainImagePreview" class="mt-2">
+          <img
+            :src="mainImagePreview"
             alt="Preview"
             class="relative w-34 h-34 border rounded overflow-hidden shadow-sm"
           />
@@ -170,7 +191,7 @@
       <div class="w-full md:w-1/3 md:pr-2 pr-0">
         <label class="block text-sm font-medium mb-1">Price (€)</label>
         <input
-          :value="product.base_price"
+          :value="form.price"
           @input="(e) => cleanNumberInput(e, 'price')"
           @keypress="allowOnlyNumbersAndDot"
           @blur="formatDisplayPrice"
@@ -201,12 +222,12 @@
         </div>
         <div class="flex flex-wrap gap-4 mt-4">
           <div
-            v-for="(img, index) in form.image_gallery "
+            v-for="(img, index) in form.image_gallery"
             :key="index"
             class="relative w-24 h-24 border rounded overflow-hidden shadow-sm"
           >
             <img
-              :src="typeof img === 'string' ? getImageUrl(img) : URL.createObjectURL(img)"
+              :src="resolveImageSrc(img)"
               alt="Selected Image"
               class="object-cover w-full h-full"
             />
@@ -220,11 +241,11 @@
           </div>
         </div>
         <div
-          v-if="form.image_galerry.length"
+          v-if="form.image_gallery.length"
           class="mt-2 text-sm text-gray-600"
         >
-          {{ form.image_galerry.length }} image{{
-            form.image_galerry.length > 1 ? "s" : ""
+          {{ form.image_gallery.length }} image{{
+            form.image_gallery.length > 1 ? "s" : ""
           }}
           selected
         </div>
@@ -233,7 +254,7 @@
       <div class="flex flex-wrap -mx-2 mb-4">
         <div class="w-full md:w-1/3 px-2">
           <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Length  (cm)</label
+            >Length (cm)</label
           >
           <input
             v-model="form.length"
@@ -293,7 +314,13 @@
       </div>
       <!-- Active -->
       <div class="flex items-center space-x-2">
-        <input v-model="product.in_stock" type="checkbox" id="is_active" />
+        <input
+          v-model="form.in_stock"
+          type="checkbox"
+          id="is_active"
+          :true-value="1"
+          :false-value="0"
+        />
         <label for="is_active" class="text-sm">Active</label>
       </div>
       <!-- Buttons -->
@@ -326,23 +353,38 @@ import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+import Alert from "@/components/shared/Alert.vue";
+import { useRouter } from "vue-router";
 
 const token = localStorage.getItem("token");
 
 const route = useRoute();
-const id = route.params.id;
-
+const productId = parseInt(route.params.id);
 const product = ref({});
 const editor = ref(null);
 const mainImagePreview = ref(null);
+
+const router = useRouter();
+// for alert
+const alert = ref({
+  message: "",
+  type: "success",
+});
+
+const showAlert = (type, message) => {
+  alert.value.type = type;
+  alert.value.message = message;
+};
+
 // create new form for update product
 const form = ref({
   productName: "",
   image_main: null,
   description: "",
   product_type: "",
+  base_price: "",
   category: "",
-  image_galerry: [],
+  image_gallery: [],
   subCategory: "",
   categories: [],
   subCategories: [],
@@ -373,7 +415,7 @@ watch(
 );
 // fetch product by id
 const fetchProduct = () => {
-  fetch(`http://localhost:8000/api/product/${id}`, {
+  fetch(`http://localhost:8000/api/product/${productId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -388,45 +430,51 @@ const fetchProduct = () => {
       return res.json();
     })
     .then((data) => {
-      console.log("Compnay Product data: ", data);
+      console.log("Company Product data jone: ", data);
       product.value = data.data;
 
       form.value.productName = product.value.name;
-      if (editor.value && product.value.description) {
-        editor.value.commands.setContent(product.value.description);
-        }
-      // to choose main image
+      form.value.price = product.value.base_price;
+      form.value.description = product.value.description;
+      form.value.length = product.value.length;
+      form.value.width = product.value.width;
+      form.value.height = product.value.height;
+      form.value.weight = product.value.weight;
+      form.value.quantity = product.value.quantity;
+      form.value.in_stock = product.value.in_stock;
+      form.value.product_type = product.value.product_type?.toLowerCase();
+      form.value.base_price = product.value.base_price;
+
+      // Set main image
       const mainImage = product.value.images.find(
         (img) => img.is_primary === 1
       );
       form.value.image_main = mainImage?.image_url || null;
-      form.value.product_type = product.value.product_type?.toLowerCase();
+
+      // Set gallery
+      form.value.image_gallery = product.value.images
+        .filter((img) => img.is_primary === 0)
+        .map((img) => img.image_url);
+
       const catId = product.value.category.id;
       const subCatId = product.value.sub_category.id;
 
       form.value.category = catId;
 
-      //  to chooes gallery images
-      form.value.image_gallery = product.value.images
-        .filter((img) => img.is_primary === 0)
-        .map((img) => img.image_url);
-      // Prvo pozovi subkategorije pa tek onda setuj vrednost
       fetchSubcategory(catId).then(() => {
         form.value.subCategory = subCatId;
       });
-      form.value.height = product.value.height;
-      form.value.length = product.value.length;
-      form.value.weight = product.value.weight;
-      form.value.width = product.value.width;
 
-      form.value.in_stock = !!product.value.in_stock;
-
-      form.value.quantity = product.value.quantity;
+      // Load description into editor
+      if (editor.value && product.value.description) {
+        editor.value.commands.setContent(product.value.description);
+      }
     })
     .catch((err) => {
       console.error("Error while fetching product:", err);
     });
 };
+
 // fetch category
 const fetchCategory = () => {
   return fetch("http://localhost:8000/api/categories", {
@@ -475,14 +523,7 @@ const fetchSubcategory = (categoryId) => {
 };
 
 editor.value = new Editor({
-  content: "",
-  extensions: [
-    StarterKit,
-    Underline,
-    Heading.configure({ levels: [1, 2, 3] }),
-    // BulletList,
-    // OrderedList,
-  ],
+  extensions: [StarterKit, Underline, Heading.configure({ levels: [1, 2, 3] })],
   editorProps: {
     attributes: {
       class: "min-h-[150px] focus:outline-none",
@@ -491,6 +532,7 @@ editor.value = new Editor({
   },
   onUpdate({ editor }) {
     form.value.description = editor.getHTML();
+    console.log("Description saved:", form.value.description); // ✅ Provera
   },
 });
 
@@ -521,19 +563,38 @@ const handleMainImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
     mainImagePreview.value = URL.createObjectURL(file);
-    product.value.image_main = file; // ako planiraš da šalješ u formi
+    form.value.image_main = file; // ako planiraš da šalješ u formi
   }
+};
+
+const handleImageUpload = (event) => {
+  const files = Array.from(event.target.files);
+  form.value.image_gallery.push(...files);
 };
 
 const removeImage = (index) => {
   form.value.image_gallery.splice(index, 1);
-  const url = imagePreviews.value.splice(index, 1)[0];
-  URL.revokeObjectURL(url); // očisti memoriju
 };
 
 const getImageUrl = (path) => {
-  console.log("PATH: ", path);
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("storage")) {
+    return `http://localhost:8000/${path}`;
+  }
   return `http://localhost:8000/storage/${path}`;
+};
+
+
+const resolveImageSrc = (img) => {
+  if (!img) return "";
+  if (typeof img === "string") {
+    return getImageUrl(img);
+  }
+  if (img instanceof File) {
+    return URL.createObjectURL(img);
+  }
+  return "";
 };
 
 const cleanNumberInput = (e, field) => {
@@ -559,6 +620,68 @@ const formatDisplayPrice = () => {
     const formatted = parseFloat(form.value.price).toFixed(2).replace(".", ",");
     form.value.price = formatted;
   }
+};
+
+const parsePriceForBackend = (value) => {
+  if (typeof value === "string") {
+    return value.replace(",", ".");
+  }
+  return value;
+};
+
+const handleEdit = () => {
+  const formData = new FormData();
+
+  formData.append("name", form.value.productName);
+  formData.append("product_type", form.value.product_type);
+  formData.append("description", form.value.description);
+  formData.append("category_id", form.value.category);
+  formData.append("sub_category_id", form.value.subCategory);
+  formData.append("base_price", parsePriceForBackend(form.value.price));
+  formData.append("length", form.value.length);
+  formData.append("width", form.value.width);
+  formData.append("height", form.value.height);
+  formData.append("weight", form.value.weight);
+  formData.append("quantity", form.value.quantity);
+  formData.append("in_stock", form.value.in_stock ? 1 : 0);
+
+  // ✅ Glavna slika
+  if (form.value.image_main instanceof File) {
+    formData.append("image_main", form.value.image_main);
+  }
+
+  // ✅ Galerija
+  form.value.image_gallery.forEach((img) => {
+    if (img instanceof File) {
+      formData.append("images[]", img);
+    } else {
+      formData.append("existing_images[]", img);
+    }
+  });
+
+  fetch(`http://localhost:8000/api/product/${productId}`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok!");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      showAlert("success", "Product is updated successfully!");
+      setTimeout(() => {
+        router.push({ name: "company.products" });
+      }, 1500);
+    })
+    .catch((error) => {
+      showAlert("error", "Failed to update product.");
+    });
 };
 
 const cancel = () => {
