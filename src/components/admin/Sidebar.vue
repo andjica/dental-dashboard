@@ -20,13 +20,15 @@
             <font-awesome-icon icon="xmark" />
           </button>
         </div>
-        <!-- Navigacija -->
-        <Navigation
-          v-for="(link, index) in menuLinks"
-          :key="index"
-          :title="link.title"
-          :items="link.items"
-        />
+        <!-- Top Navigation -->
+        <div class="flex flex-col flex-grow">
+          <Navigation v-for="(link, index) in topLinks" :key="index" :title="link.title" :items="link.items" />
+        </div>
+
+        <!-- Settings at Bottom -->
+        <div class="mt-auto">
+          <Navigation v-if="settingsLink" :title="settingsLink.title" :items="settingsLink.items" />
+        </div>
       </nav>
     </aside>
   </transition>
@@ -34,7 +36,7 @@
 
 <script setup>
 import Navigation from "@/components/shared/Navigation.vue";
-import { onBeforeUnmount, onMounted, provide, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, provide, ref } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
@@ -78,31 +80,48 @@ const menuLinks = isFinishedProfile
         ],
       },
       {
-        title: "View",
+        title: "Management",
         items: [
           { label: "Companies", to: "/admin/companies", icon: "building" },
           { label: "Users", to: "/admin/users", icon: "users" },
         ],
       },
       {
-        title: "Order",
-        items: [{ label: "View", to: "/admin/order/view", icon: "eye" }],
+        title: "Orders",
+        items: [{ label: "View Orders", to: "/admin/order/view", icon: "eye" }],
+      },
+      {
+        title: "Auctions",
+        items:[
+          {label: "View Auctions", to: "/admin/auction/view", icon: "eye"},
+          {label: "Create Auction", to: "/admin/auction/create", icon: "plus"}
+        ]
       },
       {
         title: "Settings",
         items: [
-          { label: "Company", to: "/admin/settings/company", icon: "gear" },
-          { label: "Profile", to: "/admin/settings/profile", icon: "gear" },
-          { label: "Payment", to: "/admin/settings/payment", icon: "money-bill" },
+          { label: "Company Settings", to: "/admin/settings/company", icon: "gear" },
+          { label: "Profile Settings", to: "/admin/settings/profile", icon: "gear" },
+          { label: "Payment Settings", to: "/admin/settings/payment", icon: "money-bill" },
         ],
       },
     ]
   : [
       {
         title: "Settings",
-        items: [{ label: "Setting", to: "/admin/settings/company", icon: "gear" }],
+        items: [{ label: "Complete Company Profile", to: "/admin/settings/company", icon: "gear" }],
       },
     ];
+
+    // Odvoji Settings
+const settingsLink = computed(() =>
+  menuLinks.find((link) => link.title === "Settings")
+);
+
+// Ostali linkovi
+const topLinks = computed(() =>
+  menuLinks.filter((link) => link.title !== "Settings")
+);
 </script>
 
 <style>

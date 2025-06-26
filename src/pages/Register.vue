@@ -2,77 +2,44 @@
   <div class="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 flex items-center justify-center px-4">
     <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md relative border border-gray-200">
       <!-- Alert Component -->
-      <Alert
-        v-if="alert.message"
-        :type="alert.type"
-        :message="alert.message"
-        @close="alert.message = ''"
-      />
+      <Alert v-if="alert.message" :type="alert.type" :message="alert.message" @close="alert.message = ''" />
       <h1 class="text-3xl font-extrabold mb-6 text-center text-gray-800">Create Your Account</h1>
 
       <form @submit.prevent="handleRegister" class="space-y-5">
         <!-- First Name -->
         <div>
           <label for="firstName" class="text-sm font-semibold text-gray-700 mb-1 block">First Name</label>
-          <input
-            v-model="firstName"
-            type="text"
-            id="firstNameRegister"
-            class="input"
-            placeholder="John"
-          />
+          <input v-model="firstName" type="text" id="firstNameRegister" class="input" placeholder="John" />
           <p v-if="errors.firstName" class="text-red-600 text-sm mt-1">{{ errors.firstName }}</p>
         </div>
 
         <!-- Last Name -->
         <div>
           <label for="lastName" class="text-sm font-semibold text-gray-700 mb-1 block">Last Name</label>
-          <input
-            v-model="lastName"
-            type="text"
-            id="lastNameRegister"
-            class="input"
-            placeholder="Doe"
-          />
+          <input v-model="lastName" type="text" id="lastNameRegister" class="input" placeholder="Doe" />
           <p v-if="errors.lastName" class="text-red-600 text-sm mt-1">{{ errors.lastName }}</p>
         </div>
 
         <!-- Email -->
         <div>
           <label for="email" class="text-sm font-semibold text-gray-700 mb-1 block">Email</label>
-          <input
-            v-model="email"
-            type="email"
-            id="emailRegister"
-            class="input"
-            placeholder="you@example.com"
-          />
+          <input v-model="email" type="email" id="emailRegister" class="input" placeholder="you@example.com" />
           <p v-if="errors.email" class="text-red-600 text-sm mt-1">{{ errors.email }}</p>
         </div>
 
         <!-- Password -->
         <div>
           <label for="password" class="text-sm font-semibold text-gray-700 mb-1 block">Password</label>
-          <input
-            v-model="password"
-            type="password"
-            id="passwordRegister"
-            class="input"
-            placeholder="••••••••"
-          />
+          <input v-model="password" type="password" id="passwordRegister" class="input" placeholder="••••••••" />
           <p v-if="errors.password" class="text-red-600 text-sm mt-1">{{ errors.password }}</p>
         </div>
 
         <!-- Confirm Password -->
         <div>
-          <label for="passwordConfirmRegister" class="text-sm font-semibold text-gray-700 mb-1 block">Confirm Password</label>
-          <input
-            v-model="passwordConfirm"
-            type="password"
-            id="passwordConfirmRegister"
-            class="input"
-            placeholder="••••••••"
-          />
+          <label for="passwordConfirmRegister" class="text-sm font-semibold text-gray-700 mb-1 block">Confirm
+            Password</label>
+          <input v-model="passwordConfirm" type="password" id="passwordConfirmRegister" class="input"
+            placeholder="••••••••" />
           <p v-if="errors.passwordConfirm" class="text-red-600 text-sm mt-1">{{ errors.passwordConfirm }}</p>
         </div>
 
@@ -93,10 +60,8 @@
         </div>
 
         <!-- Submit Button -->
-        <button
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-xl font-semibold flex items-center justify-center"
-        >
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-xl font-semibold flex items-center justify-center cursor-pointer">
           <LoaderIcon v-if="isLoading" />
           <span v-else>Register</span>
         </button>
@@ -236,6 +201,7 @@ const handleRegister = async () => {
       return;
     }
 
+    localStorage.setItem("token", data.token);
     localStorage.setItem(
       "user",
       JSON.stringify(

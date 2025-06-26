@@ -25,7 +25,8 @@ import {
   faBuilding,
   faArrowLeft,
   faCheck,
-  faX
+  faX,
+  faPlus
 } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -51,6 +52,7 @@ library.add(
   faArrowLeft,
   faCheck,
   faX,
+  faPlus
 );
 
 const app = createApp(App);

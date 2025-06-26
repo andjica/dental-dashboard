@@ -64,6 +64,16 @@ const routes = [
         component: () => import("@/pages/admin/product/ProductEdit.vue"),
       },
       {
+        path: "auction/create",
+        name: "admin.auction.create",
+        component: () => import("@/pages/admin/auction/AuctionCreate.vue"),
+      },
+      {
+        path: "auction/view",
+        name: "admin.auction.view",
+        component: () => import("@/pages/admin/auction/AuctionsView.vue"),
+      },
+      {
         path: "order/view",
         name: "admin.order.view",
         component: () => import("@/pages/admin/order/OrderView.vue"),
@@ -127,6 +137,16 @@ const routes = [
         component: () => import("@/pages/company/products/ProductEdit.vue"),
       },
       {
+        path: "auction/create",
+        name: "company.auction.create",
+        component: () => import("@/pages/company/auction/AuctionCreate.vue"),
+      },
+      {
+        path: "auction/view",
+        name: "company.auction.view",
+        component: () => import("@/pages/company/auction/AuctionsView.vue"),
+      },
+      {
         path: "order/view",
         name: "company.order.view",
         component: () => import("@/pages/company/order/OrderView.vue"),
@@ -173,6 +193,16 @@ const routes = [
         path: "products/:id/edit",
         name: "user.product.edit",
         component: () => import("@/pages/user/products/ProductEdit.vue"),
+      },
+      {
+        path: "auction/create",
+        name: "user.auction.create",
+        component: () => import("@/pages/user/auction/AuctionCreate.vue"),
+      },
+      {
+        path: "auction/view",
+        name: "user.auction.view",
+        component: () => import("@/pages/user/auction/AuctionsView.vue"),
       },
       {
         path: "order/view",

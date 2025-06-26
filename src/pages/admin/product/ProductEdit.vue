@@ -114,36 +114,6 @@
           >
             <s>S</s>
           </button>
-
-          <!-- <button
-            type="button"
-            @click="toggleHeading(1)"
-            :class="buttonClass(editor.isActive('heading', { level: 1 }))"
-          >
-            H1
-          </button>
-          <button
-            type="button"
-            @click="toggleHeading(2)"
-            :class="buttonClass(editor.isActive('heading', { level: 2 }))"
-          >
-            H2
-          </button>
-
-          <button
-            type="button"
-            @click="toggleBulletList"
-            :class="buttonClass(editor.isActive('bulletList'))"
-          >
-            • List
-          </button>
-          <button
-            type="button"
-            @click="toggleOrderedList"
-            :class="buttonClass(editor.isActive('orderedList'))"
-          >
-            1. List
-          </button> -->
         </div>
         <!-- EDITOR -->
         <EditorContent
@@ -345,9 +315,7 @@
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
-// import BulletList from "@tiptap/extension-bullet-list";
 import Heading from "@tiptap/extension-heading";
-// import OrderedList from "@tiptap/extension-ordered-list";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";

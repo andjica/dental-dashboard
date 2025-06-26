@@ -1,10 +1,6 @@
 <template>
   <!-- Back Button -->
   <ButtonBack />
-
-  <!-- Loading Spinner -->
-  <Loader v-if="isLoading" />
-
   <!-- Warning if profile not completed -->
   <div class=" mb-8 ml-3 max-w-4xl bg-white relative rounded-lg shadow-1xl overflow-y-auto">
     <!-- Alert Message -->
@@ -29,180 +25,134 @@
 </p>
 
 </div>
+<!-- <template  v-if="isLoading">
+  <Loader /> 
+</template>-->
+<template >
   <!-- Main Form Container -->
   <div class="p-6 mb-8 ml-3 max-w-4xl bg-white relative rounded-lg shadow-2xl overflow-y-auto">
 
+     <div class="px-6">
+      <h3 class="text-3xl font-bold mb-8 text-gray-800">🏢 Update Company</h3>
+    </div>
 
-
-    <h1 class="text-2xl font-bold mb-6">Settings Company</h1>
-
-    <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-      <!-- Company Logo Upload -->
-      <div class="mb-6">
-        <label class="block text-sm font-medium mb-1">Image</label>
-        <label
-          for="mainImageInput"
-          class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition duration-200"
-        >
-          Upload Company Image
-        </label>
-        <input
-          id="mainImageInput"
-          type="file"
-          accept="image/*"
-          @change="handleImageUpload"
-          class="hidden"
-        />
-        <div v-if="companyLogoFile" class="mt-2">
-          <img
-            :src="companyLogoFile"
-            alt="Company Logo Preview"
-            class="rounded border border-gray-300"
-            style="width: 50px; height: 50px; object-fit: cover"
-          />
-        </div>
-        <p v-if="errors.logo" class="text-red-500 text-sm mt-1">
-          {{ errors.logo }}
-        </p>
-      </div>
-
-      <!-- Company Name -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
-        <input
-          v-model="companyName"
-          type="text"
-          placeholder="Enter company name"
-          class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-        />
-        <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">{{ errors.companyName }}</p>
-      </div>
-
-      <!-- Company Email -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Company Email</label>
-        <input
-          v-model="companyEmail"
-          type="email"
-          placeholder="company@example.com"
-          class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-        />
-        <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">{{ errors.companyEmail }}</p>
-      </div>
-
-      <!-- Company Address -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
-        <input
-          v-model="companyAddress"
-          type="text"
-          placeholder="Enter company address"
-          class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-        />
-        <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">{{ errors.companyAddress }}</p>
-      </div>
-
-      <!-- Country, City, Post Number -->
-      <div class="flex flex-wrap -mx-2 mb-4">
-        <!-- Country -->
-        <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
-          <select
-            v-model="selectedCountry"
-            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-          >
-            <option disabled value="">Select country</option>
-            <option v-for="country in countries" :key="country.id" :value="country.id">
-              {{ country.name }}
-            </option>
-          </select>
-          <p v-if="errors.selectedCountry" class="text-red-500 text-sm mt-1">{{ errors.selectedCountry }}</p>
+    <div class="p-6">
+      <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
+        <!-- Company Logo Upload -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-1">Image</label>
+          <label for="mainImageInput"
+            class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition duration-200">
+            Upload Company Image
+          </label>
+          <input id="mainImageInput" type="file" accept="image/*" @change="handleImageUpload" class="hidden" />
+          <div v-if="companyLogoFile" class="mt-2">
+            <img :src="companyLogoFile" alt="Company Logo Preview"
+              class="rounded border border-gray-300 w-14 h-14 object-cover" />
+          </div>
+          <p v-if="errors.logo" class="text-red-500 text-sm mt-1">{{ errors.logo }}</p>
         </div>
 
-        <!-- City -->
-        <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-          <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-          <select
-            v-model="selectedCity"
-            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-          >
-            <option disabled value="">Select city</option>
-            <option v-for="city in filteredCities" :key="city.id" :value="city.id">
-              {{ city.name }}
-            </option>
-          </select>
-          <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">{{ errors.selectedCity }}</p>
+        <!-- Company Name -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+          <input v-model="companyName" type="text" placeholder="Enter company name"
+            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">{{ errors.companyName }}</p>
         </div>
 
-        <!-- Post Number -->
-        <div class="w-full md:w-1/3 px-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Post Number</label>
-          <input
-            v-model="companyPost"
-            type="text"
-            placeholder="Enter post number"
-            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-          />
-          <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">{{ errors.companyPost }}</p>
+        <!-- Company Email -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Company Email</label>
+          <input v-model="companyEmail" type="email" placeholder="company@example.com"
+            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">{{ errors.companyEmail }}</p>
         </div>
-      </div>
 
-      <!-- Phone Number -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-        <div class="flex gap-2">
-          <input
-            :value="`+${phoneCode}`"
-            type="text"
-            disabled
-            class="w-1/4 px-4 py-2 bg-gray-200 rounded-md border border-gray-300 text-gray-600"
-          />
-          <input
-            v-model="phoneNumber"
-            @input="validatePhoneNumber"
-            type="text"
-            placeholder="Enter phone number"
-            class="w-3/4 px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-          />
+        <!-- Company Address -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
+          <input v-model="companyAddress" type="text" placeholder="Enter company address"
+            class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">{{ errors.companyAddress }}</p>
         </div>
-        <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">{{ errors.phoneNumber }}</p>
-      </div>
 
-      <!-- Tax and Register Number -->
-      <div class="flex flex-wrap -mx-2">
-        <div class="w-full md:w-1/2 px-2 mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
-          <input
-            v-model="companyTaxNumber"
-            type="text"
-            placeholder="Enter tax number"
-            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-          />
-          <p v-if="errors.companyTaxNumber" class="text-red-500 text-sm mt-1">{{ errors.companyTaxNumber }}</p>
-        </div>
-        <div class="w-full md:w-1/2 px-2 mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Register Number</label>
-          <input
-            v-model="companyRegisterNumber"
-            type="text"
-            placeholder="Enter register number"
-            class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
-          />
-          <p v-if="errors.companyRegisterNumber" class="text-red-500 text-sm mt-1">{{ errors.companyRegisterNumber }}</p>
-        </div>
-      </div>
+        <!-- Country, City, Post Number -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <!-- Country -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+            <select v-model="selectedCountry"
+              class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option disabled value="">Select country</option>
+              <option v-for="country in countries" :key="country.id" :value="country.id">
+                {{ country.name }}
+              </option>
+            </select>
+            <p v-if="errors.selectedCountry" class="text-red-500 text-sm mt-1">{{ errors.selectedCountry }}</p>
+          </div>
 
-      <!-- Submit Button -->
-      <div class="text-right">
-        <button
-          type="submit"
-          class="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
-        >
-          Update
-        </button>
-      </div>
-    </form>
+          <!-- City -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+            <select v-model="selectedCity"
+              class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option disabled value="">Select city</option>
+              <option v-for="city in filteredCities" :key="city.id" :value="city.id">
+                {{ city.name }}
+              </option>
+            </select>
+            <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">{{ errors.selectedCity }}</p>
+          </div>
+
+          <!-- Post Number -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Post Number</label>
+            <input v-model="companyPost" type="text" placeholder="Enter post number"
+              class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">{{ errors.companyPost }}</p>
+          </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+          <div class="flex gap-2">
+            <input :value="`+${phoneCode}`" type="text" disabled
+              class="w-1/4 px-4 py-2 bg-gray-200 border border-gray-300 rounded-lg text-gray-600" />
+            <input v-model="phoneNumber" @input="validatePhoneNumber" type="text" placeholder="Enter phone number"
+              class="w-3/4 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">{{ errors.phoneNumber }}</p>
+        </div>
+
+        <!-- Tax and Register Number -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
+            <input v-model="companyTaxNumber" type="text" placeholder="Enter tax number"
+              class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <p v-if="errors.companyTaxNumber" class="text-red-500 text-sm mt-1">{{ errors.companyTaxNumber }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Register Number</label>
+            <input v-model="companyRegisterNumber" type="text" placeholder="Enter register number"
+              class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <p v-if="errors.companyRegisterNumber" class="text-red-500 text-sm mt-1">{{ errors.companyRegisterNumber }}</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-right mt-6">
+          <button type="submit"
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200">
+            Update
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
+  </template>
 </template>
 
 
@@ -399,7 +349,7 @@ const hasChange = () => {
     companyAddress.value !== originalValues.value.companyAddress ||
     companyTaxNumber.value !== originalValues.value.companyTaxNumber ||
     companyRegisterNumber.value !==
-      originalValues.value.companyRegisterNumber ||
+    originalValues.value.companyRegisterNumber ||
     selectedCountry.value !== originalValues.value.selectedCountry ||
     selectedCity.value !== originalValues.value.selectedCity ||
     phoneNumber.value !== originalValues.value.phoneNumber ||
@@ -477,8 +427,6 @@ const handleSubmit = () => {
         showAlert.value = true;
         return;
       }
-
-
 
       alertType.value = "success";
       alertMessage.value = "Company profile updated successfully!";

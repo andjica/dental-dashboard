@@ -23,19 +23,23 @@
           </button>
         </div>
 
-        <!-- Navigation -->
-        <div class="mt-6 space-y-1">
-          <div
-            v-for="(link, index) in menuLinks"
+        <!-- Top Navigation -->
+        <div class="flex flex-col flex-grow">
+          <Navigation
+            v-for="(link, index) in topLinks"
             :key="index"
-            class="px-4 py-1 rounded-md transition-colors duration-200  cursor-pointer flex items-center justify-between group"
-          >
-            <Navigation
-              :title="link.title"
-              :items="link.items"
-            />
-          
-          </div>
+            :title="link.title"
+            :items="link.items"
+          />
+        </div>
+
+        <!-- Settings at Bottom -->
+        <div class="mt-auto">
+          <Navigation
+            v-if="settingsLink"
+            :title="settingsLink.title"
+            :items="settingsLink.items"
+          />
         </div>
       </nav>
     </aside>
@@ -91,8 +95,8 @@ const fetchCompany = () => {
       return res.json();
     })
     .then((data) => {
-      iscompanyActive.value = parseInt(data.data.active);
-      localStorage.setItem("isActive", iscompanyActive.value);
+      console.log(data.data.active);
+      iscompanyActive.value = data.data.active;
       window.dispatchEvent(new Event("isActiveChanged"));
     })
     .catch((err) => {
@@ -116,72 +120,110 @@ const canAccess = (to) => {
   return true;
 };
 
+console.log(iscompanyActive.value);
 // 🔥 Menu with disabled flags
-const menuLinks = computed(() => [
-  {
-    title: "Dashboard",
-    items: [
-      {
-        label: "Home",
-        to: "/company/dashboard",
-        icon: "house",
-        disabled: !canAccess("/company/dashboard"),
-        highlight: true, 
-      },
-    ],
-  },
-  {
-    title: "Products",
-    items: [
-      {
-        label: "All Products",
-        to: "/company/products",
-        icon: "shop",
-        disabled: !canAccess("/company/products"),
-      },
-      {
-        label: "Add Product",
-        to: "/company/products/create",
-        icon: "cart-plus",
-        disabled: !canAccess("/company/products/create"),
-      },
-    ],
-  },
-  {
-    title: "Order",
-    items: [
-      {
-        label: "View",
-        to: "/company/order/view",
-        icon: "eye",
-        disabled: !canAccess("/company/order/view"),
-      },
-    ],
-  },
-  {
-    title: "Settings",
-    items: [
-      {
-        label: "Company",
-        to: "/company/settings/company",
-        icon: "gear",
-        disabled: !canAccess("/company/settings/company"),
-      },
-      {
-        label: "Profile",
-        to: "/company/settings/profile",
-        icon: "gear",
-        disabled: !canAccess("/company/settings/profile"),
-      },
-      {
-        label: "Payment",
-        to: "/company/settings/payment",
-        icon: "money-bill",
-        disabled: !canAccess("/company/settings/payment"),
-      },
-    ],
-  },
-]);
+const menuLinks = computed(() => {
+  return isFinishedProfile
+    ? [
+        {
+          title: "Dashboard",
+          items: [
+            {
+              label: "Home",
+              to: "/company/dashboard",
+              icon: "house",
+              disabled: !canAccess("/company/dashboard"),
+            },
+          ],
+        },
+        {
+          title: "Products",
+          items: [
+            {
+              label: "All Products",
+              to: "/company/products",
+              icon: "shop",
+              disabled: !canAccess("/company/products"),
+            },
+            {
+              label: "Add Product",
+              to: "/company/products/create",
+              icon: "cart-plus",
+              disabled: !canAccess("/company/products/create"),
+            },
+          ],
+        },
+        {
+          title: "Order",
+          items: [
+            {
+              label: "View",
+              to: "/company/order/view",
+              icon: "eye",
+              disabled: !canAccess("/company/order/view"),
+            },
+          ],
+        },
+        {
+          title: "Auctions",
+          items: [
+            {
+              label: "View Auctions",
+              to: "/company/auction/view",
+              icon: "eye",
+            },
+            {
+              label: "Create Auction",
+              to: "/company/auction/create",
+              icon: "plus",
+            },
+          ],
+        },
+        {
+          title: "Settings",
+          items: [
+            {
+              label: "Company",
+              to: "/company/settings/company",
+              icon: "gear",
+              disabled: !canAccess("/company/settings/company"),
+            },
+            {
+              label: "Profile",
+              to: "/company/settings/profile",
+              icon: "gear",
+              disabled: !canAccess("/company/settings/profile"),
+            },
+            {
+              label: "Payment",
+              to: "/company/settings/payment",
+              icon: "money-bill",
+              disabled: !canAccess("/company/settings/payment"),
+            },
+          ],
+        },
+      ]
+    : [
+        {
+          title: "Settings",
+          items: [
+            {
+              label: "User",
+              to: "/company/settings/user",
+              icon: "gear",
+            },
+          ],
+        },
+      ];
+});
+
+const settingsLink = computed(() =>
+  menuLinks.value.find((link) => link.title === "Settings")
+);
+
+const topLinks = computed(() =>
+  menuLinks.value.filter((link) => link.title !== "Settings")
+);
 </script>
 
 <style>

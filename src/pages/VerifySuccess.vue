@@ -17,7 +17,7 @@
 
     <router-link to="/">
       <button
-        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-2 px-8 rounded-lg shadow-lg transition-all duration-300"
+        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-2 px-8 rounded-lg shadow-lg transition-all duration-300 cursor-pointer"
       >
         Go to Login
       </button>
