@@ -1,21 +1,31 @@
 <template>
-  <transition name="fade">
+  <transition name="fade-slide">
     <div
       v-show="visible"
       :class="[
-        'mb-4 px-6 py-4 border-0 rounded absolute w-full top-0 left-0 z-1',
-        type === 'success' ? 'text-green-700 bg-green-100 border border-green-300' : type === 'info' ? 'text-orange-700 bg-orange-100 border border-orange-300' : 'text-red-700 bg-red-100 border border-red-300'
+        'flex items-start gap-4 px-6 py-4 rounded-lg shadow-lg border text-sm font-medium relative',
+        type === 'success' ? 'bg-green-50 text-green-800 border-green-200' :
+        type === 'info' ? 'bg-yellow-50 text-yellow-800 border-yellow-200' :
+        'bg-red-50 text-red-800 border-red-200'
       ]"
     >
-      <span class="text-xl inline-block mr-5 align-middle">
-        <i :class="type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
-      </span>
-      <span class="inline-block align-middle mr-8">
-        <b class="capitalize">{{ type }}!</b> {{ message }}
-      </span>
+      <div class="pt-1">
+        <i
+          :class="[
+            'text-xl',
+            type === 'success' ? 'fas fa-check-circle' :
+            type === 'info' ? 'fas fa-info-circle' :
+            'fas fa-exclamation-circle'
+          ]"
+        ></i>
+      </div>
+      <div class="flex-1">
+        <strong class="capitalize">{{ type }}</strong>: {{ message }}
+      </div>
       <button
         @click="close"
-        class="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-2 mr-4 outline-none focus:outline-none cursor-pointer"
+        class="absolute right-3 top-3 text-xl leading-none text-gray-400 hover:text-gray-600"
+        aria-label="Close"
       >
         ×
       </button>
@@ -24,13 +34,13 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 const props = defineProps({
   type: {
     type: String,
     default: 'success',
-    validator: (val) => ['success', 'error'].includes(val)
+    validator: (val) => ['success', 'info', 'error'].includes(val)
   },
   message: {
     type: String,
@@ -44,21 +54,24 @@ const visible = ref(true)
 
 const close = () => {
   visible.value = false
-  // setTimeout(() => emit('close'), 500) // Emit after fade-out
+  setTimeout(() => emit('close'), 500)
 }
 
-// onMounted(() => {
-//   // setTimeout(() => close(), 3000)
-// })
+onMounted(() => {
+  setTimeout(() => {
+    close()
+  }, 4000)
+})
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.4s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
+.fade-slide-enter-from,
+.fade-slide-leave-to {
   opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

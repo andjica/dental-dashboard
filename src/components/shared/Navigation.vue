@@ -1,12 +1,17 @@
 <template>
-  <div class="w-full mb-4">
-    <hr class="my-4 md:min-w-full" />
+  <div class="w-full mb-6">
+    <!-- Divider line (lepša) -->
+    <hr class="border-t border-gray-200 my-4 md:min-w-full" />
+
+    <!-- Section title -->
     <h3
-      class="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4"
+      class="md:min-w-full text-gray-500 text-[11px] uppercase tracking-widest font-semibold block pb-3 pl-4"
     >
       {{ title }}
     </h3>
-    <ul class="md:flex-col md:min-w-full flex flex-col list-none">
+
+    <!-- Menu items -->
+    <ul class="md:flex-col md:min-w-full flex flex-col list-none space-y-1">
       <li
         v-for="(item, index) in items"
         :key="index"
@@ -17,10 +22,10 @@
         <router-link :to="item.to" v-slot="{ isActive }">
           <div
             :class="[
-              'text-xs uppercase py-3 font-bold block transition duration-150 ease-in-out flex items-center gap-2 px-4 rounded',
+              'text-[13px] uppercase py-2 font-semibold transition duration-150 ease-in-out flex items-center gap-3 px-4 rounded-md',
               isActive
-                ? 'text-white green-custom'
-                : 'text-blueGray-700 hover-light-gray hover:text-black',
+                ? 'bg-[#C9A538] text-white shadow-sm'
+                : 'text-gray-800 hover:bg-gray-100 hover:text-black',
             ]"
             @click="() => handleClick(item)"
           >
@@ -32,6 +37,7 @@
     </ul>
   </div>
 </template>
+
 
 <script setup>
 import { inject } from "vue";

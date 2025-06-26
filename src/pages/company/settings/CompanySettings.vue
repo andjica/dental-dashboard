@@ -1,23 +1,44 @@
 <template>
+  <!-- Back Button -->
   <ButtonBack />
+
+  <!-- Loading Spinner -->
   <Loader v-if="isLoading" />
+
+  <!-- Warning if profile not completed -->
+  <div class=" mb-8 ml-3 max-w-4xl bg-white relative rounded-lg shadow-1xl overflow-y-auto">
+    <!-- Alert Message -->
+    <Alert
+      v-if="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @close="showAlert = false"
+    />
   <p
-    v-if="isFinishedProfile !== 1"
-    class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
-  >
-    ⚠️ You must finish settings before you have access to other pages!
-  </p>
+  v-if="isFinishedProfile !== 1"
+  class="mx-4 my-4 p-4 flex items-center gap-2 text-sm text-red-800 bg-red-100 border border-red-300 rounded-md shadow-md"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-700" viewBox="0 0 20 20" fill="currentColor">
+    <path
+      fill-rule="evenodd"
+      d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-9 4a1 1 0 102 0 1 1 0 00-2 0zm1-9a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z"
+      clip-rule="evenodd"
+    />
+  </svg>
+  <span>⚠️ You must complete your settings before you can access other pages.</span>
+</p>
+
+</div>
+  <!-- Main Form Container -->
   <div class="p-6 mb-8 ml-3 max-w-4xl bg-white relative rounded-lg shadow-2xl overflow-y-auto">
-      <Alert
-    v-if="showAlert"
-    :type="alertType"
-    :message="alertMessage"
-    @close="showAlert = false"
-  />
+
+
+
     <h1 class="text-2xl font-bold mb-6">Settings Company</h1>
+
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-      <!-- Company Logo -->
-       <div class="mt-4">
+      <!-- Company Logo Upload -->
+      <div class="mb-6">
         <label class="block text-sm font-medium mb-1">Image</label>
         <label
           for="mainImageInput"
@@ -25,8 +46,6 @@
         >
           Upload Company Image
         </label>
-
-        <!-- Hidden file input -->
         <input
           id="mainImageInput"
           type="file"
@@ -36,7 +55,6 @@
         />
         <div v-if="companyLogoFile" class="mt-2">
           <img
-            v-if="companyLogoFile"
             :src="companyLogoFile"
             alt="Company Logo Preview"
             class="rounded border border-gray-300"
@@ -50,117 +68,88 @@
 
       <!-- Company Name -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Company Name</label
-        >
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
         <input
           v-model="companyName"
           type="text"
           placeholder="Enter company name"
           class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
         />
-        <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">
-          {{ errors.companyName }}
-        </p>
+        <p v-if="errors.companyName" class="text-red-500 text-sm mt-1">{{ errors.companyName }}</p>
       </div>
 
       <!-- Company Email -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Company Email</label
-        >
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Email</label>
         <input
           v-model="companyEmail"
           type="email"
           placeholder="company@example.com"
           class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
         />
-        <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">
-          {{ errors.companyEmail }}
-        </p>
+        <p v-if="errors.companyEmail" class="text-red-500 text-sm mt-1">{{ errors.companyEmail }}</p>
       </div>
 
       <!-- Company Address -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Company Address</label
-        >
+        <label class="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
         <input
           v-model="companyAddress"
           type="text"
           placeholder="Enter company address"
           class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
         />
-        <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">
-          {{ errors.companyAddress }}
-        </p>
+        <p v-if="errors.companyAddress" class="text-red-500 text-sm mt-1">{{ errors.companyAddress }}</p>
       </div>
 
-      <!-- Country / City / Post Number -->
+      <!-- Country, City, Post Number -->
       <div class="flex flex-wrap -mx-2 mb-4">
+        <!-- Country -->
         <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Country</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
           <select
             v-model="selectedCountry"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           >
             <option disabled value="">Select country</option>
-            <option
-              v-for="country in countries"
-              :key="country.id"
-              :value="country.id"
-            >
+            <option v-for="country in countries" :key="country.id" :value="country.id">
               {{ country.name }}
             </option>
           </select>
-          <p v-if="errors.selectedCountry" class="text-red-500 text-sm mt-1">
-            {{ errors.selectedCountry }}
-          </p>
+          <p v-if="errors.selectedCountry" class="text-red-500 text-sm mt-1">{{ errors.selectedCountry }}</p>
         </div>
+
+        <!-- City -->
         <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >City</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
           <select
             v-model="selectedCity"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           >
             <option disabled value="">Select city</option>
-            <option
-              v-for="city in filteredCities"
-              :key="city.id"
-              :value="city.id"
-            >
+            <option v-for="city in filteredCities" :key="city.id" :value="city.id">
               {{ city.name }}
             </option>
           </select>
-          <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">
-            {{ errors.selectedCity }}
-          </p>
+          <p v-if="errors.selectedCity" class="text-red-500 text-sm mt-1">{{ errors.selectedCity }}</p>
         </div>
+
+        <!-- Post Number -->
         <div class="w-full md:w-1/3 px-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Post Number</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">Post Number</label>
           <input
             v-model="companyPost"
             type="text"
             placeholder="Enter post number"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
-          <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">
-            {{ errors.companyPost }}
-          </p>
+          <p v-if="errors.companyPost" class="text-red-500 text-sm mt-1">{{ errors.companyPost }}</p>
         </div>
       </div>
 
       <!-- Phone Number -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Phone Number</label
-        >
+        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
         <div class="flex gap-2">
           <input
             :value="`+${phoneCode}`"
@@ -176,43 +165,30 @@
             class="w-3/4 px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
         </div>
-        <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">
-          {{ errors.phoneNumber }}
-        </p>
+        <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">{{ errors.phoneNumber }}</p>
       </div>
 
       <!-- Tax and Register Number -->
       <div class="flex flex-wrap -mx-2">
         <div class="w-full md:w-1/2 px-2 mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Tax Number</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tax Number</label>
           <input
             v-model="companyTaxNumber"
             type="text"
             placeholder="Enter tax number"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
-          <p v-if="errors.companyTaxNumber" class="text-red-500 text-sm mt-1">
-            {{ errors.companyTaxNumber }}
-          </p>
+          <p v-if="errors.companyTaxNumber" class="text-red-500 text-sm mt-1">{{ errors.companyTaxNumber }}</p>
         </div>
         <div class="w-full md:w-1/2 px-2 mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Register Number</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">Register Number</label>
           <input
             v-model="companyRegisterNumber"
             type="text"
             placeholder="Enter register number"
             class="w-full px-4 py-2 bg-gray-100 rounded-md border border-gray-300"
           />
-          <p
-            v-if="errors.companyRegisterNumber"
-            class="text-red-500 text-sm mt-1"
-          >
-            {{ errors.companyRegisterNumber }}
-          </p>
+          <p v-if="errors.companyRegisterNumber" class="text-red-500 text-sm mt-1">{{ errors.companyRegisterNumber }}</p>
         </div>
       </div>
 
@@ -220,7 +196,7 @@
       <div class="text-right">
         <button
           type="submit"
-          class="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200 cursor-pointer"
+          class="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
         >
           Update
         </button>
@@ -228,6 +204,7 @@
     </form>
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from "vue";
@@ -501,15 +478,12 @@ const handleSubmit = () => {
         return;
       }
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+
 
       alertType.value = "success";
       alertMessage.value = "Company profile updated successfully!";
       showAlert.value = true;
 
-      router.push({ path: "/company/dashboard", query: { profileUpdated: "1" } });
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);

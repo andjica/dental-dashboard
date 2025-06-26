@@ -2,35 +2,49 @@
   <transition name="slide">
     <aside
       v-show="isOpen || isDesktop"
-      class="fixed top-0 left-0 z-40 w-64 h-screen overflow-y-auto bg-white shadow-xl text-black flex flex-col p-4 md:relative md:translate-x-0 transition-transform duration-300 ease-in-out"
+      class="fixed top-0 left-0 z-40 w-64 h-screen overflow-y-auto bg-white text-gray-800 shadow-2xl border-r border-gray-200 flex flex-col p-4 md:relative md:translate-x-0 transition-transform duration-300 ease-in-out"
     >
       <nav class="flex flex-col flex-grow">
         <!-- Header -->
         <div
-          class="flex justify-between items-center px-4 py-3 bg-white shadow md:shadow-none"
+          class="flex justify-between items-center px-4 py-3 border-b border-gray-200"
         >
-          <h1 class="text-left text-blueGray-600 font-bold uppercase text-sm">
-            Dental
+          <h1
+            class="text-left font-extrabold uppercase text-lg tracking-wide"
+            style="color: #C9A538;"
+          >
+            Vitelio
           </h1>
           <button
             @click="props.toggleSidebar"
-            class="md:hidden text-black focus:outline-none cursor-pointer"
+            class="md:hidden text-gray-700 hover:text-gold focus:outline-none"
           >
             <font-awesome-icon icon="xmark" />
           </button>
         </div>
 
         <!-- Navigation -->
-        <Navigation
-          v-for="(link, index) in menuLinks"
-          :key="index"
-          :title="link.title"
-          :items="link.items"
-        />
+        <div class="mt-6 space-y-1">
+          <div
+            v-for="(link, index) in menuLinks"
+            :key="index"
+            class="px-4 py-1 rounded-md transition-colors duration-200  cursor-pointer flex items-center justify-between group"
+          >
+            <Navigation
+              :title="link.title"
+              :items="link.items"
+            />
+          
+          </div>
+        </div>
       </nav>
     </aside>
   </transition>
 </template>
+
+
+
+
 
 <script setup>
 import { ref, provide, onMounted, onBeforeUnmount, computed } from "vue";
@@ -112,6 +126,7 @@ const menuLinks = computed(() => [
         to: "/company/dashboard",
         icon: "house",
         disabled: !canAccess("/company/dashboard"),
+        highlight: true, 
       },
     ],
   },

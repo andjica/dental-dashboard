@@ -8,22 +8,44 @@
 
   <Loader v-if="loading" />
 
-  <div v-else class="max-w-md mx-auto mt-32 p-6 bg-white rounded shadow-md text-center">
-    <h2>Please verify your email</h2>
-    <p>
-      We have sent a verification email to your inbox. <br />
-      You need to verify your email address before accessing the dashboard.
+  <div
+    v-else
+    class="max-w-lg mx-auto mt-28 p-10 bg-white shadow-2xl rounded-2xl border border-gray-200 text-center"
+  >
+    <div class="mb-6">
+      <svg
+        class="mx-auto h-14 w-14 text-blue-600"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M21.75 6.75l-9.75 6.75L2.25 6.75m19.5 0v10.5a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 17.25V6.75m19.5 0L12 13.5 2.25 6.75"
+        />
+      </svg>
+    </div>
+
+    <h2 class="text-2xl font-extrabold text-gray-800 mb-3">
+      Please verify your email
+    </h2>
+    <p class="text-gray-600 mb-6 leading-relaxed">
+      We've sent a confirmation link to your inbox. <br />
+      You must verify your email before continuing.
     </p>
 
     <button
       type="button"
-      class="w-full bg-blue-600 text-white py-2 rounded cursor-pointer hover:bg-blue-700 transition"
       @click="resendEmail"
+      class="inline-block w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition duration-150"
     >
-      Resend email again
+      Resend verification email
     </button>
   </div>
 </template>
+
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
