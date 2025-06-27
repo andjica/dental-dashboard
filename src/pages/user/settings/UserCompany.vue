@@ -391,12 +391,17 @@ const handleSubmit = () => {
       console.log("Ucer compnay: ", data);
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
-      user.is_finished_profile = 1;
-      isFinishedProfile.value = user.is_finished_profile;
+      isFinishedProfile.value = data.is_finished_profile;
+      localStorage.setItem("is_finished_profile", isFinishedProfile.value);
+      localStorage.setItem("user", JSON.stringify(user));
 
       alertType.value = "success";
       alertMessage.value = "User profile update successfully!";
       showAlert.value = true;
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     })
     .catch((error) => {
       console.error("Error submitting user data:", error);

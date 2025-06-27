@@ -28,7 +28,6 @@
 <!-- <template  v-if="isLoading">
   <Loader /> 
 </template>-->
-<template >
   <!-- Main Form Container -->
   <div class="p-6 mb-8 ml-3 max-w-4xl bg-white relative rounded-lg shadow-2xl overflow-y-auto">
 
@@ -145,19 +144,20 @@
         <!-- Submit Button -->
         <div class="text-right mt-6">
           <button type="submit"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200">
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200 cursor-pointer">
             Update
           </button>
         </div>
       </form>
     </div>
   </div>
-  </template>
+
 </template>
 
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { validateCompanyForm } from "@/helper/form-validation/company/company-update";
 import Alert from "@/components/shared/Alert.vue";
 import Loader from "@/components/shared/Loader.vue";
@@ -201,6 +201,8 @@ const errors = reactive({
   companyPost: "",
   phoneNumber: "",
 });
+
+const router = useRouter();
 
 const isLoading = ref(true);
 
@@ -416,10 +418,9 @@ const handleSubmit = () => {
       console.log("Company response:", data);
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
-      user.is_finished_profile = 1;
-      isFinishedProfile.value = user.is_finished_profile;
-      localStorage.setItem("user", JSON.stringify(user));
+      isFinishedProfile.value = data.is_finished_profile;
       localStorage.setItem("is_finished_profile", isFinishedProfile.value);
+      localStorage.setItem("user", JSON.stringify(user));
 
       if (!hasChange()) {
         alertType.value = "info";
@@ -431,6 +432,10 @@ const handleSubmit = () => {
       alertType.value = "success";
       alertMessage.value = "Company profile updated successfully!";
       showAlert.value = true;
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
 
     })
     .catch((error) => {

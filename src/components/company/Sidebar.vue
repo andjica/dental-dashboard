@@ -171,11 +171,13 @@ const menuLinks = computed(() => {
               label: "View Auctions",
               to: "/company/auction/view",
               icon: "eye",
+              disabled: !canAccess("/company/order/view"),
             },
             {
               label: "Create Auction",
               to: "/company/auction/create",
               icon: "plus",
+              disabled: !canAccess("/company/order/view"),
             },
           ],
         },

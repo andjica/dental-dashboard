@@ -26,7 +26,8 @@ import {
   faArrowLeft,
   faCheck,
   faX,
-  faPlus
+  faPlus,
+  faExclamationCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -52,7 +53,8 @@ library.add(
   faArrowLeft,
   faCheck,
   faX,
-  faPlus
+  faPlus,
+  faExclamationCircle  
 );
 
 const app = createApp(App);
@@ -60,6 +62,6 @@ const app = createApp(App);
 app.use(router);
 
 // Registruješ FontAwesome komponentu globalno
-app.component("font-awesome-icon", FontAwesomeIcon);
+app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.mount("#app");
