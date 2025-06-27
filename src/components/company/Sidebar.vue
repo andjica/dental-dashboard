@@ -185,19 +185,19 @@ const menuLinks = computed(() => {
           title: "Settings",
           items: [
             {
-              label: "Company",
+              label: "Company Settings",
               to: "/company/settings/company",
               icon: "gear",
               disabled: !canAccess("/company/settings/company"),
             },
             {
-              label: "Profile",
+              label: "Profile Settings",
               to: "/company/settings/profile",
               icon: "gear",
               disabled: !canAccess("/company/settings/profile"),
             },
             {
-              label: "Payment",
+              label: "Payment Settings",
               to: "/company/settings/payment",
               icon: "money-bill",
               disabled: !canAccess("/company/settings/payment"),
@@ -210,7 +210,7 @@ const menuLinks = computed(() => {
           title: "Settings",
           items: [
             {
-              label: "User",
+              label: "Complete Company Settings",
               to: "/company/settings/user",
               icon: "gear",
             },

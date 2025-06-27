@@ -185,7 +185,10 @@ import Alert from "@/components/shared/Alert.vue";
 import Loader from "@/components/shared/Loader.vue";
 import { validateUserForm } from "@/helper/form-validation/user/proflle-update";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
+import { useRouter } from "vue-router";
 
+
+const router = useRouter();
 // za alert
 const showAlert = ref(false);
 const alertType = ref("success"); // ili 'error'
@@ -392,7 +395,11 @@ const handleSubmit = () => {
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
       isFinishedProfile.value = data.is_finished_profile;
-      localStorage.setItem("is_finished_profile", isFinishedProfile.value);
+
+      if(isFinishedProfile.value == true) {
+          localStorage.setItem("is_finished_profile", 1);
+      }
+      
       localStorage.setItem("user", JSON.stringify(user));
 
       alertType.value = "success";
@@ -400,8 +407,8 @@ const handleSubmit = () => {
       showAlert.value = true;
 
       setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+        window.location.href = "/user/dashboard";
+      }, 2000);
     })
     .catch((error) => {
       console.error("Error submitting user data:", error);

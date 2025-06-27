@@ -113,15 +113,15 @@ const menuLinks = isFinishedProfile
     {
       title: "Settings",
       items: [
-        { label: "User", to: "/user/settings/user", icon: "gear", },
-        { label: "Profile", to: "/user/settings/profile", icon: "gear", },
-        { label: "Payment", to: "/user/settings/payment", icon: "money-bill", },
+        { label: "User Settings", to: "/user/settings/user", icon: "gear", },
+        { label: "Profile Settings", to: "/user/settings/profile", icon: "gear", },
+        { label: "Payment Settings", to: "/user/settings/payment", icon: "money-bill", },
       ],
     },
   ]
   : [
     {
-      title: "Settings",
+      title: "Complete User Settings",
       items: [{ label: "User", to: "/user/settings/user", icon: "gear" }],
     },
   ];

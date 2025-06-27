@@ -418,8 +418,12 @@ const handleSubmit = () => {
       console.log("Company response:", data);
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
-      isFinishedProfile.value = data.is_finished_profile;
-      localStorage.setItem("is_finished_profile", isFinishedProfile.value);
+      isFinishedProfile.value = data.data.is_finished_profile;
+
+      if(isFinishedProfile.value == true) {
+          localStorage.setItem("is_finished_profile", 1);
+      }
+
       localStorage.setItem("user", JSON.stringify(user));
 
       if (!hasChange()) {
@@ -434,8 +438,8 @@ const handleSubmit = () => {
       showAlert.value = true;
 
       setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+        window.location.href = "/company/dashboard";
+      }, 2000);
 
     })
     .catch((error) => {
