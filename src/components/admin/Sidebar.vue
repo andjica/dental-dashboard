@@ -71,12 +71,16 @@ const menuLinks = isFinishedProfile
       {
         title: "Products",
         items: [
-          { label: "All Products", to: "/admin/products", icon: "shop" },
+          { label: "Your Products", to: "/admin/products", icon: "shop" },
           {
             label: "Add Product",
             to: "/admin/products/create",
             icon: "cart-plus",
           },
+          {
+            label: "All products in system",
+            to: "/admin/all/products",
+          }
         ],
       },
       {

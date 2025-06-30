@@ -7,8 +7,10 @@
       class="mb-4"
     />
   </div>
+
   <ButtonBack />
   <Loader v-if="isLoading" />
+
   <template v-else>
     <!-- No products alert -->
     <div v-if="products.length === 0" class="px-4 mt-6 w-full">
@@ -21,8 +23,9 @@
         </span>
       </div>
     </div>
+
     <!-- Products table -->
-    <div class="px-4 mt-6 max-w-6xl">
+    <div v-if="products.length > 0" class="px-4 mt-6 max-w-6xl">
       <div class="bg-white shadow-md rounded-md overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-200">
           <h3 class="text-lg font-semibold text-gray-800">📦 Products</h3>
@@ -35,6 +38,7 @@
             <tr>
               <th class="px-4 py-3">ID</th>
               <th class="px-4 py-3">Name</th>
+               <th class="px-4 py-3">Main image</th>
               <th class="px-4 py-3">Category</th>
               <th class="px-4 py-3">Type</th>
               <th class="px-4 py-3">Price</th>
@@ -50,7 +54,7 @@
             >
               <td class="px-4 py-3">{{ product?.id }}</td>
               <td class="px-4 py-3">{{ product?.name }}</td>
-              <td class="px-4 py-3">{{ product.category?.name || "N/A" }}</td>
+              <td class="px-4 py-3">{{ product.category?.name || "N/A" }}, <br> {{ product.subCategoy?.name || "N/A" }}</td>
               <td class="px-4 py-3">{{ product.product_type }}</td>
               <td class="px-4 py-3">{{ product.base_price }}</td>
               <td class="px-4 py-3 text-center">
@@ -85,10 +89,11 @@
       </div>
     </div>
   </template>
+
   <!-- Delete Confirmation Modal -->
   <div
     v-if="showDeleteModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75 bg-gray-700"
   >
     <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
       <h2 class="text-lg font-semibold mb-4">
@@ -111,6 +116,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";

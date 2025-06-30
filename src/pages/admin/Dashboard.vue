@@ -4,15 +4,35 @@
     <Alert v-if="alert.message" :type="alert.type" :message="alert.message" @close="alert.message = ''" />
 
     <div class="p-4">
-      <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
-      <BaseCard title="Welcome" content="This is your admin dashboard." />
+    <!-- Statistic Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
+          <p class="text-sm text-gray-500 mb-1">Active Products</p>
+          <p class="text-2xl font-bold text-blue-600">142</p>
+        </div>
+        <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
+          <p class="text-sm text-gray-500 mb-1">Total Orders</p>
+          <p class="text-2xl font-bold text-green-600">87</p>
+        </div>
+        <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
+          <p class="text-sm text-gray-500 mb-1">Registered Companies</p>
+          <p class="text-2xl font-bold text-purple-600">{{ allData.length }}</p>
+        </div>
+        <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
+          <p class="text-sm text-gray-500 mb-1">Total Users - buyer od webshop</p>
+          <p class="text-2xl font-bold text-yellow-600">312</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <template v-if="allData.length === 0">
-    <p class="m-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm">
-      ⚠️ There are no companies
-    </p>
+   <div class="m-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg shadow-sm">
+      <h2 class="text-sm font-semibold text-yellow-800 mb-1">🔔 Current Notifications</h2>
+      <p class="text-sm text-yellow-700">There are no new companies at the moment.</p>
+    </div>
+
   </template>
   <template v-else>
   <div class="flex flex-col gap-4 p-4">
