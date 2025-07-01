@@ -158,7 +158,7 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { validateCompanyForm } from "@/helper/form-validation/company/company-update";
+import { validateCompanyForm } from "@/js/helper/form-validation/company/company-update";
 import Alert from "@/components/shared/Alert.vue";
 import Loader from "@/components/shared/Loader.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";

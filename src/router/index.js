@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { isAuthenticated, getUserRole, isEmailVerified } from "@/helper/auth";
+import { isAuthenticated, getUserRole, isEmailVerified } from "@/js/auth";
+import { isTokenExpired } from "@/js/helper/tokenExpired";
 import Login from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
 import EmailVerify from "@/pages/VerifyEmail.vue";
@@ -51,7 +52,7 @@ const routes = [
       {
         path: "products",
         name: "admin.products",
-        component: () => import("@/pages/admin/product/Products.vue"),
+        component: () => import("@/pages/admin/product/ProductsAdmin.vue"),
       },
       {
         path: "products/create",
@@ -62,6 +63,11 @@ const routes = [
         path: "products/:id/edit",
         name: "admin.product.edit",
         component: () => import("@/pages/admin/product/ProductEdit.vue"),
+      },
+      {
+        path: "products/:id/detail",
+        name: "admin.product.view",
+        component: () => import("@/pages/admin/product/ProductView.vue"),
       },
       {
         path: "all/products",
@@ -228,8 +234,16 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const isPublic = to.matched.some((record) => record.meta.public);
 
+  // Dodaj OVU proveru NAJVIŠE na početku
+  if (!isPublic && isTokenExpired()) {
+    window.dispatchEvent(new Event("tokenExpired"));
+    // NE pozivaš next() jer će se modal otvoriti i uraditi redirect iz App.vue
+    return; 
+  }
+
+  // Ostatak tvog koda ostaje ISTI:
   if (isPublic) {
-    return next(); // Dozvoli javne stranice
+    return next();
   }
 
   if (requiresAuth && !isAuthenticated()) {
@@ -246,23 +260,6 @@ router.beforeEach((to, from, next) => {
     !isEmailVerified() &&
     to.path !== "/verify-email"
   ) {
-    const user = localStorage.getItem("user");
-
-    fetch("http://localhost:8000/api/email/verification-notification", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ user: user }),
-    })
-      .then(() => {
-        console.log("Verification email has been resent.");
-      })
-      .catch((error) => {
-        console.error("Resend failed:", error.message);
-      });
-
     return next("/verify-email");
   }
 

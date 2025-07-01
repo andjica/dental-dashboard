@@ -183,7 +183,7 @@
 import { reactive, ref, watch, onMounted, computed } from "vue";
 import Alert from "@/components/shared/Alert.vue";
 import Loader from "@/components/shared/Loader.vue";
-import { validateUserForm } from "@/helper/form-validation/user/proflle-update";
+import { validateUserForm } from "@/js/helper/form-validation/user/proflle-update";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import { useRouter } from "vue-router";
 

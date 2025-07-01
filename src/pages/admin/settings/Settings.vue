@@ -147,7 +147,7 @@
 import Alert from "@/components/shared/Alert.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Loader from "@/components/shared/Loader.vue";
-import { validateCompanyForm } from "@/helper/form-validation/company/company-update";
+import { validateCompanyForm } from "@/js/form-validation/company/company-update";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 

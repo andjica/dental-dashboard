@@ -3,24 +3,34 @@
   <Loader v-if="isLoading" />
 
   <template v-else>
-    <div class="px-4 mt-6 max-w-6xl">
+    <div v-if="products.length === 0" class="px-4 mt-6 w-full">
+      <div
+        class="bg-red-100 border border-red-300 text-red-800 rounded-md shadow p-4 flex items-center gap-3"
+      >
+        <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
+        <span class="text-sm font-medium">
+          ⚠️ You currently have no products.
+        </span>
+      </div>
+    </div>
+    <div v-else class="px-4 mt-6 max-w-6xl">
       <div class="bg-white shadow-md rounded-md overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-200">
           <h3 class="text-lg font-semibold text-gray-800">📦 All Products</h3>
         </div>
-        <!-- <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+        <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
           <thead
             class="bg-gray-100 text-gray-600 uppercase text-xs font-semibold"
           >
             <tr>
               <th class="px-4 py-3">ID</th>
               <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Main image</th>
+              <th class="px-4 py-3">Image</th>
               <th class="px-4 py-3">Category</th>
-              <th class="px-4 py-3">Type</th>
+              <th class="px-4 py-3">Product Type</th>
               <th class="px-4 py-3">Price</th>
-              <th class="px-4 py-3 text-center">Active</th>
-              <th class="px-4 py-3 text-right">Actions</th>
+              <th class="px-4 py-3">Active</th>
+              <th class="px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 text-gray-800">
@@ -31,9 +41,10 @@
             >
               <td class="px-4 py-3">{{ product?.id }}</td>
               <td class="px-4 py-3">{{ product?.name }}</td>
+              <td class="px-4 py-3"><img :src="getImageUrl(product?.primary_image.image_url)" :alt="product.name" class="w-16 h-16 object-cover rounded-md border border-gray-200" /></td>
               <td class="px-4 py-3">
                 {{ product.category?.name || "N/A" }}, <br />
-                {{ product.subCategoy?.name || "N/A" }}
+                {{ product.sub_category?.name || "N/A" }}
               </td>
               <td class="px-4 py-3">{{ product.product_type }}</td>
               <td class="px-4 py-3">{{ product.base_price }}</td>
@@ -51,12 +62,6 @@
                   <font-awesome-icon icon="eye" />
                 </button>
                 <button
-                  @click="handleEdit(product)"
-                  class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
-                >
-                  <font-awesome-icon icon="pen-to-square" />
-                </button>
-                <button
                   @click="openDeleteModal(product)"
                   class="text-red-500 hover:text-red-700 cursor-pointer"
                 >
@@ -65,49 +70,85 @@
               </td>
             </tr>
           </tbody>
-        </table> -->
+        </table>
       </div>
     </div>
   </template>
-  <h1>TEST</h1>
+  <!-- Delete Confirmation Modal -->
+  <div
+    v-if="showDeleteModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75"
+  >
+    <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+      <h2 class="text-lg font-semibold mb-4">
+        Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong> (ID: {{ productToDelete?.id }})?
+      </h2>
+      <div class="flex justify-end space-x-4">
+        <button
+          @click="showDeleteModal = false"
+          class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          @click="confirmDelete"
+          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
+import Loader from "@/components/shared/Loader.vue";
 import { onMounted, ref } from "vue";
+import { get } from "@/js/helper/api.js";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const products = ref([]);
 const isLoading = ref(true);
+const showDeleteModal = ref(false);
+const productToDelete = ref(null);
+
+const fetchAllProducts = async () => {
+  isLoading.value = true;
+  try {
+    const response = await get("products"); // 👈 koristi get iz api.js
+    products.value = response.data;
+    console.log(products.value);
+  } catch (err) {
+    console.error("Error fetching products:", err.message);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const openDeleteModal = (product) => {
+  productToDelete.value = product;
+  showDeleteModal.value = true;
+};
+
+const getImageUrl = (path) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("storage")) {
+    return `http://localhost:8000/${path}`;
+  }
+  return `http://localhost:8000/storage/${path}`;
+};
+
+const handleView = (product) => {
+  router.push({ name: 'admin.product.view', params: { id: product.id } });
+};
 
 onMounted(async () => {
     isLoading.values = true;
     await fetchAllProducts();
 })
 
-const fetchAllProducts = () => {
-  const token = localStorage.getItem("token");
-
-  fetch(`http://localhost:8000/api/products`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Something is wrong!");
-      }
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Products data: ", data.data);
-      products.value = data.data;
-      isLoading.value = false;
-    })
-    .catch((err) => {
-      console.log("Error throw fetching products: ", err);
-    });
-};
 </script>

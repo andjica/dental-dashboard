@@ -54,10 +54,15 @@
             >
               <td class="px-4 py-3">{{ product?.id }}</td>
               <td class="px-4 py-3">{{ product?.name }}</td>
-              <td class="px-4 py-3">{{ product.category?.name || "N/A" }}, <br> {{ product.subCategoy?.name || "N/A" }}</td>
+              <td class="px-4 py-3">
+                <img :src="getImageUrl(product?.primary_image.image_url)" :alt="product.name" class="w-16 h-16 object-cover rounded-md border border-gray-200" />
+              </td>
+              <td class="px-4 py-3">{{ product.category?.name || "N/A" }}, <br> {{ product.sub_category?.name || "N/A" }}</td>
               <td class="px-4 py-3">{{ product.product_type }}</td>
-              <td class="px-4 py-3">{{ product.base_price }}</td>
               <td class="px-4 py-3 text-center">
+                {{ product.base_price }}
+              </td>
+              <td class="px-4 py-3">
                 <span
                   :class="product.in_stock ? 'bg-green-500' : 'bg-orange-400'"
                   class="inline-block w-3 h-3 rounded-full"
@@ -93,11 +98,11 @@
   <!-- Delete Confirmation Modal -->
   <div
     v-if="showDeleteModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75 bg-gray-700"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75"
   >
     <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
       <h2 class="text-lg font-semibold mb-4">
-        Are you sure you want to delete it?
+        Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong> (ID: {{ productToDelete?.id }})?
       </h2>
       <div class="flex justify-end space-x-4">
         <button
@@ -148,8 +153,7 @@ onMounted(async () => {
 });
 
 const handleView = (product) => {
-  console.log("View product", product);
-  // router.push({ name: "product.view", params: { id: product.id } });
+  router.push({ name: 'admin.product.view', params: { id: product.id } });
 };
 
 const handleEdit = (product) => {
@@ -160,6 +164,15 @@ const handleEdit = (product) => {
 const openDeleteModal = (product) => {
   productToDelete.value = product;
   showDeleteModal.value = true;
+};
+
+const getImageUrl = (path) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("storage")) {
+    return `http://localhost:8000/${path}`;
+  }
+  return `http://localhost:8000/storage/${path}`;
 };
 
 const fetchProducts = () => {

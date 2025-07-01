@@ -50,7 +50,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getUserRole } from "@/helper/auth";
+import { getUserRole } from "@/js/auth";
 import Alert from "@/components/shared/Alert.vue";
 import Loader from "@/components/shared/Loader.vue";
 

@@ -83,7 +83,7 @@
 <script setup>
 import Alert from "@/components/shared/Alert.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
-import { validationAuctionForm } from "@/helper/form-validation/auction/auction-create.js";
+import { validationAuctionForm } from "@/js/form-validation/auction/auction-create.js";
 import { ref } from "vue";
 
 // Form state
