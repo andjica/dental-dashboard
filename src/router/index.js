@@ -64,6 +64,11 @@ const routes = [
         component: () => import("@/pages/admin/product/ProductEdit.vue"),
       },
       {
+        path: "all/products",
+        name: "admin.all.products",
+        component: () => import("@/pages/admin/product/ProductsAll.vue"),
+      },
+      {
         path: "auction/create",
         name: "admin.auction.create",
         component: () => import("@/pages/admin/auction/AuctionCreate.vue"),

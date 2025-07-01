@@ -80,6 +80,7 @@ const menuLinks = isFinishedProfile
           {
             label: "All products in system",
             to: "/admin/all/products",
+            icon: "eye"
           }
         ],
       },
