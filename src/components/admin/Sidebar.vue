@@ -93,13 +93,14 @@ const menuLinks = isFinishedProfile
       },
       {
         title: "Orders",
-        items: [{ label: "View Orders", to: "/admin/order/view", icon: "eye" }],
+        items: [{ label: "View Orders", to: "/admin/orders", icon: "eye" }],
       },
       {
         title: "Auctions",
         items:[
-          {label: "View Auctions", to: "/admin/auction/view", icon: "eye"},
-          {label: "Create Auction", to: "/admin/auction/create", icon: "plus"}
+          {label: "All auctions in system", to: "/admin/all/auctions", icon: "eye"},
+          {label: "Your auctions", to: "/admin/auctions", icon: "eye"},
+          {label: "Create Auction", to: "/admin/auction/create", icon: "plus"},
         ]
       },
       {

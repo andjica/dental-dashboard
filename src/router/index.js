@@ -80,13 +80,23 @@ const routes = [
         component: () => import("@/pages/admin/auction/AuctionCreate.vue"),
       },
       {
-        path: "auction/view",
-        name: "admin.auction.view",
-        component: () => import("@/pages/admin/auction/AuctionsView.vue"),
+        path: "all/auctions",
+        name: "admin.auctions",
+        component: () => import("@/pages/admin/auction/AuctionsAll.vue"),
       },
       {
-        path: "order/view",
-        name: "admin.order.view",
+        path: "auctions",
+        name: "admin.your.auctions",
+        component: () => import("@/pages/admin/auction/AuctionsAdmin.vue"),
+      },
+      {
+        path: "auction/:id/edit",
+        name: "admin.auction.edit",
+        component: () => import("@/pages/admin/auction/AuctionEdit.vue"),
+      },
+      {
+        path: "orders",
+        name: "admin.orders",
         component: () => import("@/pages/admin/order/OrderView.vue"),
       },
       {

@@ -1,17 +1,24 @@
 const API = (url, method = "GET", body = null) => {
   const token = localStorage.getItem("token");
 
+  const headers = {
+    Accept: "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
   const options = {
     method,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
   };
 
   if (body) {
-    options.body = JSON.stringify(body);
+    if (body instanceof FormData) {
+      // Ne dodaj Content-Type, browser će sam dodati multipart/form-data sa boundary
+      options.body = body;
+    } else {
+      headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(body);
+    }
   }
 
   return fetch(`http://localhost:8000/api/${url}`, options).then(async (res) => {
@@ -28,6 +35,7 @@ const API = (url, method = "GET", body = null) => {
     return res.json();
   });
 };
+
 
 export const get = (url) => API(url, "GET");
 export const post = (url, body) => API(url, "POST", body);

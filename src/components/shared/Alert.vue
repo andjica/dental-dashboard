@@ -3,7 +3,7 @@
     <div
       v-show="visible"
       :class="[
-        'flex items-start gap-4 px-6 py-4 rounded-lg shadow-lg border text-sm font-medium relative',
+        'flex items-start gap-4 px-6 py-4 rounded-lg shadow-lg border text-sm font-medium sticky top-0',
         type === 'success' ? 'bg-green-50 text-green-800 border-green-200' :
         type === 'info' ? 'bg-yellow-50 text-yellow-800 border-yellow-200' :
         'bg-red-50 text-red-800 border-red-200'

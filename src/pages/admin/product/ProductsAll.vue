@@ -41,7 +41,13 @@
             >
               <td class="px-4 py-3">{{ product?.id }}</td>
               <td class="px-4 py-3">{{ product?.name }}</td>
-              <td class="px-4 py-3"><img :src="getImageUrl(product?.primary_image.image_url)" :alt="product.name" class="w-16 h-16 object-cover rounded-md border border-gray-200" /></td>
+              <td class="px-4 py-3">
+                <img
+                  :src="getImageUrl(product?.primary_image.image_url)"
+                  :alt="product.name"
+                  class="w-16 h-16 object-cover rounded-md border border-gray-200"
+                />
+              </td>
               <td class="px-4 py-3">
                 {{ product.category?.name || "N/A" }}, <br />
                 {{ product.sub_category?.name || "N/A" }}
@@ -81,7 +87,9 @@
   >
     <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
       <h2 class="text-lg font-semibold mb-4">
-        Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong> (ID: {{ productToDelete?.id }})?
+        Are you sure you want to delete
+        <strong>{{ productToDelete?.name }}</strong> (ID:
+        {{ productToDelete?.id }})?
       </h2>
       <div class="flex justify-end space-x-4">
         <button
@@ -107,6 +115,7 @@ import Loader from "@/components/shared/Loader.vue";
 import { onMounted, ref } from "vue";
 import { get } from "@/js/helper/api.js";
 import { useRouter } from "vue-router";
+import { getImageUrl } from "@/js/helper/displayImage";
 
 const router = useRouter();
 
@@ -133,22 +142,12 @@ const openDeleteModal = (product) => {
   showDeleteModal.value = true;
 };
 
-const getImageUrl = (path) => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("storage")) {
-    return `http://localhost:8000/${path}`;
-  }
-  return `http://localhost:8000/storage/${path}`;
-};
-
 const handleView = (product) => {
-  router.push({ name: 'admin.product.view', params: { id: product.id } });
+  router.push({ name: "admin.product.view", params: { id: product.id } });
 };
 
 onMounted(async () => {
-    isLoading.values = true;
-    await fetchAllProducts();
-})
-
+  isLoading.values = true;
+  await fetchAllProducts();
+});
 </script>
