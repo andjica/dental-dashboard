@@ -226,6 +226,11 @@ const routes = [
         component: () => import("@/pages/user/auction/AuctionsView.vue"),
       },
       {
+        path: "auction/:id/edit",
+        name: "user.auction.edit",
+        component: () => import("@/pages/user/auction/AuctionEdit.vue"),
+      },
+      {
         path: "order/view",
         name: "user.order.view",
         component: () => import("@/pages/user/order/OrderView.vue"),

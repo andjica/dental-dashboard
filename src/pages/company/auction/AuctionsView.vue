@@ -1,6 +1,7 @@
 <template>
   <ButtonBack />
   <Loader v-if="isLoading" />
+
   <template v-else>
     <div v-if="auctions.length === 0" class="px-4 mt-6 w-full">
       <div
@@ -25,8 +26,11 @@
           >
             <tr>
               <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">Image</th>
               <th class="px-4 py-3">Price (€)</th>
               <th class="px-4 py-3">Date</th>
+              <th class="px-4 py-3">Number of reaction</th>
+              <th class="px-4 py-3">Max Price</th>
               <th class="px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
@@ -36,20 +40,28 @@
               :key="index"
               class="hover:bg-gray-50 transition"
             >
-              <td class="px-4 py-3 font-medium">{{ auction.auctionName }}</td>
-              <td class="px-4 py-3">€{{ auction.auctionPrice }}</td>
-              <td class="px-4 py-3">{{ formatDate(auction.auctionDate) }}</td>
+              <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
+              <td class="px-4 py-3">
+                <img
+                  :src="getImageUrl(auction?.images[0]?.image_url)"
+                  :alt="auction.name"
+                  class="w-16 h-16 object-cover rounded-md border border-gray-200"
+                />
+              </td>
+              <td class="px-4 py-3">€{{ auction.base_price }}</td>
+              <td class="px-4 py-3">{{ formatDate(auction.auction_date) }}</td>
+              <td class="px-4 py-3">Number of reaction</td>
+              <td class="px-4 py-3">Max Price</td>
               <td class="px-4 py-3 text-center space-x-3">
                 <button
-                  @click="viewAuction(index)"
-                  class="text-blue-500 hover:text-blue-700 cursor-pointer"
-                  aria-label="View auction"
-                  title="View Auction"
+                  @click="handleEditAuction(auction)"
+                  class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
+                  title="Edit Auction"
                 >
-                  <font-awesome-icon icon="eye" />
+                  <font-awesome-icon icon="pen-to-square" />
                 </button>
                 <button
-                  @click="deleteAuction(index)"
+                  @click="deleteAuction(auction)"
                   class="text-red-500 hover:text-red-700 cursor-pointer"
                   aria-label="Delete auction"
                   title="Delete Auction"
@@ -63,23 +75,30 @@
       </div>
     </div>
   </template>
+  <ModalAction
+    :showDeleteModal="showDeleteModal"
+    :auctionToDelete="auctionToDelete"
+    @close="showDeleteModal = false"
+    @confirmDelete="confirmDelete"
+  />
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { getImageUrl } from "@/js/helper/displayImage";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Loader from "@/components/shared/Loader.vue";
+import ModalAction from "@/modal/ModalAction.vue";
+import { get, remove } from "@/js/helper/api.js";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const auctions = ref([]);
 const isLoading = ref(true);
-// Fetch auctions from localStorage
-onMounted(() => {
-  isLoading.value = true;
-  const saved = JSON.parse(localStorage.getItem("auctions")) || [];
-  auctions.value = saved;
-  isLoading.value = false;
-});
 
+const user = JSON.parse(localStorage.getItem("user"));
+const showDeleteModal = ref(false);
+const auctionToDelete = ref(null);
 
 // Format date
 const formatDate = (dateString) => {
@@ -87,21 +106,47 @@ const formatDate = (dateString) => {
   return date.toLocaleString();
 };
 
-// View auction (for example: show alert or navigate)
-const viewAuction = (index) => {
-  const auction = auctions.value[index];
-  alert(
-    `Auction:\nName: ${auction.auctionName}\nPrice: €${
-      auction.auctionPrice
-    }\nDate: ${formatDate(auction.auctionDate)}`
-  );
-};
-
-// Delete auction
-const deleteAuction = (index) => {
-  if (confirm("Are you sure you want to delete this auction?")) {
-    auctions.value.splice(index, 1);
-    localStorage.setItem("auctions", JSON.stringify(auctions.value));
+const fetchYourAuctions = async () => {
+  isLoading.value = true;
+  try {
+    const response = await get(`auctions/${user.id}`);
+    auctions.value = response.data;
+    console.log("Tvoje auction", auctions.value);
+  } catch (err) {
+    console.error("Error fetching products:", err.message);
+  } finally {
+    isLoading.value = false;
   }
 };
+
+const handleEditAuction = (auction) => {
+  console.log("Edit auction", auction);
+router.push({ name: "admin.auction.edit", params: { id: auction.id } });
+}
+
+const deleteAuction = (auction) => {
+  auctionToDelete.value = auction;
+  showDeleteModal.value = true;
+};
+// Delete auction
+const confirmDelete = async () => {
+  if (!auctionToDelete.value) return;
+
+  try {
+    await remove(`auctions/${auctionToDelete.value.id}`);
+    // Ukloni iz lokalnog state-a
+    auctions.value = auctions.value.filter(
+      (a) => a.id !== auctionToDelete.value.id
+    );
+    showDeleteModal.value = false;
+    auctionToDelete.value = null;
+  } catch (err) {
+    console.error("Error deleting auction:", err.message);
+  }
+};
+
+onMounted(async () => {
+  isLoading.value = true;
+  await fetchYourAuctions();
+});
 </script>

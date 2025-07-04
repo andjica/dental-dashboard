@@ -312,11 +312,9 @@ const handleSubmit = async () => {
   fd.append("base_price", form.value.auctionPrice);
   fd.append("auction_date", form.value.auctionDate);
 
-  if (form.value.auctionMainImage && typeof form.value.auctionMainImage !== "string") {
-  // Znači da je to novi fajl, ne stari image_url
+  if (form.value.auctionMainImage) {
     fd.append("image_main", form.value.auctionMainImage);
   }
-
 
   form.value.auctionImages.forEach((f) => fd.append("images[]", f));
   serverGalleryImages.value.forEach((id) => fd.append("existing_images[]", id));
@@ -327,7 +325,7 @@ const handleSubmit = async () => {
     alertMessage.value = "Auction updated successfully!";
     showAlert.value = true;
     sessionStorage.setItem("auctionCreatedMessage", alertMessage.value);
-    // router.push({ name: "admin.auctions.view" });
+    // router.push({ name: "user.auctions.view" });
   } catch (err) {
     alertType.value = "error";
     alertMessage.value = "Failed to update auction.";

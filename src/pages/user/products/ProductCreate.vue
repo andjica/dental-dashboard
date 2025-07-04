@@ -276,7 +276,7 @@ import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
-import { validateProductForm } from "@/js/helper/form-validation/product/product-create";
+import { validateProductForm } from "@/js/form-validation/product/product-create";
 
 const router = useRouter();
 const editor = ref(null);
