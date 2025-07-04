@@ -8,7 +8,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
           <p class="text-sm text-gray-500 mb-1">Active Products</p>
-          <p class="text-2xl font-bold text-blue-600">142</p>
+          <p class="text-2xl font-bold text-blue-600">{{ activeCompanies }}</p>
         </div>
         <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
           <p class="text-sm text-gray-500 mb-1">Total Orders</p>
@@ -16,11 +16,11 @@
         </div>
         <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
           <p class="text-sm text-gray-500 mb-1">Registered Companies</p>
-          <p class="text-2xl font-bold text-purple-600">{{ allData.length }}</p>
+          <p class="text-2xl font-bold text-purple-600">{{ registerConmpany }}</p>
         </div>
         <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
           <p class="text-sm text-gray-500 mb-1">Total Users - buyer od webshop</p>
-          <p class="text-2xl font-bold text-yellow-600">312</p>
+          <p class="text-2xl font-bold text-yellow-600">{{ totalUsers  }}</p>
         </div>
       </div>
 
@@ -83,12 +83,14 @@ import { onMounted, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 import BaseCard from "@/components/shared/BaseCard.vue";
+import { get } from "@/js/helper/api";
 
 const route = useRoute();
 const showSuccessMessage = ref(false);
-const token = localStorage.getItem("token");
 const allData = ref([]);
-const activeCompanies = ref([]);
+const activeCompanies = ref(0);
+const registerConmpany = ref(0);
+const totalUsers = ref(0);
 
 const alert = reactive({
   type: "",
@@ -97,6 +99,10 @@ const alert = reactive({
 
 onMounted(() => {
   fetchAll();
+  fetchActiceProducts();
+  fetchRegisteredCompanies();
+  fetchTotalBuyers();
+
   if (route.query.profileUpdated === "1") {
     showSuccessMessage.value = true;
     alert.type = "success";
@@ -108,48 +114,23 @@ onMounted(() => {
 });
 
 const fetchAll = () => {
-  fetch("http://localhost:8000/api/admin/inactive/companies", {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
+  get("admin/inactive/companies")
     .then((data) => {
-      console.log("Companies list ", data);
       allData.value = data.data.map(item => ({
         ...item,
-        status: "", // Dodajemo inicijalni status
+        status: "",
       }));
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
 };
 
 
+
 const activeCompany = (companyId) => {
-  fetch(`http://localhost:8000/api/admin/activate/company/${companyId}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
+  get(`admin/activate/company/${companyId}`)
     .then((data) => {
-      console.log("JONE: ",data);
       const company = allData.value.find((item) => item.id === companyId);
       if (company) {
         company.status = "active";
@@ -165,20 +146,9 @@ const activeCompany = (companyId) => {
     });
 };
 
+
 const removeCompany = (companyId) => {
-  fetch(`http://localhost:8000/api/admin/delete/${companyId}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
+  get(`admin/delete/${companyId}`)
     .then(() => {
       const company = allData.value.find((item) => item.id === companyId);
       if (company) {
@@ -194,6 +164,40 @@ const removeCompany = (companyId) => {
       console.error(error);
     });
 };
+
+
+const fetchActiceProducts = () => {
+  get("admin/active-products")
+    .then((data) => {
+      activeCompanies.value = data.count;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+
+const fetchRegisteredCompanies = () => {
+  get("admin/registered-companies")
+    .then((data) => {
+      registerConmpany.value = data.count;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+
+const fetchTotalBuyers = () => {
+  get("admin/total-buyers")
+    .then((data) => {
+      totalUsers.value = data.count;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
 
 
 </script>

@@ -99,7 +99,7 @@
           Cancel
         </button>
         <button
-          @click="confirmDelete"
+          @click="confirmDelete(productToDelete?.id)"
           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
         >
           Delete
@@ -113,7 +113,7 @@
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Loader from "@/components/shared/Loader.vue";
 import { onMounted, ref } from "vue";
-import { get } from "@/js/helper/api.js";
+import { get, remove } from "@/js/helper/api.js";
 import { useRouter } from "vue-router";
 import { getImageUrl } from "@/js/helper/displayImage";
 
@@ -123,6 +123,11 @@ const products = ref([]);
 const isLoading = ref(true);
 const showDeleteModal = ref(false);
 const productToDelete = ref(null);
+
+onMounted(async () => {
+  isLoading.values = true;
+  await fetchAllProducts();
+});
 
 const fetchAllProducts = async () => {
   isLoading.value = true;
@@ -146,8 +151,22 @@ const handleView = (product) => {
   router.push({ name: "admin.product.view", params: { id: product.id } });
 };
 
-onMounted(async () => {
-  isLoading.values = true;
-  await fetchAllProducts();
-});
+const confirmDelete = async (productId) => {
+  try {
+    await remove(`products/${productId}`);
+
+    // Ukloni proizvod iz liste
+    products.value = products.value.filter((p) => p.id !== productId);
+
+    showDeleteModal.value = false;
+    showSuccessAlert.value = true;
+
+    // (Opcionalno) sakrij alert posle par sekundi
+    setTimeout(() => {
+      showSuccessAlert.value = false;
+    }, 3000);
+  } catch (error) {
+    console.error("Greška prilikom brisanja proizvoda:", error);
+  }
+};
 </script>

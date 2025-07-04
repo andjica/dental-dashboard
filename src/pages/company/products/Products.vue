@@ -15,7 +15,7 @@
       </div>
     </div>
     <!-- Products table -->
-    <div class="px-4 mt-6 max-w-6xl">
+    <div v-else class="px-4 mt-6 max-w-6xl">
       <div class="bg-white shadow-md rounded-md overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-200">
           <h3 class="text-lg font-semibold text-gray-800">📦 Products</h3>

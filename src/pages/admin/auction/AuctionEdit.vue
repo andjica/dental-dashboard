@@ -300,7 +300,7 @@ const handleSubmit = async () => {
   const { isValid, errors: v } = validationAuctionForm({
     ...form.value,
     serverHasMainImage: serverHasMainImage.value,
-    serverHasGalleryImages: serverHasGalleryImages.value,
+    existingGalleryCount: serverGalleryImages.value.length,
   });
 
   errors.value = v;
@@ -312,11 +312,13 @@ const handleSubmit = async () => {
   fd.append("base_price", form.value.auctionPrice);
   fd.append("auction_date", form.value.auctionDate);
 
-  if (form.value.auctionMainImage && typeof form.value.auctionMainImage !== "string") {
-  // Znači da je to novi fajl, ne stari image_url
+  if (
+    form.value.auctionMainImage &&
+    typeof form.value.auctionMainImage !== "string"
+  ) {
+    // Znači da je to novi fajl, ne stari image_url
     fd.append("image_main", form.value.auctionMainImage);
   }
-
 
   form.value.auctionImages.forEach((f) => fd.append("images[]", f));
   serverGalleryImages.value.forEach((id) => fd.append("existing_images[]", id));

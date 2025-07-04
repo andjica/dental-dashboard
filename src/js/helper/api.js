@@ -13,7 +13,6 @@ const API = (url, method = "GET", body = null) => {
 
   if (body) {
     if (body instanceof FormData) {
-      // Ne dodaj Content-Type, browser će sam dodati multipart/form-data sa boundary
       options.body = body;
     } else {
       headers["Content-Type"] = "application/json";
@@ -32,10 +31,16 @@ const API = (url, method = "GET", body = null) => {
       throw new Error(err.message || `Failed to fetch ${url}`);
     }
 
+    const contentLength = res.headers.get("Content-Length");
+    const contentType = res.headers.get("Content-Type");
+
+    if (res.status === 204 || contentLength === "0" || !contentType) {
+      return null;
+    }
+
     return res.json();
   });
 };
-
 
 export const get = (url) => API(url, "GET");
 export const post = (url, body) => API(url, "POST", body);

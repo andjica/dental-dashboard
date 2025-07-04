@@ -1,6 +1,8 @@
-export function validationAuctionForm(data) {
+export function validationAuctionForm(data, mode = "create") {
   const errors = {};
   let isValid = true;
+
+  const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
 
   // Name
   if (!data.auctionName) {
@@ -9,8 +11,6 @@ export function validationAuctionForm(data) {
   }
 
   // Main Image
-  const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
-
   if (!data.auctionMainImage && !data.serverHasMainImage) {
     errors.auctionMainImage = "Main image is required.";
     isValid = false;
@@ -42,7 +42,6 @@ export function validationAuctionForm(data) {
     const now = new Date();
     const auctionDate = new Date(data.auctionDate);
     const diffInHours = (auctionDate - now) / (1000 * 60 * 60);
-
     if (diffInHours < 24) {
       errors.auctionDate = "Auction date must be at least 24 hours from now.";
       isValid = false;
@@ -50,15 +49,15 @@ export function validationAuctionForm(data) {
   }
 
   // Gallery Images
-  const hasUploadedImages = data.auctionImages && Array.isArray(data.auctionImages) && data.auctionImages.length > 0;
+  const hasUploadedImages = Array.isArray(data.auctionImages) && data.auctionImages.length > 0;
+  const totalImages = (data.existingGalleryCount || 0) + (hasUploadedImages ? data.auctionImages.length : 0);
 
-  if (!hasUploadedImages && !data.serverHasGalleryImages) {
-    errors.auctionImages = "You must select more than 2 images for the auction.";
+  if (totalImages < 2) {
+    errors.auctionImages = "You must have at least 2 images in the gallery.";
     isValid = false;
-  } else if (hasUploadedImages && data.auctionImages.length <= 1) {
-    errors.auctionImages = "You must select more than 2 images for the auction.";
-    isValid = false;
-  } else if (hasUploadedImages) {
+  }
+
+  if (hasUploadedImages) {
     for (let i = 0; i < data.auctionImages.length; i++) {
       const file = data.auctionImages[i];
       if (file.size > maxSizeInBytes) {

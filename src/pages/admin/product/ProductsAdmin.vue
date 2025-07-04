@@ -25,7 +25,7 @@
     </div>
 
     <!-- Products table -->
-    <div v-if="products.length > 0" class="px-4 mt-6 max-w-6xl">
+    <div v-else class="px-4 mt-6 max-w-6xl">
       <div class="bg-white shadow-md rounded-md overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-200">
           <h3 class="text-lg font-semibold text-gray-800">📦 Products</h3>
@@ -112,7 +112,7 @@
           Cancel
         </button>
         <button
-          @click="confirmDelete"
+          @click="confirmDelete(productToDelete.id)"
           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
         >
           Delete
@@ -129,6 +129,8 @@ import Loader from "@/components/shared/Loader.vue";
 import Alert from "@/components/shared/Alert.vue";
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { getImageUrl } from "@/js/helper/displayImage";
+import { get, remove } from "@/js/helper/api";
 
 const products = ref([]);
 const user = JSON.parse(localStorage.getItem("user"));
@@ -157,7 +159,6 @@ const handleView = (product) => {
 };
 
 const handleEdit = (product) => {
-  console.log("Edit product", product);
   router.push({ name: "admin.product.edit", params: { id: product.id } });
 };
 
@@ -166,65 +167,35 @@ const openDeleteModal = (product) => {
   showDeleteModal.value = true;
 };
 
-const getImageUrl = (path) => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("storage")) {
-    return `http://localhost:8000/${path}`;
-  }
-  return `http://localhost:8000/storage/${path}`;
-};
-
-const fetchProducts = () => {
+const fetchProducts = async () => {
   const userId = user.id;
-  const token = localStorage.getItem("token");
-
-  fetch(`http://localhost:8000/api/products/${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Something is wrong!");
-      }
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Products data: ", data.data);
-      products.value = data.data;
-      isLoading.value = false;
-    })
-    .catch((err) => {
-      console.log("Error throw fetching products: ", err);
-    });
+  try {
+    const data = await get(`products/${userId}`);
+    products.value = data.data;
+  } catch (err) {
+    console.error("Greška pri fetchovanju proizvoda:", err);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-const confirmDelete = () => {
-  const token = localStorage.getItem("token");
+const confirmDelete = async (productId) => {
+  try {
+    await remove(`products/${productId}`);
 
-  // fetch(`http://localhost:8000/api/products/${userId}`, {
-  //   method: "DELETE",
-  //   headers: {
-  //     Accept: "application/json",
-  //     Authorization: `Bearer ${token}`,
-  //   },
-  // })
-  //   .then((res) => {
-  //     if (!res.ok) throw new Error("Failed to delete product");
-  //     return res.json();
-  //   })
-  //   .then((data) => {
-  //     console.log("Deleted:", data);
-  //     // Emit event or reload list
-  //         showDeleteModal.value = false;
-  //     showDeleteModal.value = false;
-  //   })
-  //   .catch((err) => {
-  //     console.error("Error deleting:", err);
-  //   });
+    // Ukloni proizvod iz liste
+    products.value = products.value.filter((p) => p.id !== productId);
+
+    showDeleteModal.value = false;
+    showSuccessAlert.value = true;
+
+    // (Opcionalno) sakrij alert posle par sekundi
+    setTimeout(() => {
+      showSuccessAlert.value = false;
+    }, 3000);
+  } catch (error) {
+    console.error("Error deleting product:", error);
+  }
 };
+
 </script>
