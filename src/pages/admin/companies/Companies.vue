@@ -16,46 +16,58 @@
 
       <template v-else>
         <h1 class="text-2xl font-bold mb-4">List of companies</h1>
-        <TableCustome :data="companyData" />
+        <TableCustome
+          :data="paginatedAuctions"
+          title="Companies"
+          icon="building"
+        />
+        <Pagination
+          :page="page"
+          :totalPages="totalPages"
+          @update:page="page = $event"
+        />
       </template>
     </template>
   </div>
 </template>
 
-
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import TableCustome from "@/components/admin/TableCustome.vue";
 import Loader from "@/components/shared/Loader.vue";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { get } from "@/js/helper/api.js";
+import Pagination from "@/components/shared/Pagination.vue";
 
 const companyData = ref([]);
 const isLoading = ref(true);
-const token = localStorage.getItem("token");
 
-const fetchCompanies = () => {
-  fetch("http://localhost:8000/api/admin/companies", {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      companyData.value = data.data;
-    })
-    .catch((error) => {
-      console.log(error);
-    }).finally(() => {
-      isLoading.value = false;
-    });
+const page = ref(1);
+const perPage = 12;
+
+onMounted(async () => {
+  isLoading.values = true;
+  await fetchCompanies();
+});
+
+const fetchCompanies = async () => {
+  isLoading.value = true;
+  try {
+    const response = await get("admin/companies");
+    companyData.value = response.data;
+  } catch (err) {
+    console.error("Error fetching users:", err.message);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-fetchCompanies();
+const paginatedAuctions = computed(() => {
+  const start = (page.value - 1) * perPage;
+  return companyData.value.slice(start, start + perPage);
+});
+
+const totalPages = computed(() =>
+  Math.ceil(companyData.value.length / perPage)
+);
 </script>

@@ -20,62 +20,69 @@
           <h3 class="text-lg font-semibold text-gray-800">📦 Auctions</h3>
         </div>
 
-        <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
-          <thead
-            class="bg-gray-100 text-gray-600 uppercase text-xs font-semibold"
-          >
-            <tr>
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Image</th>
-              <th class="px-4 py-3">Price (€)</th>
-              <th class="px-4 py-3">Date</th>
-              <th class="px-4 py-3">Number of reaction</th>
-              <th class="px-4 py-3">Max Price</th>
-              <th class="px-4 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 text-gray-800">
-            <tr
-              v-for="(auction, index) in auctions"
-              :key="index"
-              class="hover:bg-gray-50 transition"
-            >
-              <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
-              <td class="px-4 py-3">
-                <img
-                  :src="getImageUrl(auction?.images[0]?.image_url)"
-                  :alt="auction.name"
-                  class="w-16 h-16 object-cover rounded-md border border-gray-200"
-                />
-              </td>
-              <td class="px-4 py-3">€{{ auction.base_price }}</td>
-              <td class="px-4 py-3">{{ formatDate(auction.auction_date) }}</td>
-              <td class="px-4 py-3">Number of reaction</td>
-              <td class="px-4 py-3">Max Price</td>
-              <td class="px-4 py-3 text-center space-x-3">
-                <button
-                  @click="handleEditAuction(auction)"
-                  class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
-                  title="Edit Auction"
-                >
-                  <font-awesome-icon icon="pen-to-square" />
-                </button>
-                <button
-                  @click="deleteAuction(auction)"
-                  class="text-red-500 hover:text-red-700 cursor-pointer"
-                  aria-label="Delete auction"
-                  title="Delete Auction"
-                >
-                  <font-awesome-icon icon="trash" />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
+          <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+            <thead class="bg-gray-100 sticky top-0 z-10">
+              <tr>
+                <th class="px-4 py-3">Name</th>
+                <th class="px-4 py-3">Image</th>
+                <th class="px-4 py-3">Price (€)</th>
+                <th class="px-4 py-3">Date</th>
+                <th class="px-4 py-3">Number of reaction</th>
+                <th class="px-4 py-3">Max Price</th>
+                <th class="px-4 py-3 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+              <tr
+                v-for="auction in paginatedAuctions"
+                :key="auction.id"
+                class="hover:bg-gray-50 transition"
+              >
+                <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
+                <td class="px-4 py-3">
+                  <img
+                    :src="getImageUrl(auction?.images[0]?.image_url)"
+                    :alt="auction.name"
+                    class="w-16 h-16 object-cover rounded-md border border-gray-200"
+                  />
+                </td>
+                <td class="px-4 py-3">€{{ auction.base_price }}</td>
+                <td class="px-4 py-3">
+                  {{ formatDate(auction.auction_date) }}
+                </td>
+                <td class="px-4 py-3">Number of reaction</td>
+                <td class="px-4 py-3">Max Price</td>
+                <td class="px-4 py-3 text-center space-x-3">
+                  <button
+                    @click="handleEditAuction(auction)"
+                    class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
+                    title="Edit Auction"
+                  >
+                    <font-awesome-icon icon="pen-to-square" />
+                  </button>
+                  <button
+                    @click="deleteAuction(auction)"
+                    class="text-red-500 hover:text-red-700 cursor-pointer"
+                    aria-label="Delete auction"
+                    title="Delete Auction"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <Pagination
+          :page="page"
+          :totalPages="totalPages"
+          @update:page="page = $event"
+        />
       </div>
     </div>
   </template>
-  <ModalAction
+  <ActionDelete
     :showDeleteModal="showDeleteModal"
     :auctionToDelete="auctionToDelete"
     @close="showDeleteModal = false"
@@ -84,13 +91,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { getImageUrl } from "@/js/helper/displayImage";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Loader from "@/components/shared/Loader.vue";
-import ModalAction from "@/modal/ModalAction.vue";
 import { get, remove } from "@/js/helper/api.js";
 import { useRouter } from "vue-router";
+import Pagination from "@/components/shared/Pagination.vue";
+import ActionDelete from "@/modal/ActionDelete.vue";
 
 const router = useRouter();
 const auctions = ref([]);
@@ -99,6 +107,9 @@ const isLoading = ref(true);
 const user = JSON.parse(localStorage.getItem("user"));
 const showDeleteModal = ref(false);
 const auctionToDelete = ref(null);
+
+const page = ref(1);
+const perPage = 12;
 
 // Format date
 const formatDate = (dateString) => {
@@ -119,10 +130,17 @@ const fetchYourAuctions = async () => {
   }
 };
 
+const paginatedAuctions = computed(() => {
+  const start = (page.value - 1) * perPage;
+  return auctions.value.slice(start, start + perPage);
+});
+
+const totalPages = computed(() => Math.ceil(auctions.value.length / perPage));
+
 const handleEditAuction = (auction) => {
   console.log("Edit auction", auction);
-router.push({ name: "admin.auction.edit", params: { id: auction.id } });
-}
+  router.push({ name: "admin.auction.edit", params: { id: auction.id } });
+};
 
 const deleteAuction = (auction) => {
   auctionToDelete.value = auction;

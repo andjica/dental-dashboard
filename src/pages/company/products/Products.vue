@@ -21,98 +21,94 @@
           <h3 class="text-lg font-semibold text-gray-800">📦 Products</h3>
         </div>
 
-        <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
-          <thead
-            class="bg-gray-100 text-gray-600 uppercase text-xs font-semibold"
-          >
-            <tr>
-              <th class="px-4 py-3">ID</th>
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Category</th>
-              <th class="px-4 py-3">Type</th>
-              <th class="px-4 py-3">Price</th>
-              <th class="px-4 py-3 text-center">Active</th>
-              <th class="px-4 py-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 text-gray-800">
-            <tr
-              v-for="product in products"
-              :key="product.id"
-              class="hover:bg-gray-50 transition"
-            >
-              <td class="px-4 py-3">{{ product?.id }}</td>
-              <td class="px-4 py-3">{{ product?.name }}</td>
-              <td class="px-4 py-3">{{ product.category?.name || "N/A" }}</td>
-              <td class="px-4 py-3">{{ product.product_type }}</td>
-              <td class="px-4 py-3">{{ product.base_price }}</td>
-              <td class="px-4 py-3 text-center">
-                <span
-                  :class="product.in_stock ? 'bg-green-500' : 'bg-orange-400'"
-                  class="inline-block w-3 h-3 rounded-full"
-                ></span>
-              </td>
-              <td class="px-4 py-3 text-right space-x-3">
-                <button
-                  @click="handleView(product)"
-                  class="text-blue-500 hover:text-blue-700 cursor-pointer"
-                >
-                  <font-awesome-icon icon="eye" />
-                </button>
-                <button
-                  @click="handleEdit(product)"
-                  class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
-                >
-                  <font-awesome-icon icon="pen-to-square" />
-                </button>
-                <button
-                  @click="openDeleteModal(product)"
-                  class="text-red-500 hover:text-red-700 cursor-pointer"
-                >
-                  <font-awesome-icon icon="trash" />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
+          <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+            <thead class="bg-gray-100 sticky top-0 z-10">
+              <tr>
+                <th class="px-4 py-3">ID</th>
+                <th class="px-4 py-3">Name</th>
+                <th class="px-4 py-3">Image</th>
+                <th class="px-4 py-3">Category</th>
+                <th class="px-4 py-3">Type</th>
+                <th class="px-4 py-3">Price</th>
+                <th class="px-4 py-3 text-center">Active</th>
+                <th class="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+              <tr
+                v-for="product in paginatedProducts"
+                :key="product.id"
+                class="hover:bg-gray-50 transition"
+              >
+                <td class="px-4 py-3">{{ product?.id }}</td>
+                <td class="px-4 py-3">{{ product?.name }}</td>
+                <td class="px-4 py-3">
+                  <img
+                    :src="getImageUrl(product?.images[0]?.image_url)"
+                    :alt="product.name"
+                    class="w-16 h-16 object-cover rounded-md border border-gray-200"
+                  />
+                </td>
+                <td class="px-4 py-3">{{ product.category?.name || "N/A" }}</td>
+                <td class="px-4 py-3">{{ product.product_type }}</td>
+                <td class="px-4 py-3">{{ product.base_price }}</td>
+                <td class="px-4 py-3 text-center">
+                  <span
+                    :class="product.in_stock ? 'bg-green-500' : 'bg-orange-400'"
+                    class="inline-block w-3 h-3 rounded-full"
+                  ></span>
+                </td>
+                <td class="px-4 py-3 text-right space-x-3">
+                  <button
+                    @click="handleView(product)"
+                    class="text-blue-500 hover:text-blue-700 cursor-pointer"
+                  >
+                    <font-awesome-icon icon="eye" />
+                  </button>
+                  <button
+                    @click="handleEdit(product)"
+                    class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
+                  >
+                    <font-awesome-icon icon="pen-to-square" />
+                  </button>
+                  <button
+                    @click="openDeleteModal(product)"
+                    class="text-red-500 hover:text-red-700 cursor-pointer"
+                  >
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <Pagination
+          :page="page"
+          :totalPages="totalPages"
+          @update:page="page = $event"
+        />
       </div>
     </div>
   </template>
   <!-- Delete Modal -->
-  <div
-    v-if="showDeleteModal"
-    class="fixed inset-0 bg-opacity-40 z-50 flex items-center justify-center"
-  >
-    <div class="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-xl">
-      <h2 class="text-lg font-semibold mb-4 text-gray-800">Delete Product</h2>
-      <p class="text-sm text-gray-600 mb-6">
-        Are you sure you want to delete
-        <strong>{{ productToDelete?.name }}</strong
-        >?
-      </p>
-      <div class="flex justify-end space-x-3">
-        <button
-          @click="showDeleteModal = false"
-          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Cancel
-        </button>
-        <button
-          @click="confirmDelete"
-          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
+  <ActionDelete
+    :showDeleteModal="showDeleteModal"
+    :auctionToDelete="productToDelete"
+    @close="showDeleteModal = false"
+    @confirmDelete="confirmDelete"
+  />
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import Loader from "@/components/shared/Loader.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
+import Pagination from "@/components/shared/Pagination.vue";
+import { get } from "@/js/helper/api.js";
+import { getImageUrl } from "@/js/helper/displayImage";
+import ActionDelete from "@/modal/ActionDelete.vue";
 
 const products = ref([]);
 const user = JSON.parse(localStorage.getItem("user"));
@@ -121,6 +117,8 @@ const showDeleteModal = ref(false);
 const productToDelete = ref(null);
 
 const router = useRouter();
+const page = ref(1);
+const perPage = 6;
 
 const isLoading = ref(true);
 
@@ -144,33 +142,25 @@ const openDeleteModal = (product) => {
   showDeleteModal.value = true;
 };
 
-const fetchProducts = () => {
+const fetchProducts = async () => {
   const userId = user.id;
-  const token = localStorage.getItem("token");
-
-  fetch(`http://localhost:8000/api/products/${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Something is wrong!");
-      }
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Products data: ", data.data);
-      products.value = data.data;
-      isLoading.value = false;
-    })
-    .catch((err) => {
-      console.log("Error throw fetching products: ", err);
-    });
+  isLoading.value = true;
+  try {
+    const response = await get(`products/${userId}`);
+    products.value = response.data;
+  } catch (err) {
+    console.error("Error fetching users:", err.message);
+  } finally {
+    isLoading.value = false;
+  }
 };
+
+const paginatedProducts = computed(() => {
+  const start = (page.value - 1) * perPage;
+  return products.value.slice(start, start + perPage);
+});
+
+const totalPages = computed(() => Math.ceil(products.value.length / perPage));
 
 const confirmDelete = () => {
   const token = localStorage.getItem("token");

@@ -18,9 +18,11 @@
         <div class="px-6 py-4 border-b border-gray-200">
           <h3 class="text-lg font-semibold text-gray-800">📦 All Products</h3>
         </div>
-        <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+
+        <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
+        <table class="min-w-full text-sm text-left divide-y divide-gray-200">
           <thead
-            class="bg-gray-100 text-gray-600 uppercase text-xs font-semibold"
+            class="bg-gray-100 sticky top-0 z-10"
           >
             <tr>
               <th class="px-4 py-3">ID</th>
@@ -35,7 +37,7 @@
           </thead>
           <tbody class="divide-y divide-gray-100 text-gray-800">
             <tr
-              v-for="product in products"
+              v-for="product in paginatedAuctions"
               :key="product.id"
               class="hover:bg-gray-50 transition"
             >
@@ -77,45 +79,33 @@
             </tr>
           </tbody>
         </table>
+        </div>
+              <Pagination
+          :page="page"
+          :totalPages="totalPages"
+          @update:page="page = $event"
+        />
       </div>
     </div>
   </template>
   <!-- Delete Confirmation Modal -->
-  <div
-    v-if="showDeleteModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75"
-  >
-    <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-      <h2 class="text-lg font-semibold mb-4">
-        Are you sure you want to delete
-        <strong>{{ productToDelete?.name }}</strong> (ID:
-        {{ productToDelete?.id }})?
-      </h2>
-      <div class="flex justify-end space-x-4">
-        <button
-          @click="showDeleteModal = false"
-          class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
-        >
-          Cancel
-        </button>
-        <button
-          @click="confirmDelete(productToDelete?.id)"
-          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
+  <ActionDelete
+    :productToDelete="productToDelete"
+    :showDeleteModal="showDeleteModal"
+    @close="showDeleteModal = false"
+    @confirm="confirmDelete"
+  />
 </template>
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Loader from "@/components/shared/Loader.vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { get, remove } from "@/js/helper/api.js";
 import { useRouter } from "vue-router";
 import { getImageUrl } from "@/js/helper/displayImage";
+import ActionDelete from "@/modal/ActionDelete.vue";
+import Pagination from "@/components/shared/Pagination.vue";
 
 const router = useRouter();
 
@@ -123,6 +113,9 @@ const products = ref([]);
 const isLoading = ref(true);
 const showDeleteModal = ref(false);
 const productToDelete = ref(null);
+
+const page = ref(1);
+const perPage = 6;
 
 onMounted(async () => {
   isLoading.values = true;
@@ -141,6 +134,13 @@ const fetchAllProducts = async () => {
     isLoading.value = false;
   }
 };
+
+const paginatedAuctions = computed(() => {
+  const start = (page.value - 1) * perPage;
+  return products.value.slice(start, start + perPage);
+});
+
+const totalPages = computed(() => Math.ceil(products.value.length / perPage));
 
 const openDeleteModal = (product) => {
   productToDelete.value = product;
