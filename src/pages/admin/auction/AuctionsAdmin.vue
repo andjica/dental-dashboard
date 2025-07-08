@@ -135,6 +135,8 @@ const paginatedAuctions = computed(() => {
   return auctions.value.slice(start, start + perPage);
 });
 
+const totalPages = computed(() => Math.ceil(auctions.value.length / perPage));
+
 const handleEditAuction = (auction) => {
   console.log("Edit auction", auction);
   router.push({ name: "admin.auction.edit", params: { id: auction.id } });

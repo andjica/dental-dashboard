@@ -92,6 +92,7 @@ Object.entries(fields).forEach(([key, refVar]) => {
 });
 
 const handleLogin = async () => {
+  if (isLoading.value) return; // prevent double submit
   isLoading.value = true;
   // Resetuj validaciju i alert poruke
   errors.email = "";

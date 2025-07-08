@@ -100,6 +100,36 @@ const routes = [
         component: () => import("@/pages/admin/order/OrderView.vue"),
       },
       {
+        path: "categories",
+        name: "admin.categories",
+        component: () => import("@/pages/admin/categories/CategoriesView.vue"),
+      },
+      {
+        path: "category/create",
+        name: "admin.category.create",
+        component: () => import("@/pages/admin/categories/CategoryCreate.vue"),
+      },
+      {
+        path: "category/:id/edit",
+        name: "admin.category.edit",
+        component: () => import("@/pages/admin/categories/CategoryEdit.vue"),
+      },
+      {
+        path: "sub-categories",
+        name: "admin.sub-categories",
+        component: () => import("@/pages/admin/sub-categories/SubCategoriesView.vue"),
+      },
+      {
+        path: "sub-category/create",
+        name: "admin.sub-category.create",
+        component: () => import("@/pages/admin/sub-categories/SubCategoriesCreate.vue"),
+      },
+      {
+        path: "sub-category/:id/edit",
+        name: "admin.sub-category.edit",
+        component: () => import("@/pages/admin/sub-categories/SubCategoryEdit.vue"),
+      },
+      {
         path: "settings/company",
         name: "admin.settings",
         component: () => import("@/pages/admin/settings/Settings.vue"),

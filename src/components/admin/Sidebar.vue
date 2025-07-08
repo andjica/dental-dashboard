@@ -22,12 +22,21 @@
         </div>
         <!-- Top Navigation -->
         <div class="flex flex-col flex-grow">
-          <Navigation v-for="(link, index) in topLinks" :key="index" :title="link.title" :items="link.items" />
+          <Navigation
+            v-for="(link, index) in topLinks"
+            :key="index"
+            :title="link.title"
+            :items="link.items"
+          />
         </div>
 
         <!-- Settings at Bottom -->
         <div class="mt-auto">
-          <Navigation v-if="settingsLink" :title="settingsLink.title" :items="settingsLink.items" />
+          <Navigation
+            v-if="settingsLink"
+            :title="settingsLink.title"
+            :items="settingsLink.items"
+          />
         </div>
       </nav>
     </aside>
@@ -80,8 +89,8 @@ const menuLinks = isFinishedProfile
           {
             label: "All products in system",
             to: "/admin/all/products",
-            icon: "eye"
-          }
+            icon: "eye",
+          },
         ],
       },
       {
@@ -96,30 +105,73 @@ const menuLinks = isFinishedProfile
         items: [{ label: "View Orders", to: "/admin/orders", icon: "eye" }],
       },
       {
+        title: "Category / SubCategory",
+        items: [
+          { label: "View Categories", to: "/admin/categories", icon: "eye" },
+          {
+            label: "Create Category",
+            to: "/admin/category/create",
+            icon: "plus",
+          },
+           { label: "View Sub-Categories", to: "/admin/sub-categories", icon: "eye" },
+          {
+            label: "Create Sub-Category",
+            to: "/admin/sub-category/create",
+            icon: "plus",
+          },
+        ],
+      },
+      {
         title: "Auctions",
-        items:[
-          {label: "All auctions in system", to: "/admin/all/auctions", icon: "eye"},
-          {label: "Your auctions", to: "/admin/auctions", icon: "eye"},
-          {label: "Create Auction", to: "/admin/auction/create", icon: "plus"},
-        ]
+        items: [
+          {
+            label: "All auctions in system",
+            to: "/admin/all/auctions",
+            icon: "eye",
+          },
+          { label: "Your auctions", to: "/admin/auctions", icon: "eye" },
+          {
+            label: "Create Auction",
+            to: "/admin/auction/create",
+            icon: "plus",
+          },
+        ],
       },
       {
         title: "Settings",
         items: [
-          { label: "Company Settings", to: "/admin/settings/company", icon: "gear" },
-          { label: "Profile Settings", to: "/admin/settings/profile", icon: "gear" },
-          { label: "Payment Settings", to: "/admin/settings/payment", icon: "money-bill" },
+          {
+            label: "Company Settings",
+            to: "/admin/settings/company",
+            icon: "gear",
+          },
+          {
+            label: "Profile Settings",
+            to: "/admin/settings/profile",
+            icon: "gear",
+          },
+          {
+            label: "Payment Settings",
+            to: "/admin/settings/payment",
+            icon: "money-bill",
+          },
         ],
       },
     ]
   : [
       {
         title: "Settings",
-        items: [{ label: "Complete Company Profile", to: "/admin/settings/company", icon: "gear" }],
+        items: [
+          {
+            label: "Complete Company Profile",
+            to: "/admin/settings/company",
+            icon: "gear",
+          },
+        ],
       },
     ];
 
-    // Odvoji Settings
+// Odvoji Settings
 const settingsLink = computed(() =>
   menuLinks.find((link) => link.title === "Settings")
 );

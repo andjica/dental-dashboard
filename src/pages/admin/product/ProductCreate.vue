@@ -1,5 +1,13 @@
 <template>
   <ButtonBack />
+  <div class="relative">
+    <Alert
+      v-if="alert.message"
+      :type="alert.type"
+      :message="alert.message"
+      @close="alert.message = ''"
+    />
+  </div>
   <div
     class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto"
   >
@@ -475,13 +483,13 @@
         >
           Create
         </button>
-        <button
+        <!-- <button
           type="button"
           @click="cancel"
           class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
         >
           Cancel
-        </button>
+        </button> -->
       </div>
     </form>
   </div>
@@ -489,6 +497,7 @@
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
+import Alert from "@/components/shared/Alert.vue";
 import Heading from "@tiptap/extension-heading";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
@@ -525,9 +534,15 @@ const imagePreviews = ref([]);
 const errors = ref({});
 
 // for alert
-const showAlert = ref(false);
-const alertType = ref(["success"]); // or 'error'
-const alertMessage = ref("");
+const alert = ref({
+  message: "",
+  type: "success",
+});
+
+const showAlert = (type, message) => {
+  alert.value.type = type;
+  alert.value.message = message;
+};
 
 editor.value = new Editor({
   extensions: [StarterKit, Underline, Heading.configure({ levels: [1, 2, 3] })],
@@ -751,17 +766,13 @@ const handleSubmit = () => {
     })
     .then((data) => {
       console.log("User product: ", data);
-      alertType.value = "success";
-      alertMessage.value = "Product is create successfully!";
-      showAlert.value = true;
+      showAlert("success", "Product is created successfully!");
 
       router.push({ name: "admin.products" });
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);
-      alertType.value = "error";
-      alertMessage.value = error;
-      showAlert.value = true;
+      showAlert("error", "Failed to create product.");
     });
 };
 

@@ -323,6 +323,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 import { useRouter } from "vue-router";
+import { getImageUrl } from "@/js/helper/displayImage";
 
 const token = localStorage.getItem("token");
 
@@ -544,14 +545,14 @@ const removeImage = (index) => {
   form.value.image_gallery.splice(index, 1);
 };
 
-const getImageUrl = (path) => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("storage")) {
-    return `http://localhost:8000/${path}`;
-  }
-  return `http://localhost:8000/storage/${path}`;
-};
+// const getImageUrl = (path) => {
+//   if (!path) return "";
+//   if (path.startsWith("http")) return path;
+//   if (path.startsWith("storage")) {
+//     return `http://localhost:8000/${path}`;
+//   }
+//   return `http://localhost:8000/storage/${path}`;
+// };
 
 
 const resolveImageSrc = (img) => {

@@ -31,14 +31,16 @@ const API = (url, method = "GET", body = null) => {
       throw new Error(err.message || `Failed to fetch ${url}`);
     }
 
-    const contentLength = res.headers.get("Content-Length");
-    const contentType = res.headers.get("Content-Type");
-
-    if (res.status === 204 || contentLength === "0" || !contentType) {
+    if (res.status === 204 || res.status === 205) {
       return null;
     }
 
-    return res.json();
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
   });
 };
 
