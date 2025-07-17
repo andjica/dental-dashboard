@@ -29,7 +29,6 @@
                 <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
-                <th class="px-4 py-3">Register number</th>
                 <th class="px-4 py-3">Category</th>
                 <th class="px-4 py-3">Type</th>
                 <th class="px-4 py-3">Price</th>
@@ -53,7 +52,6 @@
                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                   />
                 </td>
-                <td class="px-4 py-3">{{ product.id || "N/A" }}</td>
                 <td class="px-4 py-3">{{ product.category?.name || "N/A" }}</td>
                 <td class="px-4 py-3">{{ product.product_type }}</td>
                 <td class="px-4 py-3">{{ product.base_price }}</td>

@@ -28,7 +28,6 @@
                 <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
-                <th class="px-4 py-3">Register number</th>
                 <th class="px-4 py-3">Price (€)</th>
                 <th class="px-4 py-3">Date</th>
                 <th class="px-4 py-3">Number of reaction</th>
