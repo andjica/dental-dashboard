@@ -4,9 +4,7 @@
 
   <template v-else>
     <div v-if="auctions.length === 0" class="px-4 mt-6 w-full">
-      <div
-        class="bg-red-100 border border-red-300 text-red-800 rounded-md shadow p-4 flex items-center gap-3"
-      >
+      <div class="bg-red-100 border border-red-300 text-red-800 rounded-md shadow p-4 flex items-center gap-3">
         <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
         <span class="text-sm font-medium">
           ⚠️ You currently have no auctions. Please add some to get started.
@@ -24,49 +22,41 @@
           <table class="min-w-full text-sm text-left divide-y divide-gray-200">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
+                <th class="px-4 py-3">No.</th>
+                <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
                 <th class="px-4 py-3">Price (€)</th>
                 <th class="px-4 py-3">Date</th>
                 <th class="px-4 py-3">Number of reaction</th>
+                <th class="px-4 py-3">Reaction</th>
                 <th class="px-4 py-3">Max Price</th>
                 <th class="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
-              <tr
-                v-for="(auction, index) in paginatedAuctions"
-                :key="auction.id"
-                class="hover:bg-gray-50 transition"
-              >
+              <tr v-for="(auction, index) in paginatedAuctions" :key="auction.id" class="hover:bg-gray-50 transition">
+                <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
+                <td class="px-4 py-3 font-medium">{{ auction.id }}</td>
                 <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
                 <td class="px-4 py-3">
-                  <img
-                    :src="getImageUrl(auction?.images[0]?.image_url)"
-                    :alt="auction.name"
-                    class="w-16 h-16 object-cover rounded-md border border-gray-200"
-                  />
+                  <img :src="getImageUrl(auction?.images[0]?.image_url)" :alt="auction.name"
+                    class="w-16 h-16 object-cover rounded-md border border-gray-200" />
                 </td>
                 <td class="px-4 py-3">€{{ auction.base_price }}</td>
                 <td class="px-4 py-3">
                   {{ formatDate(auction.auction_date) }}
                 </td>
                 <td class="px-4 py-3">Number of reaction</td>
+                <td class="px-4 py-3"><a href="#">Link</a></td>
                 <td class="px-4 py-3">Max Price</td>
                 <td class="px-4 py-3 text-center space-x-3">
-                  <button
-                    @click="handleEditAuction(auction)"
-                    class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
-                    title="Edit Auction"
-                  >
+                  <button @click="handleEditAuction(auction)"
+                    class="text-yellow-500 hover:text-yellow-600 cursor-pointer" title="Edit Auction">
                     <font-awesome-icon icon="pen-to-square" />
                   </button>
-                  <button
-                    @click="deleteAuction(auction)"
-                    class="text-red-500 hover:text-red-700 cursor-pointer"
-                    aria-label="Delete auction"
-                    title="Delete Auction"
-                  >
+                  <button @click="deleteAuction(auction)" class="text-red-500 hover:text-red-700 cursor-pointer"
+                    aria-label="Delete auction" title="Delete Auction">
                     <font-awesome-icon icon="trash" />
                   </button>
                 </td>
@@ -74,20 +64,12 @@
             </tbody>
           </table>
         </div>
-        <Pagination
-          :page="page"
-          :totalPages="totalPages"
-          @update:page="page = $event"
-        />
+        <Pagination :page="page" :totalPages="totalPages" @update:page="page = $event" />
       </div>
     </div>
   </template>
-  <ActionDelete
-    :showDeleteModal="showDeleteModal"
-    :auctionToDelete="auctionToDelete"
-    @close="showDeleteModal = false"
-    @confirmDelete="confirmDelete"
-  />
+  <ActionDelete :showDeleteModal="showDeleteModal" :auctionToDelete="auctionToDelete" @close="showDeleteModal = false"
+    @confirmDelete="confirmDelete" />
 </template>
 
 <script setup>

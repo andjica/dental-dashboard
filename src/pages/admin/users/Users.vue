@@ -37,7 +37,7 @@ const usersData = ref([]);
 const isLoading = ref(true);
 
 const page = ref(1);
-const perPage = 12;
+const perPage = 10;
 
 onMounted(async () => {
   isLoading.values = true;

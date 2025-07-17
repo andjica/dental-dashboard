@@ -20,28 +20,30 @@ const API = (url, method = "GET", body = null) => {
     }
   }
 
-  return fetch(`http://localhost:8000/api/${url}`, options).then(async (res) => {
-    if (res.status === 401) {
-      window.dispatchEvent(new Event("tokenExpired"));
-      throw new Error("Unauthorized");
-    }
+  return fetch(`http://localhost:8000/api/${url}`, options).then(
+    async (res) => {
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("tokenExpired"));
+        throw new Error("Unauthorized");
+      }
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || `Failed to fetch ${url}`);
-    }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed to fetch ${url}`);
+      }
 
-    if (res.status === 204 || res.status === 205) {
-      return null;
-    }
+      if (res.status === 204 || res.status === 205) {
+        return null;
+      }
 
-    const text = await res.text();
-    try {
-      return JSON.parse(text);
-    } catch {
-      return text;
+      try {
+        return await res.json();
+      } catch (err) {
+        console.warn("Response is not JSON:", err);
+        return null;
+      }
     }
-  });
+  );
 };
 
 export const get = (url) => API(url, "GET");

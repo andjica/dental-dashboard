@@ -37,9 +37,11 @@
             class="bg-gray-100 sticky top-0 z-10"
           >
             <tr>
+              <th class="px-4 py-3">No.</th>
               <th class="px-4 py-3">ID</th>
               <th class="px-4 py-3">Name</th>
-               <th class="px-4 py-3">Main image</th>
+              <th class="px-4 py-3">Main image</th>
+              <th class="px-4 py-3">Register number</th>
               <th class="px-4 py-3">Category</th>
               <th class="px-4 py-3">Type</th>
               <th class="px-4 py-3">Price</th>
@@ -49,15 +51,17 @@
           </thead>
           <tbody class="divide-y divide-gray-100 text-gray-800">
             <tr
-              v-for="product in paginatedAuctions"
+              v-for="(product, index) in paginatedAuctions"
               :key="product.id"
               class="hover:bg-gray-50 transition"
             >
-              <td class="px-4 py-3">{{ product?.id }}</td>
+              <td class="px-4 py-3">{{ index + 1 }}</td>
+              <td class="px-4 py-3">{{ product.id }}</td>
               <td class="px-4 py-3">{{ product?.name }}</td>
               <td class="px-4 py-3">
                 <img :src="getImageUrl(product?.primary_image.image_url)" :alt="product.name" class="w-16 h-16 object-cover rounded-md border border-gray-200" />
               </td>
+              <td class="px-4 py-3">{{ product.id }}</td>
               <td class="px-4 py-3">{{ product.category?.name || "N/A" }}, <br> {{ product.sub_category?.name || "N/A" }}</td>
               <td class="px-4 py-3">{{ product.product_type }}</td>
               <td class="px-4 py-3 text-center">
@@ -157,6 +161,7 @@ const handleEdit = (product) => {
 };
 
 const openDeleteModal = (product) => {
+  console.log(product);
   productToDelete.value = product;
   showDeleteModal.value = true;
 };

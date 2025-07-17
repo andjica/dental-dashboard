@@ -24,21 +24,27 @@
           <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
+                <th class="px-4 py-3">No.</th>
+                <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
+                <th class="px-4 py-3">Register number</th>
                 <th class="px-4 py-3">Price (€)</th>
                 <th class="px-4 py-3">Date</th>
                 <th class="px-4 py-3">Number of reaction</th>
+                <th class="px-4 py-3">Raction</th>
                 <th class="px-4 py-3">Max Price</th>
                 <th class="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
               <tr
-                v-for="auction in paginatedAuctions"
+                v-for="(auction, index) in paginatedAuctions"
                 :key="auction.id"
                 class="hover:bg-gray-50 transition"
               >
+                <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
+                <td class="px-4 py-3 font-medium">{{ auction.id }}</td>
                 <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
                 <td class="px-4 py-3">
                   <img
@@ -47,11 +53,13 @@
                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                   />
                 </td>
+                <td class="px-4 py-3">{{ auction.id }}</td>
                 <td class="px-4 py-3">€{{ auction.base_price }}</td>
                 <td class="px-4 py-3">
                   {{ formatDate(auction.auction_date) }}
                 </td>
                 <td class="px-4 py-3">Number of reaction</td>
+                <td class="px-4 py-3"><a href="#">Link</a></td>
                 <td class="px-4 py-3">Max Price</td>
                 <td class="px-4 py-3 text-center space-x-3">
                   <button
@@ -139,7 +147,7 @@ const totalPages = computed(() => Math.ceil(auctions.value.length / perPage));
 
 const handleEditAuction = (auction) => {
   console.log("Edit auction", auction);
-  router.push({ name: "admin.auction.edit", params: { id: auction.id } });
+  router.push({ name: "company.product.edit", params: { id: auction.id } });
 };
 
 const deleteAuction = (auction) => {

@@ -26,6 +26,7 @@
               class="bg-gray-100 sticky top-0 z-10"
             >
               <tr>
+                <th class="px-4 py-3">No.</th>
                 <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
@@ -38,10 +39,11 @@
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
               <tr
-                v-for="product in paginatedProducts"
+                v-for="(product, index) in paginatedProducts"
                 :key="product.id"
                 class="hover:bg-gray-50 transition"
               >
+                <td class="px-4 py-3">{{ index + 1 }}</td>
                 <td class="px-4 py-3">{{ product?.id }}</td>
                 <td class="px-4 py-3">{{ product?.name }}</td>
                 <td class="px-4 py-3">

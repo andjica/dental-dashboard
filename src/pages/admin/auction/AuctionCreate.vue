@@ -263,7 +263,7 @@ const handleSubmit = async () => {
     };
     errors.value = {};
     sessionStorage.setItem('auctionCreatedMessage', alertMessage.value);
-    router.push({ name: "admin.auctions.view" });
+    router.push({ name: "admin.your.auctions" });
   } catch (err) {
     console.error("Error submitting auction:", err.message);
 

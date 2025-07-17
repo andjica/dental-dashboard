@@ -23,7 +23,8 @@
           <table class="min-w-full text-sm text-left divide-y divide-gray-200">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
-                <th class="px-4 py-3">Id</th>
+                <th class="px-4 py-3">No.</th>
+                <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Categoty Group</th>
                 <th class="px-4 py-3 text-center">Actions</th>
@@ -31,10 +32,11 @@
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
               <tr
-                v-for="subcategory in paginatedSubCategory"
+                v-for="(subcategory, index) in paginatedSubCategory"
                 :key="subcategory.id"
                 class="hover:bg-gray-50 transition"
               >
+                <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
                 <td class="px-4 py-3 font-medium">{{ subcategory.id }}</td>
                 <td class="px-4 py-3 font-medium">{{ subcategory.name }}</td>
                 <td class="px-4 py-3 font-medium">{{ subcategory.category.name }}</td>
@@ -81,7 +83,7 @@ import Loader from "@/components/shared/Loader.vue";
 import Pagination from "@/components/shared/Pagination.vue";
 import ActionDelete from "@/modal/ActionDelete.vue";
 import { computed, onMounted, ref } from "vue";
-import { get } from "@/js/helper/api";
+import { get, remove } from "@/js/helper/api";
 import { useRouter } from "vue-router";
 
 const subcategories = ref([]);
@@ -90,6 +92,10 @@ const isLoading = ref(true);
 
 const page = ref(1);
 const perPage = 12;
+
+const showAlert = ref(false);
+const alertType = ref("success"); // success, error, info
+const alertMessage = ref("");
 
 const showDeleteModal = ref(false);
 const subcategoryToDelete = ref(null);
@@ -123,20 +129,20 @@ const totalPages = computed(() =>
 );
 
 const deleteSubCategory = async (category) => {
-  categoryToDelete.value = category;
+  subcategoryToDelete.value = category;
   showDeleteModal.value = true;
 };
 
 const confirmDelete = async () => {
   try {
-    await remove(`subcategories/${categoryToDelete.value.id}`);
+    await remove(`subcategories/${subcategoryToDelete.value.id}`);
 
     categories.value = categories.value.filter(
-      (cat) => cat.id !== categoryToDelete.value.id
+      (cat) => cat.id !== subcategoryToDelete.value.id
     );
 
     showDeleteModal.value = false;
-    categoryToDelete.value = null;
+    subcategoryToDelete.value = null;
 
     showAlert.value = true;
     alertType.value = "success";

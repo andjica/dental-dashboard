@@ -25,9 +25,11 @@
           <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
+                <th class="px-4 py-3">No.</th>
                 <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
+                <th class="px-4 py-3">Register number</th>
                 <th class="px-4 py-3">Category</th>
                 <th class="px-4 py-3">Type</th>
                 <th class="px-4 py-3">Price</th>
@@ -37,10 +39,11 @@
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
               <tr
-                v-for="product in paginatedProducts"
+                v-for="(product, index) in paginatedProducts"
                 :key="product.id"
                 class="hover:bg-gray-50 transition"
               >
+                <td class="px-4 py-3">{{ index + 1 }}</td>
                 <td class="px-4 py-3">{{ product?.id }}</td>
                 <td class="px-4 py-3">{{ product?.name }}</td>
                 <td class="px-4 py-3">
@@ -50,6 +53,7 @@
                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                   />
                 </td>
+                <td class="px-4 py-3">{{ product.id || "N/A" }}</td>
                 <td class="px-4 py-3">{{ product.category?.name || "N/A" }}</td>
                 <td class="px-4 py-3">{{ product.product_type }}</td>
                 <td class="px-4 py-3">{{ product.base_price }}</td>

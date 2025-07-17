@@ -423,6 +423,10 @@ const handleSubmit = async () => {
     alertMessage.value = "Company profile updated successfully!";
     showAlert.value = true;
 
+    setTimeout(() => {
+        window.location.href = "/admin/dashboard";
+      }, 2000);
+
   } catch (error) {
     console.error("Error updating company profile:", error);
     alertType.value = "error";

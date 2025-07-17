@@ -32,7 +32,8 @@
           <table class="min-w-full text-sm text-left divide-y divide-gray-200">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
-                <th class="px-4 py-3">Id</th>
+                <th class="px-4 py-3">No.</th>
+                <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3 text-center">Number of Sub-Category</th>
                 <th class="px-4 py-3 text-center">Actions</th>
@@ -40,10 +41,11 @@
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
               <tr
-                v-for="category in paginatedAuctions"
+                v-for="(category, index) in paginatedAuctions"
                 :key="category.id"
                 class="hover:bg-gray-50 transition"
               >
+                <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
                 <td class="px-4 py-3 font-medium">{{ category.id }}</td>
                 <td class="px-4 py-3 font-medium">{{ category.name }}</td>
                 <td class="px-4 py-3 font-medium text-center">

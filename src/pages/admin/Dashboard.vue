@@ -12,7 +12,7 @@
         </div>
         <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
           <p class="text-sm text-gray-500 mb-1">Total Orders</p>
-          <p class="text-2xl font-bold text-green-600">87</p>
+          <p class="text-2xl font-bold text-green-600">0</p>
         </div>
         <div class="p-4 bg-white rounded-lg shadow border border-gray-200">
           <p class="text-sm text-gray-500 mb-1">Registered Companies</p>

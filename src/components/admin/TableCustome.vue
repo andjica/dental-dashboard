@@ -14,6 +14,8 @@
       <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
         <thead class="bg-gray-100 sticky top-0 z-10">
           <tr>
+            <th class="px-4 py-3">No.</th>
+            <th class="px-4 py-3">ID</th>
             <th class="px-4 py-3">Name</th>
             <th class="px-4 py-3">Country</th>
             <th class="px-4 py-3">City</th>
@@ -24,9 +26,11 @@
         <tbody class="divide-y divide-gray-100 text-gray-800">
           <tr
             v-for="(item, index) in props.data"
-            :key="index"
+            :key="item.id"
             class="hover:bg-gray-50 transition"
           >
+            <td class="px-4 py-3 whitespace-nowrap">{{ index + 1}}</td>
+            <td class="px-4 py-3 whitespace-nowrap">{{ item.id }}</td>
             <td class="px-4 py-3 font-medium whitespace-nowrap">
               {{
                 item?.name ||
@@ -68,7 +72,7 @@
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
         <h2 class="text-lg font-semibold mb-4 text-gray-800">
-          Are you sure you want to delete it?
+          Are you sure you want to delete it ?
         </h2>
         <div class="flex justify-end space-x-4">
           <button

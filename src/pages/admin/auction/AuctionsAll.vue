@@ -30,21 +30,26 @@
           <table class="min-w-full text-sm text-left divide-y divide-gray-200">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
+                <th class="px-4 py-3">No.</th>
+                <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
                 <th class="px-4 py-3">Price (€)</th>
                 <th class="px-4 py-3">Date</th>
                 <th class="px-4 py-3">Number of reaction</th>
+                <th class="px-4 py-3">Reaction</th>
                 <th class="px-4 py-3">Max Price</th>
                 <th class="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                v-for="auction in paginatedAuctions"
+                v-for="(auction, index) in paginatedAuctions"
                 :key="auction.id"
                 class="hover:bg-gray-50 transition"
               >
+                <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
+                <td class="px-4 py-3 font-medium">{{ auction.id }}</td>
                 <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
                 <td class="px-4 py-3">
                   <img
@@ -58,6 +63,7 @@
                   {{ formatDate(auction.auction_date) }}
                 </td>
                 <td class="px-4 py-3">Number of reaction</td>
+                <td class="px-4 py-3"><a href="#">Link</a></td>
                 <td class="px-4 py-3">Max Price</td>
                 <td class="px-4 py-3 text-center space-x-3">
                   <button

@@ -7,7 +7,7 @@
     <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
       <h2 class="text-lg font-semibold mb-4">
         Are you sure you want to delete
-        <strong>{{ auctionToDelete?.name }}</strong>?
+        <strong>{{ auctionToDelete?.name || productToDelete?.name }}</strong>?
       </h2>
       <div class="flex justify-end space-x-4">
         <button
@@ -32,7 +32,12 @@ import { defineProps, defineEmits } from "vue";
 const props = defineProps({
   showDeleteModal: Boolean,
   auctionToDelete: Object,
+  productToDelete: Object
 });
+
+console.log("showDeleteModal:", props.showDeleteModal);
+console.log("auctionToDelete:", props.auctionToDelete);
+
 
 const emits = defineEmits(["close", "confirmDelete"]);
 

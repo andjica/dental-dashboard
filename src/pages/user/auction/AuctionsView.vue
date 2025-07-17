@@ -26,6 +26,8 @@
               class="bg-gray-100 sticky top-0 z-10"
             >
               <tr>
+                <th class="px-4 py-3">No.</th>
+                <th class="px-4 py-3">ID</th>
                 <th class="px-4 py-3">Name</th>
                 <th class="px-4 py-3">Image</th>
                 <th class="px-4 py-3">Price (€)</th>
@@ -41,6 +43,8 @@
                 :key="index"
                 class="hover:bg-gray-50 transition"
               >
+              <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
+              <td class="px-4 py-3 font-medium">{{ auction.id }}</td>
                 <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
                 <td class="px-4 py-3">
                   <img
