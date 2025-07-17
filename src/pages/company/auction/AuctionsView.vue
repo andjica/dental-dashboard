@@ -52,7 +52,6 @@
                     class="w-16 h-16 object-cover rounded-md border border-gray-200"
                   />
                 </td>
-                <td class="px-4 py-3">{{ auction.id }}</td>
                 <td class="px-4 py-3">€{{ auction.base_price }}</td>
                 <td class="px-4 py-3">
                   {{ formatDate(auction.auction_date) }}
@@ -146,7 +145,7 @@ const totalPages = computed(() => Math.ceil(auctions.value.length / perPage));
 
 const handleEditAuction = (auction) => {
   console.log("Edit auction", auction);
-  router.push({ name: "company.product.edit", params: { id: auction.id } });
+  router.push({ name: "company.edit.view", params: { id: auction.id } });
 };
 
 const deleteAuction = (auction) => {

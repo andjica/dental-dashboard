@@ -1,16 +1,16 @@
 <template>
   <ButtonBack />
-  <div
-    class="p-6 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto relative"
-  >
-    <Loader v-if="isLoading" />
-    <template v-else class="relative">
-      <Alert
+  <Alert
         v-if="showAlert"
         :type="alertType"
         :message="alertMessage"
         @close="showAlert = false"
       />
+  <div
+    class="p-6 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto relative"
+  >
+    <Loader v-if="isLoading" />
+    <template v-else class="relative">
       <p
         v-if="isFinishedProfile !== 1"
         class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"

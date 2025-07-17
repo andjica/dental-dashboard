@@ -2,16 +2,16 @@
   <!-- Back Button -->
   <ButtonBack />
   <!-- Warning if profile not completed -->
-  <div class=" mb-8 ml-3 max-w-4xl bg-white relative rounded-lg shadow-1xl overflow-y-auto">
-    <!-- Alert Message -->
-    <Alert
+   <Alert
       v-if="showAlert"
       :type="alertType"
       :message="alertMessage"
       @close="showAlert = false"
     />
+  <div class="mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-1xl overflow-y-auto">
+    <!-- Alert Message -->
   <p
-  v-if="isFinishedProfile !== 1"
+  v-if="isFinishedProfile === 0"
   class="mx-4 my-4 p-4 flex items-center gap-2 text-sm text-red-800 bg-red-100 border border-red-300 rounded-md shadow-md"
 >
   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-700" viewBox="0 0 20 20" fill="currentColor">

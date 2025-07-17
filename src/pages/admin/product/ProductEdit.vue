@@ -1,13 +1,11 @@
 <template>
   <ButtonBack />
-  <div class="relative">
-    <Alert
+      <Alert
       v-if="alert.message"
       :type="alert.type"
       :message="alert.message"
       @close="alert.message = ''"
     />
-  </div>
   <div
     class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl relative overflow-y-auto"
   >

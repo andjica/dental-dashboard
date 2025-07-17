@@ -29,7 +29,6 @@
               <th class="px-4 py-3">ID</th>
               <th class="px-4 py-3">Name</th>
               <th class="px-4 py-3">Image</th>
-              <th>Register number</th>
               <th class="px-4 py-3">Category</th>
               <th class="px-4 py-3">Product Type</th>
               <th class="px-4 py-3">Price</th>

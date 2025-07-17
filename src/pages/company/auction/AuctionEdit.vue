@@ -1,15 +1,14 @@
 <template>
   <ButtonBack />
+  <Alert
+      v-if="alert.message"
+      :type="alert.type"
+      :message="alert.message"
+      @close="alert.message = ''"
+    />
   <div
     class="p-6 mt-8 mb-8 ml-3 max-w-3xl bg-white rounded-lg shadow-2xl relative"
   >
-    <Alert
-      v-if="showAlert"
-      :type="alertType"
-      :message="alertMessage"
-      @close="showAlert = false"
-    />
-
     <h1 class="text-3xl font-bold mb-8 text-gray-800">Update Auction</h1>
 
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
@@ -159,7 +158,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import { validationAuctionForm } from "@/js/form-validation/auction/auction-create.js";
@@ -167,6 +166,7 @@ import { get, post } from "@/js/helper/api.js";
 import { getImageUrl } from "@/js/helper/displayImage";
 
 const route = useRoute();
+const router = useRouter();
 const productId = route.params.id;
 
 const form = ref({
@@ -188,9 +188,15 @@ const serverGalleryImages = ref([]); // IDs of existing images on server (string
 const originalData = ref({});
 
 const errors = ref({});
-const showAlert = ref(false);
-const alertType = ref("success");
-const alertMessage = ref("");
+const alert = ref({
+  message: "",
+  type: "success",
+});
+
+const showAlert = (type, message) => {
+  alert.value.type = type;
+  alert.value.message = message;
+};
 
 onMounted(async () => {
   try {
@@ -291,9 +297,7 @@ onBeforeUnmount(() => {
 
 const handleSubmit = async () => {
   if (!hasChanges()) {
-    alertType.value = "info";
-    alertMessage.value = "No changes detected.";
-    showAlert.value = true;
+    showAlert("info", "No changes detected.");
     return;
   }
 
@@ -321,15 +325,12 @@ const handleSubmit = async () => {
 
   try {
     await post(`auction/update/${productId}`, fd);
-    alertType.value = "success";
-    alertMessage.value = "Auction updated successfully!";
-    showAlert.value = true;
-    sessionStorage.setItem("auctionCreatedMessage", alertMessage.value);
-    // router.push({ name: "company.auctions.view" });
+      showAlert("success","Auction updated successfully!");
+    
+    router.push({ name: "company.edit.view" });
   } catch (err) {
-    alertType.value = "error";
-    alertMessage.value = "Failed to update auction.";
-    showAlert.value = true;
+    console.error("Error submitting company data:", err);
+      showAlert("error", "Failed to update auction.");
   }
 };
 </script>

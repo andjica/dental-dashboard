@@ -1,13 +1,11 @@
 <template>
   <ButtonBack />
-  <div class="relative">
     <Alert
       v-if="alert.message"
       :type="alert.type"
       :message="alert.message"
       @close="alert.message = ''"
     />
-  </div>
 
   <div class="px-4 mt-6 max-w-6xl">
     <div class="bg-white shadow-md rounded-md overflow-hidden">
@@ -316,13 +314,13 @@ import ButtonBack from "@/components/shared/ButtonBack.vue";
 // import BulletList from "@tiptap/extension-bullet-list";
 import Heading from "@tiptap/extension-heading";
 // import OrderedList from "@tiptap/extension-ordered-list";
+import Alert from "@/components/shared/Alert.vue";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import Alert from "@/components/shared/Alert.vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { getImageUrl } from "@/js/helper/displayImage";
 
 const token = localStorage.getItem("token");
 
@@ -544,16 +542,6 @@ const removeImage = (index) => {
   form.value.image_gallery.splice(index, 1);
 };
 
-const getImageUrl = (path) => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("storage")) {
-    return `http://localhost:8000/${path}`;
-  }
-  return `http://localhost:8000/storage/${path}`;
-};
-
-
 const resolveImageSrc = (img) => {
   if (!img) return "";
   if (typeof img === "string") {
@@ -597,7 +585,33 @@ const parsePriceForBackend = (value) => {
   return value;
 };
 
+// to check if we have changes in the data
+// const hasChanges = () => {
+//   return (
+//     form.value.productName !== originalData.value.productName ||
+//     form.value.product_type !== originalData.value.product_type ||
+//     form.value.description !== originalData.value.description ||
+//     form.value.category !== originalData.value.category_id ||
+//     form.value.subCategory !== originalData.value.sub_category_id ||
+//     parsePriceForBackend(form.value.price) !== originalData.value.base_price ||
+//     form.value.length !== originalData.value.length ||
+//     form.value.width !== originalData.value.width ||
+//     form.value.height !== originalData.value.height ||
+//     form.value.weight !== originalData.value.weight ||
+//     form.value.quantity !== originalData.value.quantity ||
+//     (form.value.in_stock ? 1 : 0) !== originalData.value.in_stock ||
+//     !!form.value.image_main !== !!originalData.value.has_main_image ||
+//     form.value.image_gallery.length > 0 || // ima novih slika
+//     serverGalleryImages.value.length !== originalData.value.galleryCount // uporedi broj
+//   );
+// };
+
+
 const handleEdit = () => {
+  // if (!hasChanges()) {
+  //   showAlert("info", "No changes to save.");
+  //   return;
+  // }
   const formData = new FormData();
 
   formData.append("name", form.value.productName);

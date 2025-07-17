@@ -1,15 +1,14 @@
 <template>
   <ButtonBack />
-  <div
-    class="p-6 mt-8 mb-8 ml-3 max-w-3xl bg-white rounded-lg shadow-2xl relative"
-  >
-    <Alert
+  <Alert
       v-if="showAlert"
       :type="alertType"
       :message="alertMessage"
       @close="showAlert = false"
     />
-
+  <div
+    class="p-6 mt-8 mb-8 ml-3 max-w-3xl bg-white rounded-lg shadow-2xl"
+  >
     <h1 class="text-3xl font-bold mb-8 text-gray-800">Update Auction</h1>
 
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">

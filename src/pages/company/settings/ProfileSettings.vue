@@ -1,5 +1,11 @@
 <template>
   <ButtonBack />
+  <Alert
+      v-if="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @close="showAlert = false"
+    />
   <div
     class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto"
   >
@@ -85,4 +91,5 @@
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";
+import Alert from "@/components/shared/Alert.vue";
 </script>

@@ -1,16 +1,14 @@
 <template>
   <ButtonBack />
+  <Alert
+      v-if="alert.message"
+      :type="alert.type"
+      :message="alert.message"
+      @close="alert.message = ''"
+    />
   <div
     class="p-6 mt-8 mb-8 ml-3 max-w-3xl bg-white rounded-lg shadow-2xl relative"
   >
-  <div class="relative">
-    <Alert
-      v-if="showAlert"
-      :type="alertType"
-      :message="alertMessage"
-      @close="showAlert = false"
-    />
-    </div>
     <h1 class="text-3xl font-bold mb-8 text-gray-800">Create a New Auction</h1>
 
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
@@ -190,9 +188,15 @@ const imagePreviews = ref([]);
 const errors = ref({});
 
 // Success message
-const showAlert = ref(false);
-const alertType = ref(["success", "info"]); // or 'error'
-const alertMessage = ref("");
+const alert = ref({
+  message: "",
+  type: "success",
+});
+
+const showAlert = (type, message) => {
+  alert.value.type = type;
+  alert.value.message = message;
+};
 
 const handleImageUpload = (event) => {
   const files = Array.from(event.target.files);
@@ -250,9 +254,7 @@ const handleSubmit = async () => {
   try {
     await post("auction", formData);
 
-    alertType.value = "success";
-    alertMessage.value = "Auction created successfully!";
-    showAlert.value = true;
+    showAlert("success","Auction is create successfully!");
 
     form.value = {
       auctionName: "",
@@ -267,9 +269,7 @@ const handleSubmit = async () => {
   } catch (err) {
     console.error("Error submitting auction:", err.message);
 
-    alertType.value = "error";
-    alertMessage.value = "Failed to create auction.";
-    showAlert.value = true;
+    showAlert("error", "Failed to create auction.");
   }
 };
 

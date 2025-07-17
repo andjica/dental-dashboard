@@ -1,5 +1,11 @@
 <template>
   <ButtonBack />
+  <Alert
+      v-if="showAlert"
+      :type="alertType"
+      :message="alertMessage"
+      @close="showAlert = false"
+    />
   <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
     <h1 class="text-3xl font-bold mb-8 text-gray-800">🛍️ Create a New Product</h1>
 
@@ -268,6 +274,7 @@
 </template>
 
 <script setup>
+import Alert from "@/components/shared/Alert.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Heading from "@tiptap/extension-heading";
 import Underline from "@tiptap/extension-underline";

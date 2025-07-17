@@ -1,13 +1,6 @@
 <template>
   <ButtonBack />
-  <div class="relative">
-    <Alert
-      v-if="alert.message"
-      :type="alert.type"
-      :message="alert.message"
-      @close="alert.message = ''"
-    />
-  </div>
+  <Alert v-if="alert.message" :type="alert.type" :message="alert.message" @close="alert.message = ''" />
 
   <div class="px-4 mt-6 max-w-6xl">
     <div class="bg-white shadow-md rounded-md overflow-hidden">
@@ -18,50 +11,28 @@
 
       <!-- Form Body -->
       <div class="p-6">
-        <form
-          @submit.prevent="handleEdit"
-          class="space-y-6"
-          enctype="multipart/form-data"
-        >
+        <form @submit.prevent="handleEdit" class="space-y-6" enctype="multipart/form-data">
           <!-- Product Name -->
           <div>
             <label class="block text-sm font-medium mb-1">Product Name</label>
-            <input
-              v-model="form.productName"
-              type="text"
-              class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <input v-model="form.productName" type="text"
+              class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
           <!-- Main Image -->
           <div>
             <label class="block text-sm font-medium mb-1">Main Image</label>
-            <label
-              for="mainImageInput"
-              class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition"
-            >
+            <label for="mainImageInput"
+              class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition">
               Upload Image
             </label>
-            <input
-              id="mainImageInput"
-              type="file"
-              accept="image/*"
-              @change="handleMainImageUpload"
-              class="hidden"
-            />
+            <input id="mainImageInput" type="file" accept="image/*" @change="handleMainImageUpload" class="hidden" />
             <div v-if="!mainImagePreview && form.image_main" class="mt-2">
-              <img
-                :src="getImageUrl(form.image_main)"
-                alt="Preview"
-                class="w-24 h-24 border rounded object-cover shadow-sm"
-              />
+              <img :src="getImageUrl(form.image_main)" alt="Preview"
+                class="w-24 h-24 border rounded object-cover shadow-sm" />
             </div>
             <div v-if="mainImagePreview" class="mt-2">
-              <img
-                :src="mainImagePreview"
-                alt="Preview"
-                class="w-24 h-24 border rounded object-cover shadow-sm"
-              />
+              <img :src="mainImagePreview" alt="Preview" class="w-24 h-24 border rounded object-cover shadow-sm" />
             </div>
           </div>
 
@@ -70,21 +41,11 @@
             <label class="block text-sm font-medium mb-1">Product Type</label>
             <div class="flex items-center space-x-6">
               <label class="inline-flex items-center text-sm">
-                <input
-                  type="radio"
-                  value="new"
-                  v-model="form.product_type"
-                  class="form-radio text-blue-600"
-                />
+                <input type="radio" value="new" v-model="form.product_type" class="form-radio text-blue-600" />
                 <span class="ml-2">🆕 New</span>
               </label>
               <label class="inline-flex items-center text-sm">
-                <input
-                  type="radio"
-                  value="used"
-                  v-model="form.product_type"
-                  class="form-radio text-blue-600"
-                />
+                <input type="radio" value="used" v-model="form.product_type" class="form-radio text-blue-600" />
                 <span class="ml-2">♻️ Used</span>
               </label>
             </div>
@@ -93,28 +54,24 @@
           <!-- Description -->
           <div>
             <label class="block text-sm font-medium mb-1">Description</label>
-              <!-- Toolbar -->
-        <div class="flex flex-wrap gap-2 mb-3">
-          <button type="button" @click="toggleBold"
-            :class="buttonClass(editor.isActive('bold')) + ' px-2 py-1 rounded hover:bg-gray-100'"
-            aria-label="Bold">B</button>
-          <button type="button" @click="toggleItalic"
-            :class="buttonClass(editor.isActive('italic')) + ' px-2 py-1 rounded hover:bg-gray-100'"
-            aria-label="Italic"><em>I</em></button>
-          <button type="button" @click="toggleUnderline"
-            :class="buttonClass(editor.isActive('underline')) + ' px-2 py-1 rounded hover:bg-gray-100'"
-            aria-label="Underline"><u>U</u></button>
-          <button type="button" @click="toggleStrike"
-            :class="buttonClass(editor.isActive('strike')) + ' px-2 py-1 rounded hover:bg-gray-100'"
-            aria-label="Strikethrough"><s>S</s></button>
-        </div>
+            <!-- Toolbar -->
+            <div class="flex flex-wrap gap-2 mb-3">
+              <button type="button" @click="toggleBold"
+                :class="buttonClass(editor.isActive('bold')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+                aria-label="Bold">B</button>
+              <button type="button" @click="toggleItalic"
+                :class="buttonClass(editor.isActive('italic')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+                aria-label="Italic"><em>I</em></button>
+              <button type="button" @click="toggleUnderline"
+                :class="buttonClass(editor.isActive('underline')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+                aria-label="Underline"><u>U</u></button>
+              <button type="button" @click="toggleStrike"
+                :class="buttonClass(editor.isActive('strike')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+                aria-label="Strikethrough"><s>S</s></button>
+            </div>
             <div
-              class="border border-gray-300 rounded-lg bg-white p-3 shadow-inner focus-within:ring-2 focus-within:ring-blue-500"
-            >
-              <EditorContent
-                :editor="editor"
-                class="min-h-[150px] outline-none"
-              />
+              class="border border-gray-300 rounded-lg bg-white p-3 shadow-inner focus-within:ring-2 focus-within:ring-blue-500">
+              <EditorContent :editor="editor" class="min-h-[150px] outline-none" />
             </div>
           </div>
 
@@ -122,32 +79,20 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium mb-1">Category</label>
-              <select
-                v-model="form.category"
-                class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-              >
+              <select v-model="form.category"
+                class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none">
                 <option disabled value="">Select category</option>
-                <option
-                  v-for="cat in form.categories"
-                  :key="cat.id"
-                  :value="cat.id"
-                >
+                <option v-for="cat in form.categories" :key="cat.id" :value="cat.id">
                   {{ cat.name }}
                 </option>
               </select>
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">Sub-category</label>
-              <select
-                v-model="form.subCategory"
-                class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-              >
+              <select v-model="form.subCategory"
+                class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none">
                 <option disabled value="">Select sub-category</option>
-                <option
-                  v-for="sub in form.subCategories"
-                  :key="sub.id"
-                  :value="sub.id"
-                >
+                <option v-for="sub in form.subCategories" :key="sub.id" :value="sub.id">
                   {{ sub.name }}
                 </option>
               </select>
@@ -158,59 +103,32 @@
           <div class="w-full md:w-1/3">
             <label class="block text-sm font-medium mb-1">Price (€)</label>
             <div class="relative">
-              <span
-                class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500"
-                >€</span
-              >
-              <input
-                :value="form.price"
-                @input="(e) => cleanNumberInput(e, 'price')"
-                @keypress="allowOnlyNumbersAndDot"
-                @blur="formatDisplayPrice"
-                type="text"
-                placeholder="0.00"
-                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-              />
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">€</span>
+              <input :value="form.price" @input="(e) => cleanNumberInput(e, 'price')" @keypress="allowOnlyNumbersAndDot"
+                @blur="formatDisplayPrice" type="text" placeholder="0.00"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             </div>
           </div>
 
           <!-- Gallery -->
           <div>
             <label class="block text-sm font-medium mb-1">Product Gallery</label>
-            <label
-              for="imageUpload"
-              class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded cursor-pointer transition"
-            >
+            <label for="imageUpload"
+              class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded cursor-pointer transition">
               Select Images
             </label>
-            <input
-              id="imageUpload"
-              @change="handleImageUpload"
-              type="file"
-              multiple
-              accept="image/*"
-              class="hidden"
-            />
+            <input id="imageUpload" @change="handleImageUpload" type="file" multiple accept="image/*" class="hidden" />
             <div class="flex flex-wrap gap-4 mt-4">
-  <div
-    v-for="(img, index) in form.image_gallery"
-    :key="index"
-    class="relative w-24 h-24 border rounded overflow-hidden shadow-sm"
-  >
-    <img
-      :src="resolveImageSrc(img)"
-      alt="Gallery Image"
-      class="object-cover w-full h-full"
-    />
-    <button
-      @click.prevent="removeImage(index)"
-      class="absolute top-1 right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center shadow hover:bg-red-700 transition"
-      title="Remove"
-    >
-      ×
-    </button>
-  </div>
-</div>
+              <div v-for="(img, index) in form.image_gallery" :key="index"
+                class="relative w-24 h-24 border rounded overflow-hidden shadow-sm">
+                <img :src="resolveImageSrc(img)" alt="Gallery Image" class="object-cover w-full h-full" />
+                <button @click.prevent="removeImage(index)"
+                  class="absolute top-1 right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center shadow hover:bg-red-700 transition"
+                  title="Remove">
+                  ×
+                </button>
+              </div>
+            </div>
 
           </div>
 
@@ -218,90 +136,63 @@
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
               <label class="block text-sm font-medium mb-1">Length (cm)</label>
-              <input
-                v-model="form.length"
-                @input="(e) => cleanNumberInput(e, 'length')"
-                @keypress="allowOnlyNumbersAndDot"
-                type="text"
-                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-              />
+              <input v-model="form.length" @input="(e) => cleanNumberInput(e, 'length')"
+                @keypress="allowOnlyNumbersAndDot" type="text"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">Width (cm)</label>
-              <input
-                v-model="form.width"
-                @input="(e) => cleanNumberInput(e, 'width')"
-                @keypress="allowOnlyNumbersAndDot"
-                type="text"
-                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-              />
+              <input v-model="form.width" @input="(e) => cleanNumberInput(e, 'width')"
+                @keypress="allowOnlyNumbersAndDot" type="text"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">Height (cm)</label>
-              <input
-                v-model="form.height"
-                @input="(e) => cleanNumberInput(e, 'height')"
-                @keypress="allowOnlyNumbersAndDot"
-                type="text"
-                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-              />
+              <input v-model="form.height" @input="(e) => cleanNumberInput(e, 'height')"
+                @keypress="allowOnlyNumbersAndDot" type="text"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">Weight (kg)</label>
-              <input
-                v-model="form.weight"
-                @input="(e) => cleanNumberInput(e, 'weight')"
-                @keypress="allowOnlyNumbersAndDot"
-                type="text"
-                placeholder="Example 1.5"
-                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-              />
+              <input v-model="form.weight" @input="(e) => cleanNumberInput(e, 'weight')"
+                @keypress="allowOnlyNumbersAndDot" type="text" placeholder="Example 1.5"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             </div>
           </div>
 
           <!-- Stock -->
           <div class="w-full md:w-1/3">
             <label class="block text-sm font-medium mb-1">Stock Quantity</label>
-            <input
-              v-model="form.quantity"
-              type="number"
-              min="0"
-              class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-            />
+            <input v-model="form.quantity" type="number" min="0"
+              class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
           </div>
 
           <!-- Active -->
           <div class="mb-6">
             <label class="flex items-center cursor-pointer">
-            <!-- Switch Container -->
-          <div class="relative">
-            <input id="is_active" v-model="form.in_stock" type="checkbox" class="sr-only peer" />
-            <!-- Background -->
-            <div
-              class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-blue-600 transition-colors">
-            </div>
-            <!-- Handle -->
-            <div
-              class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5">
-            </div>
-          </div>
-            <span class="ml-3 text-sm font-semibold text-gray-700">Active</span>
-          </label>
+              <!-- Switch Container -->
+              <div class="relative">
+                <input id="is_active" v-model="form.in_stock" type="checkbox" class="sr-only peer" />
+                <!-- Background -->
+                <div
+                  class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-blue-600 transition-colors">
+                </div>
+                <!-- Handle -->
+                <div
+                  class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5">
+                </div>
+              </div>
+              <span class="ml-3 text-sm font-semibold text-gray-700">Active</span>
+            </label>
           </div>
 
           <!-- Buttons -->
           <div class="flex space-x-4">
-            <button
-              type="submit"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-            >
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
               Save
             </button>
-            <button
-              type="button"
-              @click="cancel"
-              class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
-            >
+            <button type="button" @click="cancel"
+              class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer">
               Cancel
             </button>
           </div>
@@ -509,11 +400,10 @@ const toggleUnderline = () =>
 const toggleStrike = () => editor.value.chain().focus().toggleStrike().run();
 
 const buttonClass = (isActive) => {
-  return `px-2 py-1 rounded border ${
-    isActive
+  return `px-2 py-1 rounded border ${isActive
       ? "bg-blue-600 text-white"
       : "bg-white text-gray-800 hover:bg-gray-100"
-  }`;
+    }`;
 };
 
 const handleMainImageUpload = (event) => {
