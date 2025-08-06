@@ -10,8 +10,11 @@
         <div
           class="flex justify-between items-center px-4 py-3 bg-white shadow md:shadow-none"
         >
-          <h1 class="text-left text-blueGray-600 font-bold uppercase text-sm">
-            Dental
+          <h1
+            class="text-left font-extrabold uppercase text-lg tracking-wide"
+            style="color: #c9a538"
+          >
+            Vitelio
           </h1>
           <button
             @click="props.toggleSidebar"
@@ -46,16 +49,18 @@
 <script setup>
 import Navigation from "@/components/shared/Navigation.vue";
 import { computed, onBeforeUnmount, onMounted, provide, ref } from "vue";
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
   isOpen: Boolean,
   toggleSidebar: Function,
 });
 
+const { t } = useI18n();
+
 const isDesktop = ref(window.innerWidth >= 768); // md breakpoint
-const isFinishedProfile = JSON.parse(
-  localStorage.getItem("is_finished_profile") || "{}"
-);
+const isFinishedProfile = localStorage.getItem("is_finished_profile") === "1";
+
 provide("toggleSidebar", props.toggleSidebar);
 
 function handleResize() {
@@ -71,87 +76,87 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", handleResize);
 });
 
-const menuLinks = isFinishedProfile
+const menuLinks = computed(() => isFinishedProfile
   ? [
       {
-        title: "Dashboard",
-        items: [{ label: "Home", to: "/admin/dashboard", icon: "house" }],
+        title: t("dashboard"),
+        items: [{ label: t("home"), to: "/admin/dashboard", icon: "house" }],
       },
       {
-        title: "Products",
+        title: t("products"),
         items: [
-          { label: "Your Products", to: "/admin/products", icon: "shop" },
+          { label: t("your_products"), to: "/admin/products", icon: "shop" },
           {
-            label: "Add Product",
+            label: t("add_product"),
             to: "/admin/products/create",
             icon: "cart-plus",
           },
           {
-            label: "All products in system",
+            label: t("all_products"),
             to: "/admin/all/products",
             icon: "eye",
           },
         ],
       },
       {
-        title: "Management",
+        title: t("management"),
         items: [
-          { label: "Companies", to: "/admin/companies", icon: "building" },
-          { label: "Users", to: "/admin/users", icon: "users" },
+          { label: t("companies"), to: "/admin/companies", icon: "building" },
+          { label: t("users"), to: "/admin/users", icon: "users" },
         ],
       },
       {
-        title: "Orders",
-        items: [{ label: "View Orders", to: "/admin/orders", icon: "eye" }],
+        title: t("orders"),
+        items: [{ label: t("view_orders"), to: "/admin/orders", icon: "eye" }],
       },
       {
-        title: "Category / SubCategory",
+        title: t("category"),
         items: [
-          { label: "View Categories", to: "/admin/categories", icon: "eye" },
+          { label: t("view_categories"), to: "/admin/categories", icon: "eye" },
           {
-            label: "Create Category",
+            label: t("create_category"),
             to: "/admin/category/create",
             icon: "plus",
           },
-           { label: "View Sub-Categories", to: "/admin/sub-categories", icon: "eye" },
+           { label: t("view_subcategories"), to: "/admin/sub-categories", icon: "eye" },
           {
-            label: "Create Sub-Category",
+            label: t("create_subcategory"),
             to: "/admin/sub-category/create",
             icon: "plus",
           },
         ],
       },
       {
-        title: "Auctions",
+        title: t("auctions"),
         items: [
           {
-            label: "All auctions in system",
+            label: t("all_auctions"),
             to: "/admin/all/auctions",
             icon: "eye",
           },
-          { label: "Your auctions", to: "/admin/auctions", icon: "eye" },
+          { label: t("your_auctions"), to: "/admin/auctions", icon: "eye" },
           {
-            label: "Create Auction",
+            label: t("create_auction"),
             to: "/admin/auction/create",
             icon: "plus",
           },
         ],
       },
       {
-        title: "Settings",
+        title: t("settings"),
         items: [
           {
-            label: "Company Settings",
+            label: t("company_settings"),
             to: "/admin/settings/company",
             icon: "gear",
           },
           {
-            label: "Profile Settings",
+            label: t("profile_settings"),
             to: "/admin/settings/profile",
             icon: "gear",
           },
           {
-            label: "Payment Settings",
+            label: t("payment_settings"),
             to: "/admin/settings/payment",
             icon: "money-bill",
           },
@@ -160,25 +165,25 @@ const menuLinks = isFinishedProfile
     ]
   : [
       {
-        title: "Settings",
+        title: t("settings"),
         items: [
           {
-            label: "Complete Company Profile",
+            label: t("complete_company"),
             to: "/admin/settings/company",
             icon: "gear",
           },
         ],
       },
-    ];
-
+    ]
+    );
 // Odvoji Settings
 const settingsLink = computed(() =>
-  menuLinks.find((link) => link.title === "Settings")
+  menuLinks.value.find((link) => link.title === t("settings"))
 );
 
 // Ostali linkovi
 const topLinks = computed(() =>
-  menuLinks.filter((link) => link.title !== "Settings")
+  menuLinks.value.filter((link) => link.title !== t("settings"))
 );
 </script>
 

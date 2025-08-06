@@ -4,100 +4,74 @@
 
   <template v-else>
     <div v-if="products.length === 0" class="px-4 mt-6 w-full">
-      <div
-        class="bg-red-100 border border-red-300 text-red-800 rounded-md shadow p-4 flex items-center gap-3"
-      >
+      <div class="bg-red-100 border border-red-300 text-red-800 rounded-md shadow p-4 flex items-center gap-3">
         <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
         <span class="text-sm font-medium">
-          ⚠️ You currently have no products.
+          {{ $t('product_no') }}
         </span>
       </div>
     </div>
     <div v-else class="px-4 mt-6 max-w-6xl">
+      <Alert v-if="showAlert" :type="alertType" :message="alertMessage" @close="showAlert = false"
+        :classWidth="'max-w-6xl'" />
       <div class="bg-white shadow-md rounded-md overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800">📦 All Products</h3>
+          <h3 class="text-lg font-semibold text-gray-800">📦 {{ $t('all') }} {{ $t('products') }}</h3>
         </div>
 
         <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
-        <table class="min-w-full text-sm text-left divide-y divide-gray-200">
-          <thead
-            class="bg-gray-100 sticky top-0 z-10"
-          >
-            <tr>
-              <th class="px-4 py-3">No.</th>
-              <th class="px-4 py-3">ID</th>
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Image</th>
-              <th class="px-4 py-3">Category</th>
-              <th class="px-4 py-3">Product Type</th>
-              <th class="px-4 py-3">Price</th>
-              <th class="px-4 py-3">Active</th>
-              <th class="px-4 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 text-gray-800">
-            <tr
-              v-for="(product, index) in paginatedAuctions"
-              :key="product.id"
-              class="hover:bg-gray-50 transition"
-            >
-              <td class="px-4 py-3">{{ index + 1 }}</td>
-              <td class="px-4 py-3">{{ product?.id }}</td>
-              <td class="px-4 py-3">{{ product?.name }}</td>
-              <td class="px-4 py-3">
-                <img
-                  :src="getImageUrl(product?.primary_image.image_url)"
-                  :alt="product.name"
-                  class="w-16 h-16 object-cover rounded-md border border-gray-200"
-                />
-              </td>
-              <td class="px-4 py-3">{{ product.id }}</td>
-              <td class="px-4 py-3">
-                {{ product.category?.name || "N/A" }}, <br />
-                {{ product.sub_category?.name || "N/A" }}
-              </td>
-              <td class="px-4 py-3">{{ product.product_type }}</td>
-              <td class="px-4 py-3">{{ product.base_price }}</td>
-              <td class="px-4 py-3 text-center">
-                <span
-                  :class="product.in_stock ? 'bg-green-500' : 'bg-orange-400'"
-                  class="inline-block w-3 h-3 rounded-full"
-                ></span>
-              </td>
-              <td class="px-4 py-3 text-right space-x-3">
-                <button
-                  @click="handleView(product)"
-                  class="text-blue-500 hover:text-blue-700 cursor-pointer"
-                >
-                  <font-awesome-icon icon="eye" />
-                </button>
-                <button
-                  @click="openDeleteModal(product)"
-                  class="text-red-500 hover:text-red-700 cursor-pointer"
-                >
-                  <font-awesome-icon icon="trash" />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table class="min-w-full text-sm text-left divide-y divide-gray-200">
+            <thead class="bg-gray-100 sticky top-0 z-10">
+              <tr>
+                <th class="px-4 py-3">{{ $t('no') }}</th>
+                <th class="px-4 py-3">{{ $t('id') }}</th>
+                <th class="px-4 py-3">{{ $t('name') }}</th>
+                <th class="px-4 py-3">{{ $t('image') }}</th>
+                <th class="px-4 py-3">{{ $t('category_name') }}</th>
+                <th class="px-4 py-3">{{ $t('product_type') }}</th>
+                <th class="px-4 py-3">{{ $t('price') }}</th>
+                <th class="px-4 py-3">{{ $t('active') }}</th>
+                <th class="px-4 py-3 text-center">{{ $t('action') }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+              <tr v-for="(product, index) in paginatedAuctions" :key="product.id" class="hover:bg-gray-50 transition">
+                <td class="px-4 py-3">{{ index + 1 }}</td>
+                <td class="px-4 py-3">{{ product?.id }}</td>
+                <td class="px-4 py-3">{{ product?.name }}</td>
+                <td class="px-4 py-3">
+                  <img :src="getImageUrl(product?.primary_image.image_url)" :alt="product.name"
+                    class="w-16 h-16 object-cover rounded-md border border-gray-200" />
+                </td>
+                <td class="px-4 py-3">
+                  {{ product.category?.name || "N/A" }}, <br />
+                  {{ product.sub_category?.name || "N/A" }}
+                </td>
+                <td class="px-4 py-3">{{ product.product_type }}</td>
+                <td class="px-4 py-3">{{ product.base_price }}</td>
+                <td class="px-4 py-3 text-center">
+                  <span :class="product.in_stock ? 'bg-green-500' : 'bg-orange-400'"
+                    class="inline-block w-3 h-3 rounded-full"></span>
+                </td>
+                <td class="px-4 py-3 text-right space-x-3">
+                  <button @click="handleView(product)" class="text-blue-500 hover:text-blue-700 cursor-pointer">
+                    <font-awesome-icon icon="eye" />
+                  </button>
+                  <button @click="openDeleteModal(product)" class="text-red-500 hover:text-red-700 cursor-pointer">
+                    <font-awesome-icon icon="trash" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-              <Pagination
-          :page="page"
-          :totalPages="totalPages"
-          @update:page="page = $event"
-        />
+        <Pagination :page="page" :totalPages="totalPages" @update:page="page = $event" />
       </div>
     </div>
   </template>
   <!-- Delete Confirmation Modal -->
-  <ActionDelete
-    :productToDelete="productToDelete"
-    :showDeleteModal="showDeleteModal"
-    @close="showDeleteModal = false"
-    @confirm="confirmDelete"
-  />
+  <ActionDelete :productToDelete="productToDelete" :showDeleteModal="showDeleteModal" @close="showDeleteModal = false"
+    @confirm="confirmDelete" />
 </template>
 
 <script setup>
@@ -109,11 +83,19 @@ import { useRouter } from "vue-router";
 import { getImageUrl } from "@/js/helper/displayImage";
 import ActionDelete from "@/modal/ActionDelete.vue";
 import Pagination from "@/components/shared/Pagination.vue";
+import Alert from "@/components/shared/Alert.vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const products = ref([]);
 const isLoading = ref(true);
+// message alert
+const showAlert = ref(false);
+const alertType = ref("success");
+const alertMessage = ref("");
+
 const showDeleteModal = ref(false);
 const productToDelete = ref(null);
 
@@ -154,22 +136,26 @@ const handleView = (product) => {
   router.push({ name: "admin.product.view", params: { id: product.id } });
 };
 
-const confirmDelete = async (productId) => {
+const confirmDelete = async () => {
+  if (!productToDelete.value) return;
+
   try {
-    await remove(`products/${productId}`);
+    await remove(`products/${productToDelete.value.id}`);
 
     // Ukloni proizvod iz liste
     products.value = products.value.filter((p) => p.id !== productId);
 
     showDeleteModal.value = false;
-    showSuccessAlert.value = true;
+    productToDelete.value = null;
 
-    // (Opcionalno) sakrij alert posle par sekundi
-    setTimeout(() => {
-      showSuccessAlert.value = false;
-    }, 3000);
+    alertType.value = "success";
+    alertMessage.value = t('product_success_delete');
+    showAlert.value = true;
   } catch (error) {
     console.error("Greška prilikom brisanja proizvoda:", error);
+    alertType.value = "error";
+    alertMessage.value = t('product_failed_delete');
+    showAlert.value = true;
   }
 };
 </script>

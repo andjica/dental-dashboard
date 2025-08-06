@@ -1,11 +1,12 @@
 <template>
   <ButtonBack />
   <Alert
-        v-if="showAlert"
-        :type="alertType"
-        :message="alertMessage"
-        @close="showAlert = false"
-      />
+    v-if="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @close="showAlert = false"
+    :classWidth="'max-w-4xl'"
+  />
   <div
     class="p-6 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto relative"
   >
@@ -15,20 +16,20 @@
         v-if="isFinishedProfile !== 1"
         class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
       >
-        ⚠️ You must finish settings before you have access to other pages!
+        {{ $t("profile_finished") }}
       </p>
-      <h1 class="text-2xl font-bold mb-6">User Profile</h1>
+      <h1 class="text-2xl font-bold mb-6">{{ t("user_profile") }}</h1>
       <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
         <!-- User Name -->
         <div class="flex flex-wrap -mx-2 mb-4">
           <div class="w-full md:w-1/3 px-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >First Name</label
-            >
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{
+              $t("first_name")
+            }}</label>
             <input
               v-model="userProfile.userFirstName"
               type="text"
-              placeholder="Enter first name"
+              :placeholder="t('enter_first_name')"
               disabled
               class="w-full px-4 py-2 bg-gray-300 rounded-md border border-gray-300 cursor-no-drop"
             />
@@ -37,14 +38,14 @@
             </p>
           </div>
           <div class="w-full md:w-1/3 px-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Last Name</label
-            >
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{
+              t("last_name")
+            }}</label>
             <input
               v-model="userProfile.userLastName"
               type="text"
               disabled
-              placeholder="Enter last name"
+              :placeholder="t('enter_last_name')"
               class="w-full px-4 py-2 bg-gray-300 rounded-md border border-gray-300 cursor-no-drop"
             />
             <p v-if="errors.userLastName" class="text-red-500 text-sm mt-1">
@@ -55,9 +56,9 @@
 
         <!-- Company Email -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Email</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{
+            $t("email")
+          }}</label>
           <input
             v-model="userProfile.userEmail"
             type="email"
@@ -71,13 +72,13 @@
         </div>
         <!-- User Address -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Address</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{
+            $t("address")
+          }}</label>
           <input
             v-model="userProfile.userAddress"
             type="text"
-            placeholder="Enter your address"
+            :placeholder="t('enter_address')"
             class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <p v-if="errors.userAddress" class="text-red-500 text-sm mt-1">
@@ -86,14 +87,14 @@
         </div>
         <div class="flex flex-wrap -mx-2 mb-4">
           <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Country</label
-            >
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{
+              $t("country")
+            }}</label>
             <select
               v-model="selectedCountry"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option disabled value="">Select country</option>
+              <option disabled value="">{{ $t("select_country") }}</option>
               <option
                 v-for="country in countries"
                 :key="country.id"
@@ -107,14 +108,14 @@
             </p>
           </div>
           <div class="w-full md:w-1/3 px-2 mb-4 md:mb-0">
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >City</label
-            >
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{
+              $t("city")
+            }}</label>
             <select
               v-model="selectedCity"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option disabled value="">Select city</option>
+              <option disabled value="">{{ $t("select_city") }}</option>
               <option
                 v-for="city in filteredCities"
                 :key="city.id"
@@ -128,13 +129,13 @@
             </p>
           </div>
           <div class="w-full md:w-1/3 px-2">
-            <label class="block text-sm font-semibold text-gray-700 mb-1"
-              >Post Number</label
-            >
+            <label class="block text-sm font-semibold text-gray-700 mb-1">{{
+              $t("compnay_post_number")
+            }}</label>
             <input
               v-model="userProfile.zipCode"
               type="text"
-              placeholder="Enter post number"
+              :placeholder="t('enter_post_number')"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p v-if="errors.zipCode" class="text-red-500 text-sm mt-1">
@@ -144,9 +145,9 @@
         </div>
         <!-- Phone Number -->
         <div class="mb-4">
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >Phone Number</label
-          >
+          <label class="block text-sm font-semibold text-gray-700 mb-1">{{
+            $t("company_phone_number")
+          }}</label>
           <div class="flex gap-2">
             <input
               :value="`+${phoneCode}`"
@@ -158,7 +159,7 @@
               v-model="phoneNumber"
               @input="validatePhoneNumber"
               type="text"
-              placeholder="Enter phone number"
+              :placeholder="t('enter_phone_number')"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -171,7 +172,7 @@
             type="submit"
             class="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200 cursor-pointer"
           >
-            Update
+            {{ $t("update") }}
           </button>
         </div>
       </form>
@@ -185,10 +186,11 @@ import Alert from "@/components/shared/Alert.vue";
 import Loader from "@/components/shared/Loader.vue";
 import { validateUserForm } from "@/js/form-validation/user/proflle-update";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
-import { useRouter } from "vue-router";
+import { get, post } from "@/js/helper/api";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 
-const router = useRouter();
 // za alert
 const showAlert = ref(false);
 const alertType = ref("success"); // ili 'error'
@@ -200,6 +202,17 @@ const userProfile = reactive({
   userEmail: "",
   userAddress: "",
   zipCode: "",
+});
+
+const originalData = reactive({
+  userFirstName: "",
+  userLastName: "",
+  userEmail: "",
+  userAddress: "",
+  zipCode: "",
+  country_id: "",
+  city_id: "",
+  phone: "",
 });
 
 const selectedCountry = ref("");
@@ -234,19 +247,7 @@ watch(selectedCountry, (newVal) => {
 const fetchCity = (countryId) => {
   if (!countryId) return Promise.resolve();
 
-  return fetch(`http://localhost:8000/api/cities/${countryId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch cities");
-      }
-      return res.json();
-    })
+  return get(`cities/${countryId}`)
     .then((data) => {
       cities.value = data.cities || [];
       //   selectedCity.value = "";
@@ -255,19 +256,7 @@ const fetchCity = (countryId) => {
 };
 
 const fetchCountry = () => {
-  return fetch("http://localhost:8000/api/countries", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Something is wrong!");
-      }
-      return res.json();
-    })
+  return get("countries")
     .then((data) => {
       countries.value = data.countries;
       if (data.countries.length > 0) {
@@ -281,17 +270,8 @@ const fetchCountry = () => {
 // fetch phone code in dependent on selected country
 const fetchPhoneCode = (countryId) => {
   if (!countryId) return;
-  fetch(`http://localhost:8000/api/country/${countryId}/phone-code`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch phone code");
-      return res.json();
-    })
+
+  get(`country/${countryId}/phone-code`)
     .then((data) => {
       phoneCode.value = data.phoneCode;
     })
@@ -347,7 +327,12 @@ Object.keys(errors).forEach((key) => {
 });
 
 const handleSubmit = () => {
-  const token = localStorage.getItem("token");
+  if (!hasChanges()) {
+    alertType.value = "info";
+    alertMessage.value = "No changes detected.";
+    showAlert.value = true;
+    return;
+  }
 
   const { isValid, errors: validationErrors } = validateUserForm({
     userFirstName: userProfile.userFirstName,
@@ -376,34 +361,20 @@ const handleSubmit = () => {
   formData.append("zip_code", userProfile.zipCode);
   formData.append("is_finished_profile", 1);
 
-  fetch("http://localhost:8000/api/user-info", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
+  post("user-info", formData)
     .then((data) => {
-      console.log("Ucer compnay: ", data);
       const userData = localStorage.getItem("user");
       let user = userData ? JSON.parse(userData) : {};
       isFinishedProfile.value = data.is_finished_profile;
 
-      if(isFinishedProfile.value == true) {
-          localStorage.setItem("is_finished_profile", 1);
+      if (isFinishedProfile.value == true) {
+        localStorage.setItem("is_finished_profile", 1);
       }
-      
+
       localStorage.setItem("user", JSON.stringify(user));
 
       alertType.value = "success";
-      alertMessage.value = "User profile update successfully!";
+      alertMessage.value = t("user_profile_s");
       showAlert.value = true;
 
       setTimeout(() => {
@@ -413,28 +384,15 @@ const handleSubmit = () => {
     .catch((error) => {
       console.error("Error submitting user data:", error);
       alertType.value = "error";
-      alertMessage.value = "Failed to update user profile.";
+      alertMessage.value = t("user_profile_f");
       showAlert.value = true;
     });
 };
 
 const fetchUser = () => {
-  const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
-  console.log("Iz local storage", user);
-  return fetch("http://localhost:8000/api/user-info", {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
+
+  return get("user-info")
     .then((data) => {
       const userData = data.data;
       console.log("Fetch user: ", userData);
@@ -450,10 +408,33 @@ const fetchUser = () => {
       });
       (userProfile.zipCode = userData.zip_code),
         (phoneNumber.value = userData.phone);
+
+      // Postavi originalData
+      originalData.userFirstName = userProfile.userFirstName;
+      originalData.userLastName = userProfile.userLastName;
+      originalData.userEmail = userProfile.userEmail;
+      originalData.userAddress = userProfile.userAddress;
+      originalData.zipCode = userData.zip_code || "";
+      originalData.country_id = userData.country_id || "";
+      originalData.city_id = userData.city_id || "";
+      originalData.phone = userData.phone || "";
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);
       // Eventualno možeš prikazati grešku korisniku
     });
+};
+
+const hasChanges = () => {
+  return (
+    userProfile.userFirstName !== originalData.userFirstName ||
+    userProfile.userLastName !== originalData.userLastName ||
+    userProfile.userEmail !== originalData.userEmail ||
+    userProfile.userAddress !== originalData.userAddress ||
+    userProfile.zipCode !== originalData.zipCode ||
+    selectedCountry.value !== originalData.country_id ||
+    selectedCity.value !== originalData.city_id ||
+    phoneNumber.value !== originalData.phone
+  );
 };
 </script>

@@ -10,15 +10,15 @@
         <p
           class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
         >
-          ⚠️ There are no active companies
+          {{t('compnay_no_active')}}
         </p>
       </template>
 
       <template v-else>
-        <h1 class="text-2xl font-bold mb-4">List of companies</h1>
+        <h1 class="text-2xl font-bold mb-4">{{t('company_list')}}</h1>
         <TableCustome
           :data="paginatedAuctions"
-          title="Companies"
+          :title="companyName"
           icon="building"
         />
         <Pagination
@@ -38,9 +38,13 @@ import Loader from "@/components/shared/Loader.vue";
 import { computed, onMounted, ref } from "vue";
 import { get } from "@/js/helper/api.js";
 import Pagination from "@/components/shared/Pagination.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const companyData = ref([]);
 const isLoading = ref(true);
+const companyName = computed(() => t('companies'));
 
 const page = ref(1);
 const perPage = 10;

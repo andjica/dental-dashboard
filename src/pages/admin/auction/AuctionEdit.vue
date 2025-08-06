@@ -1,38 +1,19 @@
 <template>
   <ButtonBack />
-  <Alert
-      v-if="showAlert"
-      :type="alertType"
-      :message="alertMessage"
-      @close="showAlert = false"
-    />
-  <div
-    class="p-6 mt-8 mb-8 ml-3 max-w-3xl bg-white rounded-lg shadow-2xl relative"
-  >
-    <h1 class="text-3xl font-bold mb-8 text-gray-800">Update Auction</h1>
+  <Alert v-if="showAlert" :type="alertType" :message="alertMessage" @close="showAlert = false" :classWidth="'max-w-3xl'" />
+  <div class="p-6 mt-8 mb-8 ml-3 max-w-3xl bg-white rounded-lg shadow-2xl relative">
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">{{ $t('auction_update') }}</h1>
 
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <!-- Main Image -->
       <div class="mt-4">
-        <label class="block text-sm font-medium mb-1">Main Image</label>
-        <label
-          for="mainImageInput"
-          class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          Upload Image
+        <label class="block text-sm font-medium mb-3">{{ $t('image_main') }}</label>
+        <label for="mainImageInput" class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded">
+          {{ $t('image_upload') }}
         </label>
-        <input
-          id="mainImageInput"
-          type="file"
-          accept="image/*"
-          class="hidden"
-          @change="handleMainImageUpload"
-        />
+        <input id="mainImageInput" type="file" accept="image/*" class="hidden" @change="handleMainImageUpload" />
         <div v-if="mainImagePreview" class="mt-2">
-          <img
-            :src="mainImagePreview"
-            class="w-34 h-34 rounded border shadow"
-          />
+          <img :src="mainImagePreview" class="w-34 h-34 rounded border shadow" />
         </div>
         <p v-if="errors.auctionMainImage" class="text-red-500 text-sm mt-1">
           {{ errors.auctionMainImage }}
@@ -41,12 +22,8 @@
 
       <!-- Name -->
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Auction Name</label>
-        <input
-          v-model="form.auctionName"
-          type="text"
-          class="w-full px-4 py-2 border rounded"
-        />
+        <label class="block text-sm font-medium mt-2 mb-1">{{ $t('auction_name') }}</label>
+        <input v-model="form.auctionName" type="text" class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <p v-if="errors.auctionName" class="text-red-500 text-sm mt-1">
           {{ errors.auctionName }}
         </p>
@@ -54,11 +31,8 @@
 
       <!-- Description -->
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Description</label>
-        <textarea
-          v-model="form.auctionDescription"
-          class="w-full px-4 py-2 border rounded"
-        ></textarea>
+        <label class="block text-sm font-medium mb-1">{{ $t('auction_desc') }}</label>
+        <textarea v-model="form.auctionDescription" class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
         <p v-if="errors.auctionDescription" class="text-red-500 text-sm mt-1">
           {{ errors.auctionDescription }}
         </p>
@@ -66,13 +40,8 @@
 
       <!-- Price -->
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Base Price (€)</label>
-        <input
-          v-model="form.auctionPrice"
-          type="number"
-          min="0"
-          class="w-full px-4 py-2 border rounded"
-        />
+        <label class="block text-sm font-medium mb-1">{{ $t('auction_price') }} (€)</label>
+        <input v-model="form.auctionPrice" type="number" min="0" class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <p v-if="errors.auctionPrice" class="text-red-500 text-sm mt-1">
           {{ errors.auctionPrice }}
         </p>
@@ -80,12 +49,8 @@
 
       <!-- Date -->
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Auction Date</label>
-        <input
-          v-model="form.auctionDate"
-          type="datetime-local"
-          class="w-full px-4 py-2 border rounded"
-        />
+        <label class="block text-sm font-medium mb-1">{{ $t('auction_date') }}</label>
+        <input v-model="form.auctionDate" type="datetime-local" class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <p v-if="errors.auctionDate" class="text-red-500 text-sm mt-1">
           {{ errors.auctionDate }}
         </p>
@@ -93,48 +58,28 @@
 
       <!-- Gallery -->
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Gallery Images</label>
-        <label
-          for="galleryInput"
-          class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          Select Images
+        <label class="block text-sm font-medium mb-1">{{ $t('auction_galerry') }}</label>
+        <label for="galleryInput" class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded cursor-pointer transition duration-200">
+          {{ $t('images_select') }}
         </label>
-        <input
-          id="galleryInput"
-          type="file"
-          multiple
-          accept="image/*"
-          class="hidden"
-          @change="handleImageUpload"
-        />
+        <input id="galleryInput" type="file" multiple accept="image/*" class="hidden" @change="handleImageUpload" />
         <div class="flex flex-wrap gap-4 mt-4">
           <!-- Server gallery images -->
-          <div
-            v-for="(img, index) in serverGalleryPreviews"
-            :key="'server-' + index"
-            class="relative w-24 h-24 border rounded overflow-hidden"
-          >
+          <div v-for="(img, index) in serverGalleryPreviews" :key="'server-' + index"
+            class="relative w-24 h-24 border rounded overflow-hidden">
             <img :src="img" class="object-cover w-full h-full" />
-            <button
-              @click.prevent="removeImage(index, true)"
-              class="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center"
-            >
+            <button @click.prevent="removeImage(index, true)"
+              class="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center">
               ×
             </button>
           </div>
 
           <!-- New uploaded images -->
-          <div
-            v-for="(img, index) in imagesPreviews"
-            :key="'new-' + index"
-            class="relative w-24 h-24 border rounded overflow-hidden"
-          >
+          <div v-for="(img, index) in imagesPreviews" :key="'new-' + index"
+            class="relative w-24 h-24 border rounded overflow-hidden">
             <img :src="img" class="object-cover w-full h-full" />
-            <button
-              @click.prevent="removeImage(index, false)"
-              class="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center"
-            >
+            <button @click.prevent="removeImage(index, false)"
+              class="absolute top-1 right-1 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center">
               ×
             </button>
           </div>
@@ -146,11 +91,8 @@
       </div>
 
       <!-- Submit -->
-      <button
-        type="submit"
-        class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-      >
-        Save Auction
+      <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
+        {{ $t('auction_save') }}
       </button>
     </form>
   </div>
@@ -158,14 +100,18 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import { validationAuctionForm } from "@/js/form-validation/auction/auction-create.js";
 import { get, post } from "@/js/helper/api.js";
 import { getImageUrl } from "@/js/helper/displayImage";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const route = useRoute();
+const router = useRouter();
 const productId = route.params.id;
 
 const form = ref({
@@ -190,6 +136,8 @@ const errors = ref({});
 const showAlert = ref(false);
 const alertType = ref("success");
 const alertMessage = ref("");
+
+let redirectTimeout;
 
 onMounted(async () => {
   try {
@@ -281,6 +229,8 @@ const removeImage = (index, isServer) => {
 };
 
 onBeforeUnmount(() => {
+  if (redirectTimeout) clearTimeout(redirectTimeout);
+
   imagesPreviews.value.forEach(URL.revokeObjectURL);
   if (!serverHasMainImage.value && mainImagePreview.value) {
     URL.revokeObjectURL(mainImagePreview.value);
@@ -291,16 +241,24 @@ onBeforeUnmount(() => {
 const handleSubmit = async () => {
   if (!hasChanges()) {
     alertType.value = "info";
-    alertMessage.value = "No changes detected.";
+    alertMessage.value = t('auction_change_no');
     showAlert.value = true;
     return;
   }
 
-  const { isValid, errors: v } = validationAuctionForm({
-    ...form.value,
+  const validationData = {
+    auctionName: form.value.auctionName,
+    auctionDescription: form.value.auctionDescription,
+    auctionPrice: form.value.auctionPrice,
+    auctionDate: form.value.auctionDate,
+    auctionMainImage: form.value.auctionMainImage,
+    auctionImages: form.value.auctionImages,
     serverHasMainImage: serverHasMainImage.value,
+    serverHasGalleryImages: serverHasGalleryImages.value,
     existingGalleryCount: serverGalleryImages.value.length,
-  });
+  };
+
+  const { isValid, errors: v } = validationAuctionForm(validationData);
 
   errors.value = v;
   if (!isValid) return;
@@ -325,13 +283,15 @@ const handleSubmit = async () => {
   try {
     await post(`auction/update/${productId}`, fd);
     alertType.value = "success";
-    alertMessage.value = "Auction updated successfully!";
+    alertMessage.value = t('auction_updaet_s');
     showAlert.value = true;
-    sessionStorage.setItem("auctionCreatedMessage", alertMessage.value);
-    // router.push({ name: "admin.auctions.view" });
+    // Delay redirect by 3 seconds
+    redirectTimeout = setTimeout(() => {
+      router.push({ name: "admin.auctions.view" });
+    }, 3000);
   } catch (err) {
     alertType.value = "error";
-    alertMessage.value = "Failed to update auction.";
+    alertMessage.value = t('auction_update_f');
     showAlert.value = true;
   }
 };

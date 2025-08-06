@@ -8,26 +8,34 @@
       >
         <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
         <span class="text-sm font-medium">
-          ⚠️ You currently have no Sub-Categories. Please add some to get
-          started.
+          {{ $t('sub_category_note') }}
         </span>
       </div>
     </div>
     <div v-else class="px-4 mt-6 max-w-6xl">
+      <Alert
+        v-if="showAlert"
+        :type="alertType"
+        :message="alertMessage"
+        @close="showAlert = false"
+        :classWidth="'max-w-6xl'"
+      />
       <div class="bg-white shadow-md rounded-md overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800">📦 Sub-Categories - {{ subcategories.length }}</h3>
+          <h3 class="text-lg font-semibold text-gray-800">
+            📦 {{ $t('sub_categories') }} - {{ subcategories.length }}
+          </h3>
         </div>
 
         <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
           <table class="min-w-full text-sm text-left divide-y divide-gray-200">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
-                <th class="px-4 py-3">No.</th>
-                <th class="px-4 py-3">ID</th>
-                <th class="px-4 py-3">Name</th>
-                <th class="px-4 py-3">Categoty Group</th>
-                <th class="px-4 py-3 text-center">Actions</th>
+                <th class="px-4 py-3">{{ $t('no') }}</th>
+                <th class="px-4 py-3">{{ $t('id') }}</th>
+                <th class="px-4 py-3">{{ $t('name') }}</th>
+                <th class="px-4 py-3">{{ $t('categoty_group') }}</th>
+                <th class="px-4 py-3 text-center">{{ $t('actions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
@@ -39,7 +47,9 @@
                 <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
                 <td class="px-4 py-3 font-medium">{{ subcategory.id }}</td>
                 <td class="px-4 py-3 font-medium">{{ subcategory.name }}</td>
-                <td class="px-4 py-3 font-medium">{{ subcategory.category.name }}</td>
+                <td class="px-4 py-3 font-medium">
+                  {{ subcategory.category.name }}
+                </td>
                 <td class="px-4 py-3 text-center space-x-3">
                   <button
                     @click="handleEditSubCategory(subcategory)"
@@ -78,13 +88,17 @@
 </template>
 
 <script setup>
+import Alert from "@/components/shared/Alert.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Loader from "@/components/shared/Loader.vue";
 import Pagination from "@/components/shared/Pagination.vue";
+import { get, remove } from "@/js/helper/api";
 import ActionDelete from "@/modal/ActionDelete.vue";
 import { computed, onMounted, ref } from "vue";
-import { get, remove } from "@/js/helper/api";
+import { useI18n } from 'vue-i18n';
 import { useRouter } from "vue-router";
+
+const { t } = useI18n();
 
 const subcategories = ref([]);
 const router = useRouter();
@@ -109,9 +123,7 @@ const fetchSubCategories = async () => {
   isLoading.value = true;
   try {
     const response = await get("subcategories");
-    console.log("RESPOSNE: ", response);
     subcategories.value = response.subcategories;
-    console.log(response.data);
   } catch (err) {
     console.error("Error fetching products: ", err.message);
   } finally {
@@ -146,7 +158,7 @@ const confirmDelete = async () => {
 
     showAlert.value = true;
     alertType.value = "success";
-    alertMessage.value = "✅ Sub-Category deleted successfully!";
+    alertMessage.value = t('sub_category_success_delete');
 
     setTimeout(() => {
       showAlert.value = false;
@@ -155,7 +167,7 @@ const confirmDelete = async () => {
     console.error("Failed to delete sub-category: ", err.message);
     showAlert.value = true;
     alertType.value = "error";
-    alertMessage.value = "❌ Failed to delete sub-category.";
+    alertMessage.value = t('sub_category_failed_delete');
     setTimeout(() => {
       showAlert.value = false;
     }, 3000);
@@ -164,7 +176,9 @@ const confirmDelete = async () => {
 
 const handleEditSubCategory = (subcategory) => {
   console.log("Edit auction", subcategory);
-  router.push({ name: "admin.sub-category.edit", params: { id: subcategory.id } });
+  router.push({
+    name: "admin.sub-category.edit",
+    params: { id: subcategory.id },
+  });
 };
-
 </script>

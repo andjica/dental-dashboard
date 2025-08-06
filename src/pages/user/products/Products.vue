@@ -9,32 +9,39 @@
       >
         <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
         <span class="text-sm font-medium">
-          ⚠️ You currently have no products. Please add some to get started.
+          {{ $t("product_no") }}
         </span>
       </div>
     </div>
     <!-- Products table -->
     <div v-else class="px-4 mt-6 max-w-6xl">
+      <Alert
+        v-if="showAlert"
+        :type="alertType"
+        :message="alertMessage"
+        @close="showAlert = false"
+        :classWidth="'max-w-6xl'"
+      />
       <div class="bg-white shadow-md rounded-md overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800">📦 Products</h3>
+          <h3 class="text-lg font-semibold text-gray-800">
+            📦 {{ $t("products") }}
+          </h3>
         </div>
 
         <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
           <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead
-              class="bg-gray-100 sticky top-0 z-10"
-            >
+            <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
-                <th class="px-4 py-3">No.</th>
-                <th class="px-4 py-3">ID</th>
-                <th class="px-4 py-3">Name</th>
-                <th class="px-4 py-3">Image</th>
-                <th class="px-4 py-3">Category</th>
-                <th class="px-4 py-3">Type</th>
-                <th class="px-4 py-3">Price</th>
-                <th class="px-4 py-3 text-center">Active</th>
-                <th class="px-4 py-3 text-right">Actions</th>
+                <th class="px-4 py-3">{{ $t("no") }}</th>
+                <th class="px-4 py-3">{{ $t("id") }}</th>
+                <th class="px-4 py-3">{{ $t("name") }}</th>
+                <th class="px-4 py-3">{{ $t("image") }}</th>
+                <th class="px-4 py-3">{{ $t("category_name") }}</th>
+                <th class="px-4 py-3">{{ $t("product_type") }}</th>
+                <th class="px-4 py-3">{{ $t("price") }}</th>
+                <th class="px-4 py-3 text-center">{{ $t("active") }}</th>
+                <th class="px-4 py-3 text-right">{{ $t("action") }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
@@ -109,12 +116,20 @@ import Loader from "@/components/shared/Loader.vue";
 import Pagination from "@/components/shared/Pagination.vue";
 import { get } from "@/js/helper/api.js";
 import { getImageUrl } from "@/js/helper/displayImage";
+import ActionDelete from "@/modal/ActionDelete.vue";
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import ActionDelete from "@/modal/ActionDelete.vue";
+import Alert from "@/components/shared/Alert.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const products = ref([]);
 const user = JSON.parse(localStorage.getItem("user"));
+// message alert
+const showAlert = ref(false);
+const alertType = ref("success");
+const alertMessage = ref("");
 
 const showDeleteModal = ref(false);
 const productToDelete = ref(null);
@@ -166,28 +181,25 @@ const paginatedProducts = computed(() => {
 
 const totalPages = computed(() => Math.ceil(products.value.length / perPage));
 
-const confirmDelete = () => {
-  const token = localStorage.getItem("token");
+const confirmDelete = async () => {
+  if (!productToDelete.value) return;
 
-  // fetch(`http://localhost:8000/api/products/${userId}`, {
-  //   method: "DELETE",
-  //   headers: {
-  //     Accept: "application/json",
-  //     Authorization: `Bearer ${token}`,
-  //   },
-  // })
-  //   .then((res) => {
-  //     if (!res.ok) throw new Error("Failed to delete product");
-  //     return res.json();
-  //   })
-  //   .then((data) => {
-  //     console.log("Deleted:", data);
-  //     // Emit event or reload list
-  //         showDeleteModal.value = false;
-  //     showDeleteModal.value = false;
-  //   })
-  //   .catch((err) => {
-  //     console.error("Error deleting:", err);
-  //   });
+  try {
+    await remove(`products/${productToDelete.value.id}`);
+    products.value = products.value.filter(
+      (p) => p.id !== productToDelete.value.id
+    );
+    showDeleteModal.value = false;
+    productToDelete.value = null;
+
+    alertType.value = "success";
+    alertMessage.value = t("product_success_delete");
+    showAlert.value = true;
+  } catch (err) {
+    console.error("Error deleting product:", err.message);
+    alertType.value = "error";
+    alertMessage.value = t("product_failed_delete");
+    showAlert.value = true;
+  }
 };
 </script>

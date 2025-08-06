@@ -1,37 +1,29 @@
 <template>
   <transition name="fade-slide">
-    <div
-      v-show="visible"
-      :class="[
-        'flex items-start gap-4 px-6 py-4 max-w-3xl rounded-lg shadow-lg border text-sm font-medium sticky top-0 z-10',
-        type === 'success'
-          ? 'bg-green-50 text-green-800 border-green-200'
-          : type === 'info'
+    <div v-show="visible" :class="[
+      'flex items-start gap-4 ml-3 px-6 py-4 rounded-lg shadow-lg border text-sm font-medium sticky top-0 z-10',
+      type === 'success'
+        ? 'bg-green-50 text-green-800 border-green-200'
+        : type === 'info'
           ? 'bg-yellow-50 text-yellow-800 border-yellow-200'
           : 'bg-red-50 text-red-800 border-red-200',
-      ]"
-    >
+        classWidth
+    ]">
       <div class="pt-1">
-        <i
-          :class="[
-            'text-xl',
-            type === 'success'
-              ? 'fas fa-check-circle'
-              : type === 'info'
+        <i :class="[
+          'text-xl',
+          type === 'success'
+            ? 'fas fa-check-circle'
+            : type === 'info'
               ? 'fas fa-info-circle'
               : 'fas fa-exclamation-circle',
-          ]"
-        ></i>
+        ]"></i>
       </div>
       <div class="flex-1">
-        <strong class="capitalize">{{ type }}</strong
-        >: {{ message }}
+        <strong class="capitalize">{{ type }}</strong>: {{ message }}
       </div>
-      <button
-        @click="close"
-        class="absolute right-3 top-3 text-xl leading-none text-gray-400 hover:text-gray-600"
-        aria-label="Close"
-      >
+      <button @click="close" class="absolute right-3 top-3 text-xl leading-none text-gray-400 hover:text-gray-600"
+        aria-label="Close">
         ×
       </button>
     </div>
@@ -51,6 +43,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  classWidth: {
+    type: String,
+    default: ''
+  }
 });
 
 const emit = defineEmits(["close"]);
@@ -74,6 +70,7 @@ onMounted(() => {
 .fade-slide-leave-active {
   transition: all 0.4s ease;
 }
+
 .fade-slide-enter-from,
 .fade-slide-leave-to {
   opacity: 0;

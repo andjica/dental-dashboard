@@ -1,7 +1,9 @@
 export const validateProductForm = (data) => {
-  console.log("DATA validation: ",data);
+
   const errors = {};
   let isValid = true;
+
+  const maxSizeInBytes = 4 * 1024 * 1024; // 4MB
 
   if (!data.productName) {
     errors.productName = "Product name is requred.";
@@ -9,8 +11,10 @@ export const validateProductForm = (data) => {
   }
 
   if(!(data.productMainImage instanceof File)) {
-    errors.productMainImage = "Select main image for product.";
+    errors.productMainImage = "Main image for product is required.";
     isValid = false;
+  } else if(data.productMainImage && data.productMainImage.size > maxSizeInBytes) {
+    errors.productMainImage = "Image size must not exceed 4MB."
   }
 
   if (!data.productDesc) {
@@ -29,12 +33,16 @@ export const validateProductForm = (data) => {
   }
 
   if (!data.productGallery || data.productGallery.length === 0) {
-    errors.productGallery = "Product images is required.";
+    errors.productGallery = "At least 2 product images are required.";
+    isValid = false;
+  } else if (data.productGallery.length < 2) {
+    errors.productGallery = "You must upload at least 2 images.";
     isValid = false;
   } else if (data.productGallery.length > 5) {
     errors.productGallery = "You must upload a maximum of 5 images.";
     isValid = false;
   }
+
 
   if (
     !data.productQuantity ||

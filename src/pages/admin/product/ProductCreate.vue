@@ -1,15 +1,14 @@
 <template>
   <ButtonBack />
-  <Alert v-if="alert.message" :type="alert.type" :message="alert.message" @close="alert.message = ''" />
+  <Alert v-if="showAlert" :type="alertType" :message="alertMessage" @close="showAlert = false"
+    :classWidth="'max-w-4xl'" />
   <div class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl overflow-y-auto">
-    <h1 class="text-3xl font-bold mb-8 text-gray-800">
-      🛍️ Create a New Product
-    </h1>
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">🛍️ {{ $t('product_create') }}</h1>
 
     <form @submit.prevent="handleSubmit" class="space-y-6" enctype="multipart/form-data">
       <!-- Product Name -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Product Name</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('product_name') }}</label>
         <input v-model="form.name" type="text"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <p v-if="errors.productName" class="text-red-500 text-sm mt-1">
@@ -17,12 +16,13 @@
         </p>
       </div>
 
+
       <!-- Product main image -->
       <div class="mt-4">
-        <label class="block text-sm font-medium mb-1">Main Image</label>
+        <label class="block text-sm font-medium mb-1">{{ $t('image_main') }}</label>
         <label for="mainImageInput"
           class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition duration-200">
-          Upload Image
+          {{ $t('image_upload') }}
         </label>
 
         <!-- Hidden file input -->
@@ -38,44 +38,36 @@
 
       <!-- Product Type -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Product Type</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('product_type') }}</label>
         <div class="flex items-center space-x-6">
           <label class="inline-flex items-center text-sm">
             <input type="radio" value="new" v-model="form.type" class="form-radio text-blue-600" />
-            <span class="ml-2">🆕 New</span>
+            <span class="ml-2">🆕 {{ $t('new') }}</span>
           </label>
           <label class="inline-flex items-center text-sm">
             <input type="radio" value="used" v-model="form.type" class="form-radio text-blue-600" />
-            <span class="ml-2">♻️ Used</span>
+            <span class="ml-2">♻️ {{ $t('used') }}</span>
           </label>
         </div>
       </div>
 
       <!-- Product Description -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Product Description</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">{{ $t('product_description') }}</label>
         <!-- Toolbar -->
         <div class="flex flex-wrap gap-2 mb-3">
-          <button type="button" @click="toggleBold" :class="buttonClass(editor.isActive('bold')) +
-            ' px-2 py-1 rounded hover:bg-gray-100'
-            " aria-label="Bold">
-            B
-          </button>
-          <button type="button" @click="toggleItalic" :class="buttonClass(editor.isActive('italic')) +
-            ' px-2 py-1 rounded hover:bg-gray-100'
-            " aria-label="Italic">
-            <em>I</em>
-          </button>
-          <button type="button" @click="toggleUnderline" :class="buttonClass(editor.isActive('underline')) +
-            ' px-2 py-1 rounded hover:bg-gray-100'
-            " aria-label="Underline">
-            <u>U</u>
-          </button>
-          <button type="button" @click="toggleStrike" :class="buttonClass(editor.isActive('strike')) +
-            ' px-2 py-1 rounded hover:bg-gray-100'
-            " aria-label="Strikethrough">
-            <s>S</s>
-          </button>
+          <button type="button" @click="toggleBold"
+            :class="buttonClass(editor.isActive('bold')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+            aria-label="Bold">B</button>
+          <button type="button" @click="toggleItalic"
+            :class="buttonClass(editor.isActive('italic')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+            aria-label="Italic"><em>I</em></button>
+          <button type="button" @click="toggleUnderline"
+            :class="buttonClass(editor.isActive('underline')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+            aria-label="Underline"><u>U</u></button>
+          <button type="button" @click="toggleStrike"
+            :class="buttonClass(editor.isActive('strike')) + ' px-2 py-1 rounded hover:bg-gray-100'"
+            aria-label="Strikethrough"><s>S</s></button>
         </div>
         <!-- Editor Container -->
         <div
@@ -91,11 +83,11 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Category -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">Product Category</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('product_category') }}</label>
           <div class="relative">
             <select v-model="form.category"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none">
-              <option disabled value="">Select a category</option>
+              <option disabled value="">{{ $t('category_select') }}</option>
               <option v-for="category in form.categories" :key="category.id" :value="category.id">
                 {{ category.name }}
               </option>
@@ -112,11 +104,11 @@
 
         <!-- Sub-category -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">Product Sub-category</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('productSub_category') }}</label>
           <div class="relative">
             <select v-model="form.subCategory"
               class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none">
-              <option disabled value="">Select a subcategory</option>
+              <option disabled value="">{{ $t('subcategory_select') }}</option>
               <option v-for="subCategory in form.subCategories" :key="subCategory.id" :value="subCategory.id">
                 {{ subCategory.name }}
               </option>
@@ -135,7 +127,7 @@
       <!-- Price -->
       <div class="w-full md:w-1/3 md:pr-2 pr-0">
         <label for="priceInput" class="block text-sm font-semibold text-gray-700 mb-1">
-          Price (€)
+          {{ $t('price') }} (€)
         </label>
         <div class="relative">
           <!-- Euro symbol inside -->
@@ -150,13 +142,14 @@
         </p>
       </div>
 
+
       <!-- Images -->
       <div>
-        <label class="block text-sm font-medium mb-1">Product Gallery</label>
+        <label class="block text-sm font-medium mb-1">{{ $t('product_gallery') }}</label>
         <div>
           <label for="imageUpload"
             class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded cursor-pointer transition duration-200">
-            Select Images
+            {{ $t('images_select') }}
           </label>
           <input id="imageUpload" name="images[]" @change="handleImageUpload" type="file" multiple accept="image/*"
             class="hidden" />
@@ -174,10 +167,10 @@
           </div>
         </div>
         <div v-if="form.image_gallery.length" class="mt-2 text-sm text-gray-600">
-          {{ form.image_gallery.length }} image{{
+          {{ form.image_gallery.length }} {{ $t('image') }}{{
             form.image_gallery.length > 1 ? "s" : ""
           }}
-          selected
+          {{ $t('selected') }}
         </div>
         <p v-if="errors.productGallery" class="text-red-500 text-sm mt-1">
           {{ errors.productGallery }}
@@ -188,69 +181,63 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
         <!-- Length -->
         <div>
-          <label for="lengthInput" class="block text-sm font-semibold text-gray-700 mb-1">Length (cm)</label>
+          <label for="lengthInput" class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('length') }}
+            (cm)</label>
           <div class="relative">
             <input id="lengthInput" v-model="form.length" @input="(e) => cleanNumberInput(e, 'length')"
               @keypress="allowOnlyNumbersAndDot" type="text" placeholder="0"
               class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">cm</span>
           </div>
-          <p v-if="errors.productLength" class="text-red-500 text-sm mt-1">
-            {{ errors.productLength }}
-          </p>
+          <p v-if="errors.productLength" class="text-red-500 text-sm mt-1">{{ errors.productLength }}</p>
         </div>
 
         <!-- Width -->
         <div>
-          <label for="widthInput" class="block text-sm font-semibold text-gray-700 mb-1">Width (cm)</label>
+          <label for="widthInput" class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('width') }} (cm)</label>
           <div class="relative">
             <input id="widthInput" v-model="form.width" @input="(e) => cleanNumberInput(e, 'width')"
               @keypress="allowOnlyNumbersAndDot" type="text" placeholder="0"
               class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">cm</span>
           </div>
-          <p v-if="errors.productWidth" class="text-red-500 text-sm mt-1">
-            {{ errors.productWidth }}
-          </p>
+          <p v-if="errors.productWidth" class="text-red-500 text-sm mt-1">{{ errors.productWidth }}</p>
         </div>
 
         <!-- Height -->
         <div>
-          <label for="heightInput" class="block text-sm font-semibold text-gray-700 mb-1">Height (cm)</label>
+          <label for="heightInput" class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('height') }}
+            (cm)</label>
           <div class="relative">
             <input id="heightInput" v-model="form.height" @input="(e) => cleanNumberInput(e, 'height')"
               @keypress="allowOnlyNumbersAndDot" type="text" placeholder="0"
               class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">cm</span>
           </div>
-          <p v-if="errors.productHeight" class="text-red-500 text-sm mt-1">
-            {{ errors.productHeight }}
-          </p>
+          <p v-if="errors.productHeight" class="text-red-500 text-sm mt-1">{{ errors.productHeight }}</p>
         </div>
 
         <!-- Weight -->
         <div>
-          <label for="weightInput" class="block text-sm font-semibold text-gray-700 mb-1">Weight (kg)</label>
+          <label for="weightInput" class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('weight') }}
+            (kg)</label>
           <div class="relative">
             <input id="weightInput" v-model="form.weight" @input="(e) => cleanNumberInput(e, 'weight')"
               @keypress="allowOnlyNumbersAndDot" type="text" placeholder="e.g. 1.5"
               class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
             <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">kg</span>
           </div>
-          <p v-if="errors.productWeight" class="text-red-500 text-sm mt-1">
-            {{ errors.productWeight }}
-          </p>
+          <p v-if="errors.productWeight" class="text-red-500 text-sm mt-1">{{ errors.productWeight }}</p>
         </div>
       </div>
 
       <!-- Stock Quantity -->
       <div class="w-full md:w-1/3 mb-6">
-        <label for="stockInput" class="block text-sm font-semibold text-gray-700 mb-1">Stock Quantity</label>
+        <label for="stockInput" class="block text-sm font-semibold text-gray-700 mb-1">{{ $t('stock_quantity')
+          }}</label>
         <input id="stockInput" v-model="form.stock" type="number" min="0" placeholder="0"
           class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
-        <p v-if="errors.productQuantity" class="text-red-500 text-sm mt-1">
-          {{ errors.productQuantity }}
-        </p>
+        <p v-if="errors.productQuantity" class="text-red-500 text-sm mt-1">{{ errors.productQuantity }}</p>
       </div>
 
       <!-- Active Toggle -->
@@ -268,20 +255,17 @@
               class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5">
             </div>
           </div>
-          <span class="ml-3 text-sm font-semibold text-gray-700">Active</span>
+          <span class="ml-3 text-sm font-semibold text-gray-700">{{ $t('active') }}</span>
         </label>
       </div>
 
       <!-- Buttons -->
       <div class="flex space-x-4">
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
-          Create
+          {{ $t('create') }}
         </button>
-        <!-- <button
-          type="button"
-          @click="cancel"
-          class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
-        >
+        <!-- <button type="button" @click="cancel"
+          class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer">
           Cancel
         </button> -->
       </div>
@@ -290,16 +274,18 @@
 </template>
 
 <script setup>
-import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Alert from "@/components/shared/Alert.vue";
-import Heading from "@tiptap/extension-heading";
+import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-
 import { validateProductForm } from "@/js/form-validation/product/product-create";
+import { get, post } from "@/js/helper/api";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const editor = ref(null);
@@ -325,25 +311,25 @@ const form = ref({
 
 const mainImagePreview = ref(null);
 const imagePreviews = ref([]);
+
+let redirectTimeout;
+
 const errors = ref({});
 
 // for alert
-const alert = ref({
-  message: "",
-  type: "success",
-});
-
-const showAlert = (type, message) => {
-  alert.value.type = type;
-  alert.value.message = message;
-};
+const showAlert = ref(false);
+const alertType = ref("success");
+const alertMessage = ref("");
 
 editor.value = new Editor({
-  extensions: [StarterKit, Underline, Heading.configure({ levels: [1, 2, 3] })],
+  extensions: [
+    StarterKit,
+    Underline,
+  ],
   editorProps: {
     attributes: {
       class: "min-h-[150px] focus:outline-none",
-      placeholder: "Write description of product...",
+      placeholder: t('product_write_description'),
     },
   },
   onUpdate({ editor }) {
@@ -357,19 +343,10 @@ const toggleUnderline = () =>
   editor.value.chain().focus().toggleUnderline().run();
 const toggleStrike = () => editor.value.chain().focus().toggleStrike().run();
 
-// const toggleHeading = (level) =>
-//   editor.value.chain().focus().toggleHeading({ level }).run();
-
-// const toggleBulletList = () =>
-//   editor.value.chain().focus().toggleBulletList().run();
-
-// const toggleOrderedList = () =>
-//   editor.value.chain().focus().toggleOrderedList().run();
-
 const buttonClass = (isActive) => {
   return `px-2 py-1 rounded border ${isActive
-      ? "bg-blue-600 text-white"
-      : "bg-white text-gray-800 hover:bg-gray-100"
+    ? "bg-blue-600 text-white"
+    : "bg-white text-gray-800 hover:bg-gray-100"
     }`;
 };
 
@@ -418,6 +395,8 @@ watch(
 );
 
 onBeforeUnmount(() => {
+  if (redirectTimeout) clearTimeout(redirectTimeout);
+
   imagePreviews.value.forEach((url) => URL.revokeObjectURL(url));
   if (mainImagePreview.value) {
     URL.revokeObjectURL(mainImagePreview.value);
@@ -427,10 +406,8 @@ onBeforeUnmount(() => {
 });
 
 const cleanNumberInput = (e, field) => {
-  // Ukloni sve osim cifara i tačke
   let input = e.target.value.replace(/[^0-9.]/g, "");
 
-  // Samo prva tačka se dozvoljava (decimalna)
   const parts = input.split(".");
   if (parts.length > 2) {
     input = parts[0] + "." + parts[1];
@@ -454,21 +431,7 @@ const formatDisplayPrice = () => {
 };
 
 const fetchCategory = () => {
-  const token = localStorage.getItem("token");
-  return fetch("http://localhost:8000/api/categories", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch cities");
-      }
-      return res.json();
-    })
+  return get("categories")
     .then((data) => {
       form.value.categories = data.data || [];
     })
@@ -478,21 +441,7 @@ const fetchCategory = () => {
 };
 
 const fetchSubcategory = (categoryId) => {
-  const token = localStorage.getItem("token");
-  return fetch(`http://localhost:8000/api/sub-categories/${categoryId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch sub category");
-      }
-      return res.json();
-    })
+  return get(`sub-categories/${categoryId}`)
     .then((data) => {
       form.value.subCategories = data.data || [];
     })
@@ -502,7 +451,6 @@ const fetchSubcategory = (categoryId) => {
 };
 
 const handleSubmit = () => {
-  const token = localStorage.getItem("token");
 
   const { isValid, errors: validationErrors } = validateProductForm({
     productName: form.value.name,
@@ -543,33 +491,23 @@ const handleSubmit = () => {
   formData.append("weight", form.value.weight);
   formData.append("in_stock", form.value.is_active ? "1" : "0");
 
-  fetch("http://localhost:8000/api/products", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
+  post("products", formData)
     .then((data) => {
-      console.log("User product: ", data);
-      showAlert("success", "Product is created successfully!");
-
-      router.push({ name: "admin.products" });
+      console.log("Server response:", data);
+      alertType.value = "success";
+      alertMessage.value = t('product_success');
+      showAlert.value = true;
+      redirectTimeout = setTimeout(() => { router.push({ name: "admin.products" }); }, 3000);
     })
     .catch((error) => {
       console.error("Error submitting company data:", error);
-      showAlert("error", "Failed to create product.");
+
+      alertType.value = "error";
+      alertMessage.value = t('product_failed');
+      showAlert.value = true;
     });
+  // (opciono) idi dalje
+  console.log("Product locally saved:", formData);
 };
 
-// const cancel = () =>  {
-//   router.back()
-// }
 </script>

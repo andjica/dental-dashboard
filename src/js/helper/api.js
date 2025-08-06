@@ -29,7 +29,9 @@ const API = (url, method = "GET", body = null) => {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `Failed to fetch ${url}`);
+        throw new Error(
+          err.message || res.statusText || `Failed to fetch ${url}`
+        );
       }
 
       if (res.status === 204 || res.status === 205) {

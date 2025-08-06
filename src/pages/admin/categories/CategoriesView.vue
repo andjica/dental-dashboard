@@ -8,7 +8,7 @@
       >
         <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
         <span class="text-sm font-medium">
-          ⚠️ You currently have no Categories. Please add some to get started.
+          {{ $t('category_no') }}
         </span>
       </div>
     </div>
@@ -21,10 +21,11 @@
               :type="alertType"
               :message="alertMessage"
               @close="showAlert = false"
+              :classWidth="'max-w-6xl'"
             />
           </div>
           <h3 class="text-lg font-semibold text-gray-800">
-            📦 Categories - {{ categories.length }}
+            📦 {{ $t('categories') }} - {{ categories.length }}
           </h3>
         </div>
 
@@ -32,11 +33,11 @@
           <table class="min-w-full text-sm text-left divide-y divide-gray-200">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
-                <th class="px-4 py-3">No.</th>
-                <th class="px-4 py-3">ID</th>
-                <th class="px-4 py-3">Name</th>
-                <th class="px-4 py-3 text-center">Number of Sub-Category</th>
-                <th class="px-4 py-3 text-center">Actions</th>
+                <th class="px-4 py-3">{{ $t('no') }}</th>
+                <th class="px-4 py-3">{{ $t('id') }}</th>
+                <th class="px-4 py-3">{{ $t('name') }}</th>
+                <th class="px-4 py-3 text-center">{{t('subCategoty_number')}}</th>
+                <th class="px-4 py-3 text-center">{{ $t('actions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 text-gray-800">
@@ -97,6 +98,9 @@ import ActionDelete from "@/modal/ActionDelete.vue";
 import { computed, onMounted, ref } from "vue";
 import { get, remove } from "@/js/helper/api";
 import { useRouter } from "vue-router";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const categories = ref([]);
@@ -182,7 +186,7 @@ const confirmDelete = async () => {
 
     showAlert.value = true;
     alertType.value = "success";
-    alertMessage.value = "✅ Category deleted successfully!";
+    alertMessage.value = t('category_delete_success');
 
     setTimeout(() => {
       showAlert.value = false;
@@ -191,7 +195,7 @@ const confirmDelete = async () => {
     console.error("Failed to delete category: ", err.message);
     showAlert.value = true;
     alertType.value = "error";
-    alertMessage.value = "❌ Failed to delete category.";
+    alertMessage.value = t('category_delete_failed');
     setTimeout(() => {
       showAlert.value = false;
     }, 3000);

@@ -7,22 +7,23 @@
         :type="alertType"
         :message="alertMessage"
         @close="showAlert = false"
+        :classWidth="'max-w-3xl'"
       />
     </div>
 
-    <h1 class="text-3xl font-bold mb-8 text-gray-800">Create a new Sub-Category</h1>
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">{{ $t('subCategory_new') }}</h1>
 
     <form @submit.prevent="handleSubmit">
       <!-- Sub-category name -->
       <div class="mt-4">
         <label class="block text-sm font-semibold text-gray-700 mb-1">
-          Sub-Category Name
+          {{t('subCategory_name')}}
         </label>
         <input
           v-model="subCategoryName"
           type="text"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter sub-category name"
+          :placeholder="t('subCategory_name_enter')"
         />
         <p v-if="errors.subCategoryName" class="text-sm text-red-600 mt-1">
           {{ errors.subCategoryName }}
@@ -32,13 +33,13 @@
       <!-- Category dropdown -->
       <div class="mt-4">
         <label class="block text-sm font-semibold text-gray-700 mb-1">
-          Category
+          {{t('category_name')}}
         </label>
         <select
           v-model="selectedCategory"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option disabled value="">Select a category</option>
+          <option disabled value="">{{ $t('category_select') }}</option>
           <option
             v-for="category in sortedCategories"
             :key="category.id"
@@ -56,7 +57,7 @@
         type="submit"
         class="bg-blue-600 text-white mt-4 px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
       >
-        Create
+        {{t('create')}}
       </button>
     </form>
   </div>
@@ -68,6 +69,9 @@ import Alert from "@/components/shared/Alert.vue";
 import { get, post } from "@/js/helper/api";
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 // Form values
@@ -113,11 +117,11 @@ const handleSubmit = async () => {
   errors.value = {};
 
   if (!subCategoryName.value.trim()) {
-    errors.value.subCategoryName = "Sub-category name is required.";
+    errors.value.subCategoryName = t('subCategory_required');
   }
 
   if (!selectedCategory.value) {
-    errors.value.selectedCategory = "Please select a category.";
+    errors.value.selectedCategory = t('subCategory_select_pl');
   }
 
   if (Object.keys(errors.value).length > 0) return;
@@ -136,11 +140,11 @@ const handleSubmit = async () => {
     // Success alert
     showAlert.value = true;
     alertType.value = "success";
-    alertMessage.value = "✅ Sub-category created successfully!";
+    alertMessage.value = t('subCategory_create-s');
   } catch (error) {
     showAlert.value = true;
     alertType.value = "error";
-    alertMessage.value = "❌ Failed to create sub-category.";
+    alertMessage.value = t('subCategory_create-f');
     console.error(error);
   }
 };

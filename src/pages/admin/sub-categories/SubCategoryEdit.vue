@@ -7,16 +7,17 @@
         :type="alertType"
         :message="alertMessage"
         @close="showAlert = false"
+        :classWidth="'max-w-3xl'"
       />
     </div>
 
-    <h1 class="text-3xl font-bold mb-8 text-gray-800">Edit Sub-Category</h1>
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">{{ $t('subCategory_edit') }}</h1>
 
     <form @submit.prevent="handleSubmit">
       <!-- Sub-category name -->
       <div class="mt-4">
         <label class="block text-sm font-semibold text-gray-700 mb-1">
-          Sub-Category Name
+          {{ $t('subCategory_name') }}
         </label>
         <input
           v-model="subCategoryName"
@@ -32,13 +33,13 @@
       <!-- Category dropdown -->
       <div class="mt-4">
         <label class="block text-sm font-semibold text-gray-700 mb-1">
-          Category
+          {{ $t('category_name') }}
         </label>
         <select
           v-model="selectedCategory"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option disabled value="">Select a category</option>
+          <option disabled value="">{{ $t('category_select') }}</option>
           <option
             v-for="category in sortedCategories"
             :key="category.id"
@@ -56,7 +57,7 @@
         type="submit"
         class="bg-blue-600 text-white mt-4 px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
       >
-        Save
+        {{ $t('save') }}
       </button>
     </form>
   </div>
@@ -68,6 +69,9 @@ import Alert from "@/components/shared/Alert.vue";
 import { get, put } from "@/js/helper/api";
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
@@ -115,7 +119,7 @@ const fetchSubCategory = async () => {
 
   } catch (err) {
     console.error("Failed to load sub-category:", err.message);
-    alertMessage.value = "❌ Failed to load sub-category.";
+    alertMessage.value = t('subCategory_failed');
     alertType.value = "error";
     showAlert.value = true;
   }
@@ -139,11 +143,11 @@ const handleSubmit = async () => {
   errors.value = {};
 
   if (!subCategoryName.value.trim()) {
-    errors.value.subCategoryName = "Sub-category name is required.";
+    errors.value.subCategoryName = t('subCategory_required');
   }
 
   if (!selectedCategory.value) {
-    errors.value.selectedCategory = "Please select a category.";
+    errors.value.selectedCategory = t('subCategory_select_pl');
   }
 
   if (
@@ -152,7 +156,7 @@ const handleSubmit = async () => {
     ) {
     showAlert.value = true;
     alertType.value = "info";
-    alertMessage.value = "ℹ️ No changes detected. Please modify something before saving.";
+    alertMessage.value = t('subCategory_info');
     return;
     }
 
@@ -168,14 +172,14 @@ const handleSubmit = async () => {
     // Success alert
     showAlert.value = true;
     alertType.value = "success";
-    alertMessage.value = "✅ Sub-category update successfully!";
+    alertMessage.value = t('subCategory_update_s');
     setTimeout(() => {
       router.push("/admin/sub-categories");
     }, 1500);
 } catch (error) {
     showAlert.value = true;
     alertType.value = "error";
-    alertMessage.value = "❌ Failed to save sub-category.";
+    alertMessage.value = t('subCategory_update_f');
     console.error(error);
   }
 };

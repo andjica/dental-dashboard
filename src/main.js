@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import i18n from './i18n';
 import "./assets/color.css";
 import "./assets/main.css";
 
@@ -60,7 +61,7 @@ library.add(
 const app = createApp(App);
 
 app.use(router);
-
+app.use(i18n);
 // Registruješ FontAwesome komponentu globalno
 app.component('font-awesome-icon', FontAwesomeIcon);
 

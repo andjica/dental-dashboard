@@ -7,7 +7,7 @@
     <p
       class="m-4 p-4 text-sm text-green-700 bg-green-100 border border-green-300 rounded-lg shadow-sm"
     >
-      Admin will inform You, when you will have access to all pages!!!
+      {{ t('admin_info') }}
     </p>
   </div>
 </template>
@@ -15,7 +15,9 @@
 <script setup>
 import BaseCard from "@/components/shared/BaseCard.vue";
 import { onMounted, ref } from "vue";
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const isActive = ref(0);
 
 onMounted(() => {

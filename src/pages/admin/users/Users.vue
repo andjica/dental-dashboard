@@ -9,12 +9,17 @@
         <p
           class="mt-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-lg shadow-sm"
         >
-          ⚠️ There are no active users
+          {{ $t('user_no_active') }}
         </p>
       </template>
 
       <template class="p-6" v-else>
-        <TableCustome :data="paginatedAuctions" title="Users" icon="users" />
+        <h1 class="text-2xl font-bold mb-4">{{ $t('user_list') }}</h1>
+        <TableCustome
+          :data="paginatedAuctions"
+          :title="userName"
+          icon="users"
+        />
         <Pagination
           :page="page"
           :totalPages="totalPages"
@@ -32,9 +37,13 @@ import Loader from "@/components/shared/Loader.vue";
 import { computed, onMounted, ref } from "vue";
 import { get } from "@/js/helper/api.js";
 import Pagination from "@/components/shared/Pagination.vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const usersData = ref([]);
 const isLoading = ref(true);
+const userName = computed(() => t("users"));
 
 const page = ref(1);
 const perPage = 10;

@@ -9,20 +9,21 @@
         :type="alertType"
         :message="alertMessage"
         @close="showAlert = false"
+        :classWidth="'max-w-3xl'"
       />
     </div>
-    <h1 class="text-3xl font-bold mb-8 text-gray-800">Create a new category</h1>
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">{{ $t('category_new') }}</h1>
 
     <form @submit.prevent="handleSubmit">
       <div class="mt-4">
         <label class="block text-sm font-semibold text-gray-700 mb-1"
-          >Category Name</label
+          >{{ $t('category_name_only') }}</label
         >
         <input
           v-model="categoryName"
           type="text"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter category name"
+          :placeholder="t('category_name_enter')"
         />
         <p v-if="errors.categoryName" class="text-sm text-red-600 mt-1">
           {{ errors.categoryName }}
@@ -32,7 +33,7 @@
         type="submit"
         class="bg-blue-600 text-white mt-2 px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
       >
-        Create
+        {{ $t('create') }}
       </button>
     </form>
   </div>
@@ -44,6 +45,9 @@ import ButtonBack from "@/components/shared/ButtonBack.vue";
 import { post } from "@/js/helper/api";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -58,13 +62,13 @@ const handleSubmit = async () => {
   errors.value = {};
 
   if (!categoryName.value.trim()) {
-    errors.value.categoryName = "Category name is required.";
+    errors.value.categoryName = t('category_required');
     return;
   }
 
   if (categoryName.value.trim().length < 6) {
     errors.value.categoryName =
-      "Category name must be at least 6 characters long.";
+      t('category_name_min');
     return;
   }
 
@@ -77,7 +81,7 @@ const handleSubmit = async () => {
     // Optionally show success alert
     showAlert.value = true;
     alertType.value = "success";
-    alertMessage.value = "✅ Category created successfully!";
+    alertMessage.value = t('category_create_success');
 
     // Redirect or reset form
     categoryName.value = "";
@@ -88,7 +92,7 @@ const handleSubmit = async () => {
     } else {
       showAlert.value = true;
       alertType.value = "error";
-      alertMessage.value = "❌ Failed to create category.";
+      alertMessage.value = t('category_create_failed');
       console.error(error);
     }
   }

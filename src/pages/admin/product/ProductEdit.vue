@@ -1,347 +1,240 @@
 <template>
   <ButtonBack />
-      <Alert
-      v-if="alert.message"
-      :type="alert.type"
-      :message="alert.message"
-      @close="alert.message = ''"
-    />
-  <div
-    class="p-6 mt-8 mb-8 ml-3 max-w-4xl bg-white rounded-lg shadow-2xl relative overflow-y-auto"
-  >
-    <h1 class="text-2xl font-semibold mb-6">Edit Product</h1>
-    <form
-      @submit.prevent="handleEdit"
-      class="space-y-6"
-      enctype="multipart/form-data"
-    >
-      <div>
-        <label class="block text-sm font-medium mb-1">Product Name</label>
-        <input
-          v-model="form.productName"
-          type="text"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        />
+  <Alert v-if="showAlert" :type="alertType" :message="alertMessage" @close="showAlert = false"
+    :classWidth="'max-w-6xl'" />
+  <div class="px-4 mt-6 max-w-6xl">
+    <div class="bg-white shadow-md rounded-md overflow-hidden">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-3xl font-bold mb-8 text-gray-800">🛍️ {{ t('product_edit') }}</h3>
       </div>
-      <!-- Product main image -->
-      <div class="mt-4">
-        <label class="block text-sm font-medium mb-1">Main Image</label>
-        <label
-          for="mainImageInput"
-          class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition duration-200"
-        >
-          Upload Image
-        </label>
 
-        <input
-          id="mainImageInput"
-          type="file"
-          accept="image/*"
-          @change="handleMainImageUpload"
-          class="hidden"
-        />
-        <div v-if="!mainImagePreview && form.image_main" class="mt-2">
-          <img
-            :src="getImageUrl(form.image_main)"
-            alt="Preview"
-            class="relative w-34 h-34 border rounded overflow-hidden shadow-sm"
-          />
-        </div>
-        <div v-if="mainImagePreview" class="mt-2">
-          <img
-            :src="mainImagePreview"
-            alt="Preview"
-            class="relative w-34 h-34 border rounded overflow-hidden shadow-sm"
-          />
-        </div>
-      </div>
-      <!-- Product Type -->
-      <div>
-        <label class="block text-sm font-medium mb-1">Product type</label>
-        <div class="flex items-center space-x-4 mb-2">
-          <label class="inline-flex items-center">
-            <input
-              type="radio"
-              value="new"
-              v-model="form.product_type"
-              class="form-radio text-blue-600"
-            />
-            <span class="ml-2">New</span>
-          </label>
-          <label class="inline-flex items-center">
-            <input
-              type="radio"
-              value="used"
-              v-model="form.product_type"
-              class="form-radio text-blue-600"
-            />
-            <span class="ml-2">Used</span>
-          </label>
-        </div>
-      </div>
-      <!-- Description -->
-      <div>
-        <label class="block text-sm font-medium mb-1">Description</label>
-        <!-- TOOLBAR -->
-        <div class="flex flex-wrap items-center gap-2 mb-2 text-sm">
-          <button
-            type="button"
-            @click="toggleBold"
-            :class="buttonClass(editor.isActive('bold'))"
-          >
-            B
-          </button>
-          <button
-            type="button"
-            @click="toggleItalic"
-            :class="buttonClass(editor.isActive('italic'))"
-          >
-            <em>I</em>
-          </button>
-          <button
-            type="button"
-            @click="toggleUnderline"
-            :class="buttonClass(editor.isActive('underline'))"
-          >
-            <u>U</u>
-          </button>
-          <button
-            type="button"
-            @click="toggleStrike"
-            :class="buttonClass(editor.isActive('strike'))"
-          >
-            <s>S</s>
-          </button>
-        </div>
-        <!-- EDITOR -->
-        <EditorContent
-          :editor="editor"
-          class="border rounded p-3 min-h-[150px]"
-        />
-      </div>
-      <!-- Category -->
-      <div class="flex flex-wrap -mx-2 mb-4">
-        <div class="w-full md:w-1/3 px-2">
-          <label class="block text-sm font-medium mb-1">Category</label>
-          <select
-            v-model="form.category"
-            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-          >
-            <option disabled value="">Select category</option>
-            <option
-              v-for="cat in form.categories"
-              :key="cat.id"
-              :value="cat.id"
-            >
-              {{ cat.name }}
-            </option>
-          </select>
-        </div>
-        <!-- Sub-category -->
-        <div class="w-full md:w-1/3 px-2">
-          <label class="block text-sm font-medium mb-1">Sub-category</label>
-          <select
-            v-model="form.subCategory"
-            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-          >
-            <option disabled value="">Select sub-category</option>
-            <option
-              v-for="sub in form.subCategories"
-              :key="sub.id"
-              :value="sub.id"
-            >
-              {{ sub.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <!-- Price -->
-      <div class="w-full md:w-1/3 md:pr-2 pr-0">
-        <label class="block text-sm font-medium mb-1">Price (€)</label>
-        <input
-          :value="form.price"
-          @input="(e) => cleanNumberInput(e, 'price')"
-          @keypress="allowOnlyNumbersAndDot"
-          @blur="formatDisplayPrice"
-          type="text"
-          inputmode="numeric"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        />
-      </div>
-      <!-- Images -->
-      <div>
-        <label class="block text-sm font-medium mb-1">Product Gallery</label>
-        <div>
-          <label
-            for="imageUpload"
-            class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded cursor-pointer transition duration-200"
-          >
-            Select Images
-          </label>
-          <input
-            id="imageUpload"
-            name="images[]"
-            @change="handleImageUpload"
-            type="file"
-            multiple
-            accept="image/*"
-            class="hidden"
-          />
-        </div>
-        <div class="flex flex-wrap gap-4 mt-4">
-          <div
-            v-for="(img, index) in form.image_gallery"
-            :key="index"
-            class="relative w-24 h-24 border rounded overflow-hidden shadow-sm"
-          >
-            <img
-              :src="resolveImageSrc(img)"
-              alt="Selected Image"
-              class="object-cover w-full h-full"
-            />
-            <button
-              @click.prevent="removeImage(index)"
-              class="absolute top-1 right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center shadow hover:bg-red-700 transition cursor-pointer"
-              title="Remove"
-            >
-              ×
+      <!-- Form Body -->
+      <div class="p-6">
+        <form @submit.prevent="handleEdit" class="space-y-6" enctype="multipart/form-data">
+          <!-- Product Name -->
+          <div>
+            <label class="block text-sm font-medium mb-1">{{ $t('product_name') }}</label>
+            <input v-model="form.productName" type="text"
+              class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <!-- Main Image -->
+          <div>
+            <label class="block text-sm font-medium mb-1">{{ $t('image_main') }}</label>
+            <label for="mainImageInput"
+              class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition">
+              {{ $t('image_upload') }}
+            </label>
+            <input id="mainImageInput" type="file" accept="image/*" @change="handleMainImageUpload" class="hidden" />
+            <div v-if="!mainImagePreview && form.image_main" class="mt-2">
+              <img :src="getImageUrl(form.image_main)" alt="Preview"
+                class="w-24 h-24 border rounded object-cover shadow-sm" />
+            </div>
+            <div v-if="mainImagePreview" class="mt-2">
+              <img :src="mainImagePreview" alt="Preview" class="w-24 h-24 border rounded object-cover shadow-sm" />
+            </div>
+          </div>
+
+          <!-- Product Type -->
+          <div>
+            <label class="block text-sm font-medium mb-1">{{ $t('product_type') }}</label>
+            <div class="flex items-center space-x-6">
+              <label class="inline-flex items-center text-sm">
+                <input type="radio" value="new" v-model="form.product_type" class="form-radio text-blue-600" />
+                <span class="ml-2">🆕 {{ $t('new') }}</span>
+              </label>
+              <label class="inline-flex items-center text-sm">
+                <input type="radio" value="used" v-model="form.product_type" class="form-radio text-blue-600" />
+                <span class="ml-2">♻️ {{ $t('used') }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-medium mb-1">{{ $t('product_description') }}</label>
+            <!-- Toolbar -->
+            <div class="flex flex-wrap gap-2 mb-3">
+              <button type="button" @click="toggleBold" :class="buttonClass(editor.isActive('bold')) +
+                ' px-2 py-1 rounded hover:bg-gray-100'
+                " aria-label="Bold">
+                B
+              </button>
+              <button type="button" @click="toggleItalic" :class="buttonClass(editor.isActive('italic')) +
+                ' px-2 py-1 rounded hover:bg-gray-100'
+                " aria-label="Italic">
+                <em>I</em>
+              </button>
+              <button type="button" @click="toggleUnderline" :class="buttonClass(editor.isActive('underline')) +
+                ' px-2 py-1 rounded hover:bg-gray-100'
+                " aria-label="Underline">
+                <u>U</u>
+              </button>
+              <button type="button" @click="toggleStrike" :class="buttonClass(editor.isActive('strike')) +
+                ' px-2 py-1 rounded hover:bg-gray-100'
+                " aria-label="Strikethrough">
+                <s>S</s>
+              </button>
+            </div>
+            <div
+              class="border border-gray-300 rounded-lg bg-white p-3 shadow-inner focus-within:ring-2 focus-within:ring-blue-500">
+              <EditorContent :editor="editor" class="min-h-[150px] outline-none" />
+            </div>
+          </div>
+
+          <!-- Category & Sub-category -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium mb-1">{{ $t('product_category') }}</label>
+              <select v-model="form.category"
+                class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none">
+                <option disabled value="">{{ $t('category_select') }}</option>
+                <option v-for="cat in form.categories" :key="cat.id" :value="cat.id">
+                  {{ cat.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">{{ $t('productSub_category') }}</label>
+              <select v-model="form.subCategory"
+                class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none">
+                <option disabled value="">{{ $t('subcategory_select') }}</option>
+                <option v-for="sub in form.subCategories" :key="sub.id" :value="sub.id">
+                  {{ sub.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="w-full md:w-1/3">
+            <label class="block text-sm font-medium mb-1">{{ $t('price') }} (€)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">€</span>
+              <input :value="form.price" @input="(e) => cleanNumberInput(e, 'price')" @keypress="allowOnlyNumbersAndDot"
+                @blur="formatDisplayPrice" type="text" placeholder="0.00"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
+            </div>
+          </div>
+
+          <!-- Gallery -->
+          <div>
+            <label class="block text-sm font-medium mb-1">{{ $t('product_gallery') }}</label>
+            <label for="imageUpload"
+              class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded cursor-pointer transition">
+              {{ $t('images_select') }}
+            </label>
+            <input id="imageUpload" @change="handleImageUpload" type="file" multiple accept="image/*" class="hidden" />
+            <div class="flex flex-wrap gap-4 mt-4">
+              <div v-for="(img, index) in form.image_gallery" :key="index"
+                class="relative w-24 h-24 border rounded overflow-hidden shadow-sm">
+                <img :src="resolveImageSrc(img)" alt="Selected Image" class="object-cover w-full h-full" />
+                <button @click.prevent="removeImage(index)"
+                  class="absolute top-1 right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center shadow hover:bg-red-700 transition"
+                  title="Remove">
+                  ×
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimensions -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div>
+              <label class="block text-sm font-medium mb-1">{{ $t('length') }} (cm)</label>
+              <input v-model="form.length" @input="(e) => cleanNumberInput(e, 'length')"
+                @keypress="allowOnlyNumbersAndDot" type="text"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">{{ $t('width') }} (cm)</label>
+              <input v-model="form.width" @input="(e) => cleanNumberInput(e, 'width')"
+                @keypress="allowOnlyNumbersAndDot" type="text"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">{{ $t('height') }} (cm)</label>
+              <input v-model="form.height" @input="(e) => cleanNumberInput(e, 'height')"
+                @keypress="allowOnlyNumbersAndDot" type="text"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">{{ $t('weight') }} (kg)</label>
+              <input v-model="form.weight" @input="(e) => cleanNumberInput(e, 'weight')"
+                @keypress="allowOnlyNumbersAndDot" type="text" placeholder="Example 1.5"
+                class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
+            </div>
+          </div>
+
+          <!-- Stock -->
+          <div class="w-full md:w-1/3">
+            <label class="block text-sm font-medium mb-1">{{ $t('stock_quantity') }}</label>
+            <input v-model="product.quantity" type="number" min="0"
+              class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400" />
+          </div>
+
+          <!-- Active -->
+          <div class="mb-6">
+            <label class="flex items-center cursor-pointer">
+              <!-- Switch Container -->
+              <div class="relative">
+                <input id="is_active" v-model="form.in_stock" type="checkbox" class="sr-only peer" />
+                <!-- Background -->
+                <div
+                  class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-blue-600 transition-colors">
+                </div>
+                <!-- Handle -->
+                <div
+                  class="absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5">
+                </div>
+              </div>
+              <span class="ml-3 text-sm font-semibold text-gray-700">{{ $t('active') }}</span>
+            </label>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex space-x-4">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
+              {{ t('save') }}
+            </button>
+            <button type="button" @click="cancel"
+              class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer">
+              {{ $t('cancel') }}
             </button>
           </div>
-        </div>
-        <div
-          v-if="form.image_gallery.length"
-          class="mt-2 text-sm text-gray-600"
-        >
-          {{ form.image_gallery.length }} image{{
-            form.image_gallery.length > 1 ? "s" : ""
-          }}
-          selected
-        </div>
+        </form>
       </div>
-      <!-- Width, Height, Length and Weight-->
-      <div class="flex flex-wrap -mx-2 mb-4">
-        <div class="w-full md:w-1/3 px-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Length (cm)</label
-          >
-          <input
-            v-model="form.length"
-            @input="(e) => cleanNumberInput(e, 'length')"
-            @keypress="allowOnlyNumbersAndDot"
-            type="text"
-            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-          />
-        </div>
-        <div class="w-full md:w-1/3 md:mt-0 mt-2 px-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Width (cm)</label
-          >
-          <input
-            v-model="form.width"
-            @input="(e) => cleanNumberInput(e, 'width')"
-            @keypress="allowOnlyNumbersAndDot"
-            type="text"
-            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-          />
-        </div>
-        <div class="w-full md:w-1/3 md:mt-0 mt-2 px-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Height (cm)</label
-          >
-          <input
-            v-model="form.height"
-            @input="(e) => cleanNumberInput(e, 'height')"
-            @keypress="allowOnlyNumbersAndDot"
-            type="text"
-            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-          />
-        </div>
-        <div class="w-full md:w-1/3 px-2 mt-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1"
-            >Weight (kg)</label
-          >
-          <input
-            v-model="form.weight"
-            @input="(e) => cleanNumberInput(e, 'weight')"
-            @keypress="allowOnlyNumbersAndDot"
-            placeholder="example 1.5"
-            type="text"
-            class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-          />
-        </div>
-      </div>
-      <!-- Stock -->
-      <div class="w-full md:w-1/3 md:pr-2 pr-0">
-        <label class="block text-sm font-medium mb-1">Stock Quantity</label>
-        <input
-          v-model="product.quantity"
-          type="number"
-          min="0"
-          class="w-full border px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-        />
-      </div>
-      <!-- Active -->
-      <div class="flex items-center space-x-2">
-        <input
-          v-model="form.in_stock"
-          type="checkbox"
-          id="is_active"
-          :true-value="1"
-          :false-value="0"
-        />
-        <label for="is_active" class="text-sm">Active</label>
-      </div>
-      <!-- Buttons -->
-      <div class="flex space-x-4">
-        <button
-          type="submit"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          @click="cancel"
-          class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+    </div>
   </div>
 </template>
 
 <script setup>
+import Alert from "@/components/shared/Alert.vue";
 import ButtonBack from "@/components/shared/ButtonBack.vue";
-import Heading from "@tiptap/extension-heading";
+import { getImageUrl } from "@/js/helper/displayImage";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import { onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import Alert from "@/components/shared/Alert.vue";
-import { useRouter } from "vue-router";
-import { getImageUrl } from "@/js/helper/displayImage";
+import { useRoute, useRouter } from "vue-router";
+import { get, post } from "@/js/helper/api";
+import { useI18n } from 'vue-i18n';
 
-const token = localStorage.getItem("token");
+const { t } = useI18n();
 
 const route = useRoute();
 const productId = parseInt(route.params.id);
 const product = ref({});
 const editor = ref(null);
 const mainImagePreview = ref(null);
+const originalData = ref({});
 
 const router = useRouter();
 // for alert
-const alert = ref({
-  message: "",
-  type: "success",
-});
-
-const showAlert = (type, message) => {
-  alert.value.type = type;
-  alert.value.message = message;
-};
+const showAlert = ref(false);
+const alertType = ref("success");
+const alertMessage = ref("");
 
 // create new form for update product
 const form = ref({
@@ -382,22 +275,9 @@ watch(
 );
 // fetch product by id
 const fetchProduct = () => {
-  fetch(`http://localhost:8000/api/product/${productId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Can't fetch product!");
-      }
-      return res.json();
-    })
+  get(`product/${productId}`)
     .then((data) => {
-      console.log("Company Product data jone: ", data);
+      console.log("Admin Product data jone: ", data.data);
       product.value = data.data;
 
       form.value.productName = product.value.name;
@@ -427,6 +307,26 @@ const fetchProduct = () => {
       const subCatId = product.value.sub_category.id;
 
       form.value.category = catId;
+      console.log(form.value.in_stock);
+      originalData.value = {
+        productName: product.value.name,
+        product_type: product.value.product_type?.toLowerCase(),
+        description: product.value.description,
+        category_id: product.value.category.id,
+        sub_category_id: product.value.sub_category.id,
+        base_price: parseFloat(product.value.base_price).toFixed(2),
+        length: product.value.length,
+        width: product.value.width,
+        height: product.value.height,
+        weight: product.value.weight,
+        quantity: product.value.quantity,
+        in_stock: product.value.in_stock,
+        has_main_image: !!product.value.images.find(
+          (img) => img.is_primary === 1
+        ),
+        galleryCount: product.value.images.filter((img) => img.is_primary === 0)
+          .length,
+      };
 
       fetchSubcategory(catId).then(() => {
         form.value.subCategory = subCatId;
@@ -444,20 +344,7 @@ const fetchProduct = () => {
 
 // fetch category
 const fetchCategory = () => {
-  return fetch("http://localhost:8000/api/categories", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch cities");
-      }
-      return res.json();
-    })
+  return get("categories")
     .then((data) => {
       form.value.categories = data.data || [];
     })
@@ -465,22 +352,9 @@ const fetchCategory = () => {
       console.log("Errro throw fetching category: ", err);
     });
 };
-// fetch sub category
+
 const fetchSubcategory = (categoryId) => {
-  return fetch(`http://localhost:8000/api/sub-categories/${categoryId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch sub category");
-      }
-      return res.json();
-    })
+  return get(`sub-categories/${categoryId}`)
     .then((data) => {
       form.value.subCategories = data.data || [];
     })
@@ -490,11 +364,11 @@ const fetchSubcategory = (categoryId) => {
 };
 
 editor.value = new Editor({
-  extensions: [StarterKit, Underline, Heading.configure({ levels: [1, 2, 3] })],
+  extensions: [StarterKit, Underline],
   editorProps: {
     attributes: {
       class: "min-h-[150px] focus:outline-none",
-      placeholder: "Write description of product...",
+      placeholder: t('product_write_description'),
     },
   },
   onUpdate({ editor }) {
@@ -509,21 +383,11 @@ const toggleUnderline = () =>
   editor.value.chain().focus().toggleUnderline().run();
 const toggleStrike = () => editor.value.chain().focus().toggleStrike().run();
 
-// const toggleHeading = (level) =>
-//   editor.value.chain().focus().toggleHeading({ level }).run();
-
-// const toggleBulletList = () =>
-//   editor.value.chain().focus().toggleBulletList().run();
-
-// const toggleOrderedList = () =>
-//   editor.value.chain().focus().toggleOrderedList().run();
-
 const buttonClass = (isActive) => {
-  return `px-2 py-1 rounded border ${
-    isActive
+  return `px-2 py-1 rounded border ${isActive
       ? "bg-blue-600 text-white"
       : "bg-white text-gray-800 hover:bg-gray-100"
-  }`;
+    }`;
 };
 
 const handleMainImageUpload = (event) => {
@@ -542,16 +406,6 @@ const handleImageUpload = (event) => {
 const removeImage = (index) => {
   form.value.image_gallery.splice(index, 1);
 };
-
-// const getImageUrl = (path) => {
-//   if (!path) return "";
-//   if (path.startsWith("http")) return path;
-//   if (path.startsWith("storage")) {
-//     return `http://localhost:8000/${path}`;
-//   }
-//   return `http://localhost:8000/storage/${path}`;
-// };
-
 
 const resolveImageSrc = (img) => {
   if (!img) return "";
@@ -596,7 +450,36 @@ const parsePriceForBackend = (value) => {
   return value;
 };
 
-const handleEdit = () => {
+// to check if we have changes in the data
+const hasChanges = () => {
+  console.log("Origin data: ", originalData.value);
+  return (
+    form.value.productName !== originalData.value.productName ||
+    form.value.product_type !== originalData.value.product_type ||
+    form.value.description !== originalData.value.description ||
+    form.value.category !== originalData.value.category_id ||
+    form.value.subCategory !== originalData.value.sub_category_id ||
+    parsePriceForBackend(form.value.price) !== originalData.value.base_price ||
+    form.value.length !== originalData.value.length ||
+    form.value.width !== originalData.value.width ||
+    form.value.height !== originalData.value.height ||
+    form.value.weight !== originalData.value.weight ||
+    form.value.quantity !== originalData.value.quantity ||
+    (form.value.in_stock ? 1 : 0) !== originalData.value.in_stock ||
+    !!form.value.image_main !== !!originalData.value.has_main_image ||
+    form.value.image_gallery.length > 0 || // ima novih slika
+    serverGalleryImages.value.length !== originalData.value.galleryCount // uporedi broj
+  );
+};
+
+const handleEdit = async () => {
+  if (!hasChanges()) {
+    alertType.value = "info";
+    alertMessage.value = t('no_change');
+    showAlert.value = true;
+    return;
+  }
+
   const formData = new FormData();
 
   formData.append("name", form.value.productName);
@@ -626,29 +509,19 @@ const handleEdit = () => {
     }
   });
 
-  fetch(`http://localhost:8000/api/product/${productId}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok!");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      showAlert("success", "Product is updated successfully!");
-      setTimeout(() => {
-        router.push({ name: "admin.products" });
-      }, 1500);
-    })
-    .catch((error) => {
-      showAlert("error", "Failed to update product.");
-    });
+  try {
+    await post(`product/${productId}`, formData);
+    alertType.value = "success";
+    alertMessage.value = t('product_success_update');
+    showAlert.value = true;
+    setTimeout(() => {
+      router.push({ name: "admin.products" });
+    }, 1500);
+  } catch {
+    alertType.value = "error";
+    alertMessage.value = t('product_failed_update');
+    showAlert.value = true;
+  }
 };
 
 const cancel = () => {

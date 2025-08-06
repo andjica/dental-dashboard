@@ -2,8 +2,8 @@ export function validationAuctionForm(data, mode = "create") {
   const errors = {};
   let isValid = true;
 
-  const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
-
+  const maxSizeInBytes = 4 * 1024 * 1024; // 4MB
+  console.log("Auction validacion: ", data);
   // Name
   if (!data.auctionName) {
     errors.auctionName = "Auction name is required.";
@@ -15,7 +15,7 @@ export function validationAuctionForm(data, mode = "create") {
     errors.auctionMainImage = "Main image is required.";
     isValid = false;
   } else if (data.auctionMainImage && data.auctionMainImage.size > maxSizeInBytes) {
-    errors.auctionMainImage = "Image size must not exceed 2MB.";
+    errors.auctionMainImage = "Image size must not exceed 4MB.";
     isValid = false;
   }
 
@@ -61,7 +61,7 @@ export function validationAuctionForm(data, mode = "create") {
     for (let i = 0; i < data.auctionImages.length; i++) {
       const file = data.auctionImages[i];
       if (file.size > maxSizeInBytes) {
-        errors.auctionImages = `Image ${i + 1} exceeds the maximum size of 2MB.`;
+        errors.auctionImages = `Image ${i + 1} exceeds the maximum size of 4MB.`;
         isValid = false;
         break;
       }

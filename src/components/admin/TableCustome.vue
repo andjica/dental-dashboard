@@ -7,20 +7,20 @@
           :icon="props.icon"
           class="mr-2 text-gray-600"
         />
-        All {{ props.title }}
+        {{ $t('all') }} {{ props.title }}
       </h3>
     </div>
     <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
       <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
         <thead class="bg-gray-100 sticky top-0 z-10">
           <tr>
-            <th class="px-4 py-3">No.</th>
-            <th class="px-4 py-3">ID</th>
-            <th class="px-4 py-3">Name</th>
-            <th class="px-4 py-3">Country</th>
-            <th class="px-4 py-3">City</th>
-            <th class="px-4 py-3">Active of products</th>
-            <th class="px-4 py-3 text-center">Action</th>
+            <th class="px-4 py-3">{{ $t('no') }}</th>
+            <th class="px-4 py-3">{{ $t('id') }}</th>
+            <th class="px-4 py-3">{{ $t('name') }}</th>
+            <th class="px-4 py-3">{{ $t('country') }}</th>
+            <th class="px-4 py-3">{{ $t('city') }}</th>
+            <th class="px-4 py-3">{{ $t('active_product') }}</th>
+            <th class="px-4 py-3 text-center">{{ $t('action') }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 text-gray-800">
@@ -72,20 +72,20 @@
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
         <h2 class="text-lg font-semibold mb-4 text-gray-800">
-          Are you sure you want to delete it ?
+          {{ $t('question') }} {{ fullName }}?
         </h2>
         <div class="flex justify-end space-x-4">
           <button
             @click="showDeleteModal = false"
             class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer transition"
           >
-            Cancel
+            {{ $t('cancel') }}
           </button>
           <button
             @click="confirmDelete"
             class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer transition"
           >
-            Delete
+            {{ $t('delete') }}
           </button>
         </div>
       </div>
@@ -95,6 +95,11 @@
 
 <script setup>
 import { ref } from "vue";
+import { computed } from 'vue'
+import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
   data: {
@@ -108,6 +113,8 @@ const props = defineProps({
   },
 });
 
+const route = useRoute();
+
 const showDeleteModal = ref(false);
 const selectedRow = ref(null);
 
@@ -115,6 +122,19 @@ const openDeleteModal = (item) => {
   selectedRow.value = item;
   showDeleteModal.value = true;
 };
+
+const fullName = computed(() => {
+  const item = selectedRow.value;
+  if (!item) return ''
+
+  if (route.path.includes('/admin/companies')) {
+    return item.name || ''
+  } else if (route.path.includes('/admin/users')) {
+    return `${item.user?.first_name || ''} ${item.user?.last_name || ''}`.trim()
+  }
+
+  return ''
+});
 
 const confirmDelete = () => {
   // Ovde staviš logiku brisanja ako koristiš dinamičke podatke

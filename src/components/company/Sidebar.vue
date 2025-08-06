@@ -11,7 +11,7 @@
         >
           <h1
             class="text-left font-extrabold uppercase text-lg tracking-wide"
-            style="color: #C9A538;"
+            style="color: #c9a538"
           >
             Vitelio
           </h1>
@@ -46,13 +46,11 @@
   </transition>
 </template>
 
-
-
-
-
 <script setup>
 import { ref, provide, onMounted, onBeforeUnmount, computed } from "vue";
 import Navigation from "@/components/shared/Navigation.vue";
+import { get } from "@/js/helper/api.js";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   isOpen: Boolean,
@@ -63,6 +61,7 @@ const iscompanyActive = ref(0);
 const isDesktop = ref(window.innerWidth >= 768);
 const isFinishedProfile = localStorage.getItem("is_finished_profile") === "1";
 
+const { t } = useI18n();
 provide("toggleSidebar", props.toggleSidebar);
 
 function handleResize() {
@@ -81,19 +80,7 @@ onBeforeUnmount(() => {
 
 // 🔥 Fetch company active status
 const fetchCompany = () => {
-  const token = localStorage.getItem("token");
-  fetch("http://localhost:8000/api/company", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Fetch error");
-      return res.json();
-    })
+  get('company')
     .then((data) => {
       console.log(data.data.active);
       iscompanyActive.value = data.data.active;
@@ -126,10 +113,10 @@ const menuLinks = computed(() => {
   return isFinishedProfile
     ? [
         {
-          title: "Dashboard",
+          title: t("dashboard"),
           items: [
             {
-              label: "Home",
+              label: t("home"),
               to: "/company/dashboard",
               icon: "house",
               disabled: !canAccess("/company/dashboard"),
@@ -137,16 +124,16 @@ const menuLinks = computed(() => {
           ],
         },
         {
-          title: "Products",
+          title: t("products"),
           items: [
             {
-              label: "All Products",
+              label: t("all_products"),
               to: "/company/products",
               icon: "shop",
               disabled: !canAccess("/company/products"),
             },
             {
-              label: "Add Product",
+              label: t("add_product"),
               to: "/company/products/create",
               icon: "cart-plus",
               disabled: !canAccess("/company/products/create"),
@@ -154,10 +141,10 @@ const menuLinks = computed(() => {
           ],
         },
         {
-          title: "Order",
+          title: t("orders"),
           items: [
             {
-              label: "View",
+              label: t("view_orders"),
               to: "/company/order/view",
               icon: "eye",
               disabled: !canAccess("/company/order/view"),
@@ -165,16 +152,16 @@ const menuLinks = computed(() => {
           ],
         },
         {
-          title: "Auctions",
+          title: t("auctions"),
           items: [
             {
-              label: "View Auctions",
+              label: t("auction_view"),
               to: "/company/auction/view",
               icon: "eye",
               disabled: !canAccess("/company/order/view"),
             },
             {
-              label: "Create Auction",
+              label: t("create_auction"),
               to: "/company/auction/create",
               icon: "plus",
               disabled: !canAccess("/company/order/view"),
@@ -182,22 +169,22 @@ const menuLinks = computed(() => {
           ],
         },
         {
-          title: "Settings",
+          title: t("settings"),
           items: [
             {
-              label: "Company Settings",
+              label: t("company_settings"),
               to: "/company/settings/company",
               icon: "gear",
               disabled: !canAccess("/company/settings/company"),
             },
             {
-              label: "Profile Settings",
+              label: t("profile_settings"),
               to: "/company/settings/profile",
               icon: "gear",
               disabled: !canAccess("/company/settings/profile"),
             },
             {
-              label: "Payment Settings",
+              label: t("payment_settings"),
               to: "/company/settings/payment",
               icon: "money-bill",
               disabled: !canAccess("/company/settings/payment"),
@@ -207,10 +194,10 @@ const menuLinks = computed(() => {
       ]
     : [
         {
-          title: "Settings",
+          title: t("settings"),
           items: [
             {
-              label: "Complete Company Settings",
+              label: t("complete_company"),
               to: "/company/settings/user",
               icon: "gear",
             },
@@ -220,21 +207,21 @@ const menuLinks = computed(() => {
 });
 
 const settingsLink = computed(() =>
-  menuLinks.value.find((link) => link.title === "Settings")
+  menuLinks.value.find((link) => link.title === t("settings"))
 );
 
 const topLinks = computed(() =>
-  menuLinks.value.filter((link) => link.title !== "Settings")
+  menuLinks.value.filter((link) => link.title !== t("settings"))
 );
 </script>
 
 <style>
-.slide-enter-active,
-.slide-leave-active {
-  transition: transform 0.3s ease;
-}
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateX(-100%);
-}
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: transform 0.3s ease;
+  }
+  .slide-enter-from,
+  .slide-leave-to {
+    transform: translateX(-100%);
+  }
 </style>

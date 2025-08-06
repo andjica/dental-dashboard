@@ -8,6 +8,9 @@
 <script setup>
     import BaseCard from '@/components/shared/BaseCard.vue';
     import { ref } from 'vue';
+    import { useI18n } from 'vue-i18n';
+
+    const { t } = useI18n();
 
 
     const isFinished = ref("");

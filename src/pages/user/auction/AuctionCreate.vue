@@ -1,25 +1,30 @@
 <template>
   <ButtonBack />
   <Alert
-      v-if="showAlert"
-      :type="alertType"
-      :message="alertMessage"
-      @close="showAlert = false"
-    />
+    v-if="showAlert"
+    :type="alertType"
+    :message="alertMessage"
+    @close="showAlert = false"
+    :classWidth="'max-w-3xl'"
+  />
   <div
     class="p-6 mt-8 mb-8 ml-3 max-w-3xl bg-white rounded-lg shadow-2xl relative"
   >
-    <h1 class="text-3xl font-bold mb-8 text-gray-800">Create a New Auction</h1>
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">
+      {{ $t("auction_new") }}
+    </h1>
 
     <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
       <!-- Auction main image -->
       <div class="mt-4">
-        <label class="block text-sm font-medium mb-1">Main Image</label>
+        <label class="block text-sm font-medium mb-1">{{
+          $t("image_main")
+        }}</label>
         <label
           for="mainImageInput"
           class="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 cursor-pointer transition duration-200"
         >
-          Upload Image
+          {{ $t("image_upload") }}
         </label>
 
         <!-- Hidden file input -->
@@ -43,12 +48,14 @@
       </div>
       <!-- Auction Name -->
       <div class="mb-4">
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Auction Name</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">{{
+          $t("auction_name")
+        }}</label>
         <input
           v-model="form.auctionName"
           type="text"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter auction name"
+          :placeholder="t('auction_enter_name')"
         />
         <p v-if="errors.auctionName" class="text-red-600 text-sm mt-1">
           {{ errors.auctionName }}
@@ -57,13 +64,13 @@
 
       <!-- Auction Description -->
       <div class="mb-4">
-        <label class="block text-sm font-semibold text-gray-700 mb-1"
-          >Auction Description</label
-        >
+        <label class="block text-sm font-semibold text-gray-700 mb-1">{{
+          $t("auction_desc")
+        }}</label>
         <textarea
           v-model="form.auctionDescription"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter description"
+          :placeholder="t('auction_enter_desc')"
         ></textarea>
         <p v-if="errors.auctionDescription" class="text-red-600 text-sm mt-1">
           {{ errors.auctionDescription }}
@@ -72,13 +79,15 @@
 
       <!-- Auction Price -->
       <div class="mb-4">
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Base Price (€)</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-1"
+          >{{ $t("auction_price") }} (€)</label
+        >
         <input
           v-model="form.auctionPrice"
           type="number"
           min="0"
           class="w-full border border-gray-300 px-4 py-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter base price"
+          :placeholder="t('auction_enter_price')"
         />
         <p v-if="errors.auctionPrice" class="text-red-600 text-sm mt-1">
           {{ errors.auctionPrice }}
@@ -87,7 +96,9 @@
 
       <!-- Auction Date -->
       <div class="mb-4">
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Auction Date</label>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">{{
+          $t("auction_date")
+        }}</label>
         <input
           v-model="form.auctionDate"
           type="datetime-local"
@@ -99,13 +110,15 @@
       </div>
       <!-- Images -->
       <div>
-        <label class="block text-sm font-medium mb-1">Product Gallery</label>
+        <label class="block text-sm font-medium mb-1">{{
+          $t("auction_galerry")
+        }}</label>
         <div>
           <label
             for="imageUpload"
             class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded cursor-pointer transition duration-200"
           >
-            Select Images
+            {{ $t("images_select") }}
           </label>
           <input
             id="imageUpload"
@@ -138,14 +151,10 @@
             </button>
           </div>
         </div>
-        <div
-          v-if="form.auctionImages"
-          class="mt-2 text-sm text-gray-600"
-        >
-          {{ form.auctionImages.length }} image{{
-            form.auctionImages.length > 1 ? "s" : ""
-          }}
-          selected
+        <div v-if="form.auctionImages" class="mt-2 text-sm text-gray-600">
+          {{ form.auctionImages.length }} {{ $t("image")
+          }}{{ form.auctionImages.length > 1 ? "s" : "" }}
+          {{ $t("selected") }}
         </div>
         <p v-if="errors.auctionImages" class="text-red-500 text-sm mt-1">
           {{ errors.auctionImages }}
@@ -157,7 +166,7 @@
         type="submit"
         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
       >
-        Save Auction
+        {{ $t("auction_save") }}
       </button>
     </form>
   </div>
@@ -170,6 +179,9 @@ import { validationAuctionForm } from "@/js/form-validation/auction/auction-crea
 import { onBeforeUnmount, ref } from "vue";
 import { post } from "@/js/helper/api.js";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const router = useRouter();
 // Form state
@@ -179,17 +191,18 @@ const form = ref({
   auctionDescription: "",
   auctionPrice: "",
   auctionDate: "",
-  auctionImages: []
+  auctionImages: [],
 });
 
 const mainImagePreview = ref(null);
 const imagePreviews = ref([]);
+let redirectTimeout;
 // Validation errors
 const errors = ref({});
 
 // Success message
 const showAlert = ref(false);
-const alertType = ref(["success", "info"]); // or 'error'
+const alertType = ref("success");
 const alertMessage = ref("");
 
 const handleImageUpload = (event) => {
@@ -220,6 +233,8 @@ const removeImage = (index) => {
 };
 
 onBeforeUnmount(() => {
+  if (redirectTimeout) clearTimeout(redirectTimeout);
+
   imagePreviews.value.forEach((url) => URL.revokeObjectURL(url));
   if (mainImagePreview.value) {
     URL.revokeObjectURL(mainImagePreview.value);
@@ -228,7 +243,9 @@ onBeforeUnmount(() => {
 
 // Submit handler
 const handleSubmit = async () => {
-  const { isValid, errors: validationErrors } = validationAuctionForm(form.value);
+  const { isValid, errors: validationErrors } = validationAuctionForm(
+    form.value
+  );
   errors.value = validationErrors;
 
   if (!isValid) return;
@@ -249,7 +266,7 @@ const handleSubmit = async () => {
     await post("auction", formData);
 
     alertType.value = "success";
-    alertMessage.value = "Auction created successfully!";
+    alertMessage.value = t("auction_create_s");
     showAlert.value = true;
 
     form.value = {
@@ -260,15 +277,15 @@ const handleSubmit = async () => {
       auctionImages: [],
     };
     errors.value = {};
-    sessionStorage.setItem('auctionCreatedMessage', alertMessage.value);
-    router.push({ name: "user.auction.view" });
+    redirectTimeout = setTimeout(() => {
+      router.push({ name: "user.auction.view" });
+    }, 3000);
   } catch (err) {
     console.error("Error submitting auction:", err.message);
 
     alertType.value = "error";
-    alertMessage.value = "Failed to create auction.";
+    alertMessage.value = t("auction_create_f");
     showAlert.value = true;
   }
 };
-
 </script>

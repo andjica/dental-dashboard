@@ -1,39 +1,74 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 flex items-center justify-center px-4">
-    <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md relative border border-gray-200">
+  <div
+    class="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 flex items-center justify-center px-4"
+  >
+    <div
+      class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md relative border border-gray-200"
+    >
       <!-- Route Alert -->
-      <div v-if="$route.query.error === 'unauthenticated'"
-        class="mb-4 px-4 py-3 rounded-md bg-yellow-50 text-yellow-800 border border-yellow-300 text-sm font-medium">
-        ⚠ You must be logged in to access that page.
+      <div
+        v-if="$route.query.error === 'unauthenticated'"
+        class="mb-4 px-4 py-3 rounded-md bg-yellow-50 text-yellow-800 border border-yellow-300 text-sm font-medium"
+      >
+        ⚠️ You must be logged in to access that page.
       </div>
 
       <!-- Alert Component -->
-      <Alert v-if="alert.message" :type="alert.type" :message="alert.message" @close="alert.message = ''" />
+      <Alert
+        v-if="alert.message"
+        :type="alert.type"
+        :message="alert.message"
+        @close="alert.message = ''"
+      />
 
-      <h1 class="text-3xl font-extrabold mb-6 text-center text-gray-800">Log in to your account</h1>
+      <h1 class="text-3xl font-extrabold mb-6 text-center text-gray-800">
+        Log in to your account
+      </h1>
 
       <form @submit.prevent="handleLogin" class="space-y-6">
         <!-- Email -->
         <div>
-          <label for="emailLogin" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-          <input v-model="email" type="email" id="emailLogin"
+          <label
+            for="emailLogin"
+            class="block text-sm font-semibold text-gray-700 mb-1"
+            >Email</label
+          >
+          <input
+            v-model="email"
+            type="email"
+            id="emailLogin"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="you@example.com" />
-          <p v-if="errors.email" class="text-red-600 text-sm mt-1">{{ errors.email }}</p>
+            placeholder="you@example.com"
+          />
+          <p v-if="errors.email" class="text-red-600 text-sm mt-1">
+            {{ errors.email }}
+          </p>
         </div>
 
         <!-- Password -->
         <div>
-          <label for="passwordLogin" class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-          <input v-model="password" type="password" id="passwordLogin"
+          <label
+            for="passwordLogin"
+            class="block text-sm font-semibold text-gray-700 mb-1"
+            >Password</label
+          >
+          <input
+            v-model="password"
+            type="password"
+            id="passwordLogin"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your password" />
-          <p v-if="errors.password" class="text-red-600 text-sm mt-1">{{ errors.password }}</p>
+            placeholder="Your password"
+          />
+          <p v-if="errors.password" class="text-red-600 text-sm mt-1">
+            {{ errors.password }}
+          </p>
         </div>
 
         <!-- Submit -->
-        <button type="submit"
-          class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer">
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+        >
           <LoaderIcon v-if="isLoading" />
           <span v-else>Log In</span>
         </button>
@@ -41,7 +76,10 @@
 
       <p class="mt-6 text-center text-sm text-gray-600">
         Don't have an account?
-        <router-link to="/register" class="font-medium text-blue-600 hover:underline">
+        <router-link
+          to="/register"
+          class="font-medium text-blue-600 hover:underline"
+        >
           Register here
         </router-link>
       </p>
@@ -49,12 +87,17 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { ref, reactive, watch, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Alert from "@/components/shared/Alert.vue";
 import LoaderIcon from "@/components/shared/LoaderIcon.vue";
+import { detectCountryByIP } from "@/js/services/geo";
+import { changeLangByCountry } from "@/js/helper/language";
+import { useI18n } from "vue-i18n";
+
+// const apiKey = "AIzaSyBcUvDip47wIEv406SNvg_uhsrlWlbsEFo";
+const { locale } = useI18n();
 
 const email = ref("");
 const password = ref("");
@@ -89,6 +132,18 @@ Object.entries(fields).forEach(([key, refVar]) => {
   watch(refVar, () => {
     if (errors[key]) errors[key] = "";
   });
+});
+
+onMounted(async () => {
+  try {
+    const country = await detectCountryByIP();
+    const lang = changeLangByCountry(country);
+    locale.value = lang;
+    localStorage.setItem("lang", lang);
+    localStorage.setItem("country", country); // opcionalno za Dashboard
+  } catch (error) {
+    console.error("Location detection failed:", error);
+  }
 });
 
 const handleLogin = async () => {

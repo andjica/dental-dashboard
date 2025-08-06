@@ -6,7 +6,7 @@
   >
     <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
       <h2 class="text-lg font-semibold mb-4">
-        Are you sure you want to delete
+        {{ $t('question') }}
         <strong>{{ auctionToDelete?.name || productToDelete?.name }}</strong>?
       </h2>
       <div class="flex justify-end space-x-4">
@@ -14,13 +14,13 @@
           @click="closeModal"
           class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
         >
-          Cancel
+          {{ $t('cancel') }}
         </button>
         <button
           @click="confirmDelete"
           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
         >
-          Delete
+          {{ $t('delete') }}
         </button>
       </div>
     </div>
@@ -29,6 +29,9 @@
 
 <script setup>
 import { defineProps, defineEmits } from "vue";
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const props = defineProps({
   showDeleteModal: Boolean,
   auctionToDelete: Object,
