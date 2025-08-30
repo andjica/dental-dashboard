@@ -74,6 +74,10 @@
         </button>
       </form>
 
+    <!-- Google Sign In -->
+    <div class="mt-6">
+      <div id="googleLoginButton" class="w-full flex justify-center"></div>
+    </div>
       <p class="mt-6 text-center text-sm text-gray-600">
         Don't have an account?
         <router-link
@@ -89,34 +93,145 @@
 
 <script setup>
 import { ref, reactive, watch, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router"; // ✅ samo jednom
 import Alert from "@/components/shared/Alert.vue";
 import LoaderIcon from "@/components/shared/LoaderIcon.vue";
 import { detectCountryByIP } from "@/js/services/geo";
 import { changeLangByCountry } from "@/js/helper/language";
 import { useI18n } from "vue-i18n";
 
-// const apiKey = "AIzaSyBcUvDip47wIEv406SNvg_uhsrlWlbsEFo";
+const router = useRouter();
+const route = useRoute(); // ✅ definisano
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+/* ---------------- GOOGLE LOGIN ---------------- */
+onMounted(() => {
+  if (window.google) {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleLoginCallback, // koristi tačan naziv funkcije
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("googleLoginButton"), // ✅ sada odgovara template-u
+      { theme: "outline", size: "large" }
+    );
+  }
+});
+
+const handleGoogleLoginCallback = async (response) => {
+  try {
+    const idToken = response.credential;
+
+    const res = await fetch("http://localhost:8000/api/auth/google", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ token: idToken }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert.type = "error";
+      alert.message = data.message || "Google login failed.";
+      return;
+    }
+
+    const token = data.token;
+    const baseUser = data.user;
+    let isFinisheProfile = 0;
+
+    // 👇 isto kao kod običnog logina
+    if (baseUser.role_id === 1 || baseUser.role_id === 2) {
+      try {
+        const companyResponse = await fetch("http://localhost:8000/api/company", {
+          method: "GET",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        });
+
+        if (companyResponse.ok) {
+          const companyData = await companyResponse.json();
+          isFinisheProfile = companyData.data.is_finished_profile;
+          localStorage.setItem("is_finished_profile", isFinisheProfile);
+          localStorage.setItem("isActive", companyData.data.active);
+        }
+      } catch (err) {
+        console.error("Company fetch error:", err);
+      }
+    } else {
+      try {
+        const userResponse = await fetch("http://localhost:8000/api/user-info", {
+          method: "GET",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          isFinisheProfile = userData.data.is_finished_profile;
+          localStorage.setItem("is_finished_profile", isFinisheProfile);
+        }
+      } catch (err) {
+        console.error("User info fetch error:", err);
+      }
+    }
+
+    // 👇 složi fullUser isto kao u handleLogin
+    const fullUser = {
+      ...baseUser,
+      is_finished_profile: isFinisheProfile,
+      isActive: localStorage.getItem("isActive"),
+    };
+
+    localStorage.setItem("user", JSON.stringify(fullUser));
+    localStorage.setItem("token", token);
+    localStorage.setItem("auth_provider", "google");
+
+    alert.type = "success";
+    alert.message = "Google login successful! Redirecting...";
+
+    setTimeout(() => {
+      switch (fullUser.role_id) {
+        case 1:
+          isFinisheProfile
+            ? router.push("/admin/dashboard")
+            : router.push("/admin/settings/company");
+          break;
+        case 2:
+          isFinisheProfile
+            ? router.push("/company/dashboard")
+            : router.push("/company/settings/company");
+          break;
+        case 3:
+        default:
+          isFinisheProfile
+            ? router.push("/user/dashboard")
+            : router.push("/user/settings/user");
+          break;
+      }
+    }, 1200);
+  } catch (err) {
+    alert.type = "error";
+    alert.message = "Google login error: " + err.message;
+  }
+};
+
+
+/* ---------------- FORMA LOGIN ---------------- */
 const { locale } = useI18n();
 
 const email = ref("");
 const password = ref("");
 const isLoading = ref(false);
 
-const router = useRouter();
-const route = useRoute();
-
-const errors = reactive({
-  email: "",
-  password: "",
-});
-
-const alert = reactive({
-  type: "",
-  message: "",
-});
+const errors = reactive({ email: "", password: "" });
+const alert = reactive({ type: "", message: "" });
 
 const isValidEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
+// watch za error query parametar
 watch(
   () => route.query.error,
   (val) => {
@@ -126,7 +241,8 @@ watch(
     }
   }
 );
-// Clear errors when typing
+
+// resetuj errors kad korisnik kuca
 const fields = { email, password };
 Object.entries(fields).forEach(([key, refVar]) => {
   watch(refVar, () => {
@@ -134,28 +250,28 @@ Object.entries(fields).forEach(([key, refVar]) => {
   });
 });
 
+// auto language detection
 onMounted(async () => {
   try {
     const country = await detectCountryByIP();
     const lang = changeLangByCountry(country);
     locale.value = lang;
     localStorage.setItem("lang", lang);
-    localStorage.setItem("country", country); // opcionalno za Dashboard
+    localStorage.setItem("country", country);
   } catch (error) {
     console.error("Location detection failed:", error);
   }
 });
 
 const handleLogin = async () => {
-  if (isLoading.value) return; // prevent double submit
+  if (isLoading.value) return;
   isLoading.value = true;
-  // Resetuj validaciju i alert poruke
+
   errors.email = "";
   errors.password = "";
   alert.message = "";
   alert.type = "";
 
-  // Validacija forme
   let isValid = true;
 
   if (!email.value) {
@@ -178,7 +294,6 @@ const handleLogin = async () => {
   }
 
   try {
-    // Login request
     const loginResponse = await fetch("http://localhost:8000/api/login", {
       method: "POST",
       headers: {
@@ -191,7 +306,6 @@ const handleLogin = async () => {
       }),
     });
 
-    console.log(loginResponse);
     if ([401, 404].includes(loginResponse.status)) {
       throw new Error(loginResponse.statusText);
     }
@@ -208,35 +322,27 @@ const handleLogin = async () => {
     const baseUser = loginData.user;
     const isVerified = !!baseUser.email_verified_at;
     let isFinisheProfile = "";
+
     let fullUser = {
       ...baseUser,
       isVerify: isVerified,
       is_finished_profile: isFinisheProfile,
     };
-    console.log("Ko se ulogovao: ", baseUser);
-    // Ako je kompanija, uzmi dodatne podatke o profilu
+
     if (baseUser.role_id === 2 || baseUser.role_id === 1) {
       try {
-        const companyResponse = await fetch(
-          "http://localhost:8000/api/company",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const companyResponse = await fetch("http://localhost:8000/api/company", {
+          method: "GET",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        });
 
-        if (!companyResponse.ok) {
-          console.warn("Company info not found or error occurred");
-          isFinisheProfile = 0; // fallback ako nema podataka
-        } else {
+        if (companyResponse.ok) {
           const companyData = await companyResponse.json();
-          console.log("Company ili Admin: ", companyData);
           isFinisheProfile = companyData.data.is_finished_profile;
           localStorage.setItem("is_finished_profile", isFinisheProfile);
           localStorage.setItem("isActive", companyData.data.active);
+        } else {
+          isFinisheProfile = 0;
         }
       } catch (error) {
         console.error("Company fetch error:", error);
@@ -244,33 +350,24 @@ const handleLogin = async () => {
       }
     } else {
       try {
-        const userResponse = await fetch(
-          "http://localhost:8000/api/user-info",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const userResponse = await fetch("http://localhost:8000/api/user-info", {
+          method: "GET",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        });
 
-        if (!userResponse.ok) {
-          console.warn("User info not found or error occurred");
-          isFinisheProfile = 0;
-        } else {
+        if (userResponse.ok) {
           const userData = await userResponse.json();
-          console.log("User: ", userData);
           isFinisheProfile = userData.data.is_finished_profile;
           localStorage.setItem("is_finished_profile", isFinisheProfile);
+        } else {
+          isFinisheProfile = 0;
         }
       } catch (error) {
-        console.error("User fetch errror: ", error);
+        console.error("User fetch error:", error);
         isFinisheProfile = 0;
       }
     }
 
-    // Sačuvaj korisnika i token
     localStorage.setItem("user", JSON.stringify(fullUser));
     localStorage.setItem("token", token);
 
@@ -280,40 +377,24 @@ const handleLogin = async () => {
     setTimeout(() => {
       if (!isVerified) {
         router.push("/verify-email");
-
-        // Pošalji zahtev za verifikaciju emaila
         fetch("http://localhost:8000/api/email/verification-notification", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ user_id: fullUser.id }),
-        }).catch((error) => {
-          console.error("Verification email resend failed:", error.message);
-        });
-
+        }).catch(console.error);
         return;
       }
 
-      // Redirekcija po roli
       switch (fullUser.role_id) {
         case 1:
-          isFinisheProfile
-            ? router.push("/admin/dashboard")
-            : router.push("/admin/settings/company");
+          isFinisheProfile ? router.push("/admin/dashboard") : router.push("/admin/settings/company");
           break;
         case 2:
-          isFinisheProfile
-            ? router.push("/company/dashboard")
-            : router.push("/company/settings/company");
+          isFinisheProfile ? router.push("/company/dashboard") : router.push("/company/settings/company");
           break;
         case 3:
         default:
-          isFinisheProfile
-            ? router.push("/user/dashboard")
-            : router.push("/user/settings/user");
+          isFinisheProfile ? router.push("/user/dashboard") : router.push("/user/settings/user");
           break;
       }
     }, 1500);
@@ -321,7 +402,7 @@ const handleLogin = async () => {
     alert.type = "error";
     alert.message = `Login failed: ${error.message}`;
   } finally {
-    isLoading.value = false; // ⬅️ stop loader
+    isLoading.value = false;
   }
 };
 </script>

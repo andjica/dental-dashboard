@@ -1,14 +1,17 @@
 <template>
   <transition name="fade-slide">
-    <div v-show="visible" :class="[
-      'flex items-start gap-4 ml-3 px-6 py-4 rounded-lg shadow-lg border text-sm font-medium sticky top-0 z-10',
-      type === 'success'
-        ? 'bg-green-50 text-green-800 border-green-200'
-        : type === 'info'
-          ? 'bg-yellow-50 text-yellow-800 border-yellow-200'
-          : 'bg-red-50 text-red-800 border-red-200',
+    <div
+      v-show="visible"
+      :class="[
+        'flex items-start gap-4 ml-3 px-6 py-4 rounded-lg shadow-lg border text-sm font-medium sticky top-0 z-10',
+        type === 'success'
+          ? 'bg-green-50 text-green-800 border-green-200'
+          : type === 'info'
+            ? 'bg-yellow-50 text-yellow-800 border-yellow-200'
+            : 'bg-red-50 text-red-800 border-red-200',
         classWidth
-    ]">
+      ]"
+    >
       <div class="pt-1">
         <i :class="[
           'text-xl',
@@ -19,11 +22,17 @@
               : 'fas fa-exclamation-circle',
         ]"></i>
       </div>
+
+      <!-- Samo plain message, bez prefiksa -->
       <div class="flex-1">
-        <strong class="capitalize">{{ type }}</strong>: {{ message }}
+        {{ message }}
       </div>
-      <button @click="close" class="absolute right-3 top-3 text-xl leading-none text-gray-400 hover:text-gray-600"
-        aria-label="Close">
+
+      <button
+        @click="close"
+        class="absolute right-3 top-3 text-xl leading-none text-gray-400 hover:text-gray-600"
+        aria-label="Close"
+      >
         ×
       </button>
     </div>
@@ -31,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 
 const props = defineProps({
   type: {
@@ -45,12 +54,11 @@ const props = defineProps({
   },
   classWidth: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 });
 
 const emit = defineEmits(["close"]);
-
 const visible = ref(true);
 
 const close = () => {

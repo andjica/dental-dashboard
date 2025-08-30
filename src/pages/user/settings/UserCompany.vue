@@ -388,42 +388,65 @@ const handleSubmit = () => {
       showAlert.value = true;
     });
 };
-
 const fetchUser = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const lsUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   return get("user-info")
     .then((data) => {
-      const userData = data.data;
-      console.log("Fetch user: ", userData);
-      // userProfile._profileImageFile,
-      userProfile.userFirstName = userData.first_name || user.first_name || "";
-      userProfile.userLastName = userData.last_name || user.last_name || "";
-      userProfile.userEmail = userData.email || user.email || "";
-      userProfile.userAddress = userData.address || "";
-      selectedCountry.value = userData.country_id || "";
-      fetchCity(userData.country_id).then(() => {
-        const cityExists = cities.value.some((c) => c.id === userData.city_id);
-        selectedCity.value = cityExists ? userData.city_id : "";
-      });
-      (userProfile.zipCode = userData.zip_code),
-        (phoneNumber.value = userData.phone);
+      // API podaci ako postoje
+      const userData = data?.data || {};
 
-      // Postavi originalData
-      originalData.userFirstName = userProfile.userFirstName;
-      originalData.userLastName = userProfile.userLastName;
-      originalData.userEmail = userProfile.userEmail;
-      originalData.userAddress = userProfile.userAddress;
-      originalData.zipCode = userData.zip_code || "";
-      originalData.country_id = userData.country_id || "";
-      originalData.city_id = userData.city_id || "";
-      originalData.phone = userData.phone || "";
+      // fallback ako API ne vrati ništa (Google auth slučaj)
+      const merged = {
+        first_name: userData.first_name || lsUser.first_name || "",
+        last_name:  userData.last_name  || lsUser.last_name  || "",
+        email:      userData.email      || lsUser.email      || "",
+        address:    userData.address    || lsUser.address    || "",
+        country_id: userData.country_id || lsUser.country_id || "",
+        city_id:    userData.city_id    || lsUser.city_id    || "",
+        zip_code:   userData.zip_code   || lsUser.zip        || "",
+        phone:      userData.phone      || lsUser.phone      || "",
+      };
+
+      // upiši u reaktivni profil
+      userProfile.userFirstName = merged.first_name;
+      userProfile.userLastName  = merged.last_name;
+      userProfile.userEmail     = merged.email;
+      userProfile.userAddress   = merged.address;
+      selectedCountry.value     = merged.country_id;
+      userProfile.zipCode       = merged.zip_code;
+      phoneNumber.value         = merged.phone;
+
+      // grad iz API-a ako postoji
+      fetchCity(merged.country_id).then(() => {
+        const cityExists = cities.value.some((c) => c.id === merged.city_id);
+        selectedCity.value = cityExists ? merged.city_id : "";
+      });
+
+      // zapamti originalData za "hasChanges"
+      Object.assign(originalData, {
+        userFirstName: merged.first_name,
+        userLastName:  merged.last_name,
+        userEmail:     merged.email,
+        userAddress:   merged.address,
+        zipCode:       merged.zip_code,
+        country_id:    merged.country_id,
+        city_id:       merged.city_id,
+        phone:         merged.phone,
+      });
     })
     .catch((error) => {
-      console.error("Error submitting company data:", error);
-      // Eventualno možeš prikazati grešku korisniku
+      console.error("Error fetching user-info, fallback to LS:", error);
+
+      // ako API pukne, opet LS fallback
+      if (lsUser) {
+        userProfile.userFirstName = lsUser.first_name || "";
+        userProfile.userLastName  = lsUser.last_name || "";
+        userProfile.userEmail     = lsUser.email || "";
+      }
     });
 };
+
 
 const hasChanges = () => {
   return (

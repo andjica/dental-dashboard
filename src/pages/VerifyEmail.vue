@@ -77,6 +77,10 @@ const goToNextRoute = () => {
       loading.value = false;
       if (res.ok) {
         success.value = true;
+          const u = JSON.parse(localStorage.getItem("user") || "{}");
+          u.email_verified_at = new Date().toISOString();
+          localStorage.setItem("user", JSON.stringify(u));
+          
         setTimeout(() => {
           const role = getUserRole();
           if (role === 1) {
