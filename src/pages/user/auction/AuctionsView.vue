@@ -3,80 +3,100 @@
   <Loader v-if="isLoading" />
 
   <template v-else>
-    <div v-if="auctions.length === 0" class="px-4 mt-6 w-full">
+    <!-- Empty state -->
+    <div v-if="auctions.length === 0" class="px-6 mt-20 flex justify-center">
       <div
-        class="bg-red-100 border border-red-300 text-red-800 rounded-md shadow p-4 flex items-center gap-3"
+        class="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-700 rounded-xl shadow-lg p-6 flex items-center gap-4 max-w-xl"
       >
-        <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
-        <span class="text-sm font-medium">
-          {{ $t("auction_note") }}
-        </span>
+        <font-awesome-icon icon="exclamation-circle" class="text-red-500 text-2xl" />
+        <div>
+          <p class="text-lg font-semibold">{{ $t("auction_note") }}</p>
+          <p class="text-sm text-gray-600">{{ $t("auction_add_hint") }}</p>
+        </div>
       </div>
     </div>
+
     <!-- Auction table -->
-    <div v-else class="px-4 mt-6 max-w-6xl">
+    <div v-else class="px-6 mt-10 max-w-10xl mx-auto">
       <Alert
         v-if="showAlert"
         :type="alertType"
         :message="alertMessage"
         @close="showAlert = false"
-        :classWidth="'max-w-6xl'"
+        :classWidth="'max-w-7xl'"
+        class="mb-6"
       />
-      <div class="bg-white shadow-md rounded-md overflow-x-auto">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800">
+
+      <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
+        <!-- Header -->
+        <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="text-2xl font-extrabold text-gray-800 flex items-center gap-2">
             📦 {{ $t("auctions") }}
           </h3>
+          <button
+            @click="$router.push('/user/auction/create')"
+            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md transition"
+          >
+            + {{ $t("create_auction") }}
+          </button>
         </div>
 
-        <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
-          <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead class="bg-gray-100 sticky top-0 z-10">
+        <!-- Table -->
+        <div class="overflow-y-auto max-h-[600px] scrollbar-thin scrollbar-thumb-gray-300">
+          <table class="min-w-full text-sm text-left">
+            <thead class="bg-gray-50 sticky top-0 z-10 text-gray-600 uppercase text-xs tracking-wider">
               <tr>
-                <th class="px-4 py-3">{{ $t("no") }}</th>
-                <th class="px-4 py-3">{{ $t("id") }}</th>
-                <th class="px-4 py-3">{{ $t("name") }}</th>
-                <th class="px-4 py-3">{{ $t("image") }}</th>
-                <th class="px-4 py-3">{{ $t("price") }} (€)</th>
-                <th class="px-4 py-3">{{ $t("date") }}</th>
-                <th class="px-4 py-3">{{ $t("number_reaction") }}</th>
-                <th class="px-4 py-3">{{ $t("price_max") }}</th>
-                <th class="px-4 py-3 text-center">{{ $t("actions") }}</th>
+                <th class="px-5 py-3">{{ $t("no") }}</th>
+                <th class="px-5 py-3">{{ $t("id") }}</th>
+                <th class="px-5 py-3">{{ $t("name") }}</th>
+                <th class="px-5 py-3">{{ $t("image") }}</th>
+                <th class="px-5 py-3">{{ $t("price") }} (€)</th>
+                <th class="px-5 py-3">{{ $t("date") }}</th>
+                <th class="px-5 py-3">{{ $t("number_reaction") }}</th>
+                <th class="px-5 py-3">{{ $t("price_max") }}</th>
+                <th class="px-5 py-3 text-center">{{ $t("actions") }}</th>
               </tr>
             </thead>
+
             <tbody class="divide-y divide-gray-100 text-gray-800">
               <tr
                 v-for="(auction, index) in paginatedAuctions"
                 :key="index"
                 class="hover:bg-gray-50 transition"
               >
-                <td class="px-4 py-3 font-medium">{{ index + 1 }}</td>
-                <td class="px-4 py-3 font-medium">{{ auction.id }}</td>
-                <td class="px-4 py-3 font-medium">{{ auction.name }}</td>
-                <td class="px-4 py-3">
+                <td class="px-5 py-3 font-medium">{{ index + 1 }}</td>
+                <td class="px-5 py-3">{{ auction.id }}</td>
+                <td class="px-5 py-3 font-semibold">{{ auction.name }}</td>
+                <td class="px-5 py-3">
                   <img
                     :src="getImageUrl(auction?.images[0]?.image_url)"
                     :alt="auction.name"
-                    class="w-16 h-16 object-cover rounded-md border border-gray-200"
+                    class="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm"
                   />
                 </td>
-                <td class="px-4 py-3">€{{ auction.base_price }}</td>
-                <td class="px-4 py-3">
-                  {{ formatDate(auction.auction_date) }}
+                <td class="px-5 py-3 font-bold text-gray-700">€{{ auction.base_price }}</td>
+                <td class="px-5 py-3">{{ formatDate(auction.auction_date) }}</td>
+                <td class="px-5 py-3 text-center">
+                  <span
+                    class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700 font-semibold"
+                  >
+                    {{ auction.reactions_count || 0 }}
+                  </span>
                 </td>
-                <td class="px-4 py-3">{{ $t("reaction_number") }}</td>
-                <td class="px-4 py-3">{{ $t("price_max") }}</td>
-                <td class="px-4 py-3 text-center space-x-3">
+                <td class="px-5 py-3 font-bold text-green-600">
+                  {{ auction.max_price || '—' }}
+                </td>
+                <td class="px-5 py-3 text-center space-x-2">
                   <button
                     @click="handleEditAuction(auction)"
-                    class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 transition"
                     title="Edit Auction"
                   >
                     <font-awesome-icon icon="pen-to-square" />
                   </button>
                   <button
                     @click="deleteAuction(auction)"
-                    class="text-red-500 hover:text-red-700 cursor-pointer"
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition"
                     aria-label="Delete auction"
                     title="Delete Auction"
                   >
@@ -87,14 +107,20 @@
             </tbody>
           </table>
         </div>
-        <Pagination
-          :page="page"
-          :totalPages="totalPages"
-          @update:page="page = $event"
-        />
+
+        <!-- Pagination -->
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <Pagination
+            :page="page"
+            :totalPages="totalPages"
+            @update:page="page = $event"
+          />
+        </div>
       </div>
     </div>
   </template>
+
+  <!-- Delete modal -->
   <ActionDelete
     :showDeleteModal="showDeleteModal"
     :auctionToDelete="auctionToDelete"
@@ -102,6 +128,7 @@
     @confirmDelete="confirmDelete"
   />
 </template>
+
 
 <script setup>
 import ButtonBack from "@/components/shared/ButtonBack.vue";

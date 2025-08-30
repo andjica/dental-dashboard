@@ -28,6 +28,12 @@ const routes = [
     path: "/verify-success",
     component: VerifySuccess,
   },
+  {
+      path: "/choose-role",
+      name: "choose-role",
+      component: () => import("@/pages/ChooseRole.vue"),
+      meta: { requiresAuth: true, allowNoRole: true } // mora da bude ulogovan
+  },
   // Admin
   {
     path: "/admin",
@@ -281,39 +287,53 @@ const router = createRouter({
 
 // ✅ Middleware logika
 router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const isPublic = to.matched.some((record) => record.meta.public);
+  const requiresAuth = to.matched.some((r) => r.meta.requiresAuth);
+  const isPublic     = to.matched.some((r) => r.meta.public);
 
-  // Dodaj OVU proveru NAJVIŠE na početku
+  // 1) Token expiry modal (ostaje kako si imala)
   if (!isPublic && isTokenExpired()) {
     window.dispatchEvent(new Event("tokenExpired"));
-    // NE pozivaš next() jer će se modal otvoriti i uraditi redirect iz App.vue
-    return; 
+    return; // modal će odraditi redirect iz App.vue
   }
 
-  // Ostatak tvog koda ostaje ISTI:
+  // 2) Javne rute (login/register itd.)
   if (isPublic) {
+    // ako si već ulogovan, smislen redirect
+    if (isAuthenticated()) {
+      const roleId = getUserRole(); // vrati null ili 1/2/3
+      if (roleId == null) return next("/choose-role");
+      if (roleId === 1)   return next("/admin/dashboard");
+      if (roleId === 2)   return next("/company/dashboard");
+      if (roleId === 3)   return next("/user/dashboard");
+    }
     return next();
   }
 
+  // 3) Rute koje traže login
   if (requiresAuth && !isAuthenticated()) {
     return next({ path: "/", query: { error: "unauthenticated" } });
   }
 
-  if (requiresAuth && isAuthenticated() && getUserRole() !== to.meta.role) {
-    return next("/");
+  // 4) DOZVOLI /choose-role: ruta sa allowNoRole = true propušta korisnika
+  //    koji ima token čak i ako nema role_id
+  if (requiresAuth && to.meta?.allowNoRole) {
+    return next();
   }
 
-  if (
-    requiresAuth &&
-    isAuthenticated() &&
-    !isEmailVerified() &&
-    to.path !== "/verify-email"
-  ) {
+  // 5) Role-check SAMO ako je ruta definisala meta.role (1/2/3)
+  if (requiresAuth && to.meta?.role != null) {
+    const roleId = getUserRole(); // null ili broj
+    if (roleId == null) return next("/choose-role"); // nema rolu → prvo biraj rolu
+    if (roleId !== to.meta.role) return next("/");   // pogrešna rola → login
+  }
+
+  // 6) Verifikacija emaila (tvoja logika ostaje ista)
+  if (requiresAuth && isAuthenticated() && !isEmailVerified() && to.path !== "/verify-email") {
     return next("/verify-email");
   }
 
   return next();
 });
+
 
 export default router;

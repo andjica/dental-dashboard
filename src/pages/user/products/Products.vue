@@ -1,49 +1,64 @@
 <template>
   <ButtonBack />
   <Loader v-if="isLoading" />
+
   <template v-else>
     <!-- No products alert -->
-    <div v-if="products.length === 0" class="px-4 mt-6 w-full">
+    <div v-if="products.length === 0" class="px-6 mt-10 w-full flex justify-center">
       <div
-        class="bg-red-100 border border-red-300 text-red-800 rounded-md shadow p-4 flex items-center gap-3"
+        class="bg-red-50 border border-red-200 text-red-700 rounded-lg shadow-md p-5 flex items-center gap-3 w-full max-w-3xl"
       >
-        <font-awesome-icon icon="exclamation-circle" class="text-red-600" />
+        <font-awesome-icon icon="exclamation-circle" class="text-red-600 text-lg" />
         <span class="text-sm font-medium">
           {{ $t("product_no") }}
         </span>
       </div>
     </div>
+
     <!-- Products table -->
-    <div v-else class="px-4 mt-6 max-w-6xl">
+    <div v-else class="px-6 mt-10 max-w-10xl mx-auto">
+      <!-- Alert -->
       <Alert
         v-if="showAlert"
         :type="alertType"
         :message="alertMessage"
         @close="showAlert = false"
-        :classWidth="'max-w-6xl'"
+        :classWidth="'max-w-7xl'"
+        class="mb-6"
       />
-      <div class="bg-white shadow-md rounded-md overflow-x-auto">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800">
+
+      <!-- Card -->
+      <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
             📦 {{ $t("products") }}
           </h3>
+          <button
+            @click="$router.push('/user/products/create')"
+            class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-md transition"
+          >
+            + {{ $t("add_product") }}
+          </button>
         </div>
 
-        <div class="overflow-y-auto max-h-[580px] min-h-[550px]">
-          <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead class="bg-gray-100 sticky top-0 z-10">
+        <!-- Table wrapper -->
+        <div class="overflow-y-auto max-h-[600px] scrollbar-thin scrollbar-thumb-gray-300">
+          <table class="min-w-full text-sm text-left">
+            <thead class="bg-gray-100 sticky top-0 z-10 text-gray-600">
               <tr>
-                <th class="px-4 py-3">{{ $t("no") }}</th>
-                <th class="px-4 py-3">{{ $t("id") }}</th>
-                <th class="px-4 py-3">{{ $t("name") }}</th>
-                <th class="px-4 py-3">{{ $t("image") }}</th>
-                <th class="px-4 py-3">{{ $t("category_name") }}</th>
-                <th class="px-4 py-3">{{ $t("product_type") }}</th>
-                <th class="px-4 py-3">{{ $t("price") }}</th>
-                <th class="px-4 py-3 text-center">{{ $t("active") }}</th>
-                <th class="px-4 py-3 text-right">{{ $t("action") }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t("no") }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t("id") }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t("name") }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t("image") }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t("category_name") }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t("product_type") }}</th>
+                <th class="px-4 py-3 font-semibold">{{ $t("price") }}</th>
+                <th class="px-4 py-3 text-center font-semibold">{{ $t("active") }}</th>
+                <th class="px-4 py-3 text-right font-semibold">{{ $t("action") }}</th>
               </tr>
             </thead>
+
             <tbody class="divide-y divide-gray-100 text-gray-800">
               <tr
                 v-for="(product, index) in paginatedProducts"
@@ -52,39 +67,41 @@
               >
                 <td class="px-4 py-3">{{ index + 1 }}</td>
                 <td class="px-4 py-3">{{ product?.id }}</td>
-                <td class="px-4 py-3">{{ product?.name }}</td>
+                <td class="px-4 py-3 font-medium">{{ product?.name }}</td>
                 <td class="px-4 py-3">
                   <img
                     :src="getImageUrl(product?.images[0]?.image_url)"
                     :alt="product.name"
-                    class="w-16 h-16 object-cover rounded-md border border-gray-200"
+                    class="w-14 h-14 object-cover rounded-md border border-gray-200 shadow-sm"
                   />
                 </td>
                 <td class="px-4 py-3">{{ product.category?.name || "N/A" }}</td>
                 <td class="px-4 py-3">{{ product.product_type }}</td>
-                <td class="px-4 py-3">{{ product.base_price }}</td>
+                <td class="px-4 py-3 font-semibold text-gray-700">
+                  {{ product.base_price }} €
+                </td>
                 <td class="px-4 py-3 text-center">
                   <span
                     :class="product.in_stock ? 'bg-green-500' : 'bg-orange-400'"
                     class="inline-block w-3 h-3 rounded-full"
                   ></span>
                 </td>
-                <td class="px-4 py-3 text-right space-x-3">
+                <td class="px-4 py-3 text-right space-x-4">
                   <button
                     @click="handleView(product)"
-                    class="text-blue-500 hover:text-blue-700 cursor-pointer"
+                    class="text-blue-500 hover:text-blue-700 transition"
                   >
                     <font-awesome-icon icon="eye" />
                   </button>
                   <button
                     @click="handleEdit(product)"
-                    class="text-yellow-500 hover:text-yellow-600 cursor-pointer"
+                    class="text-yellow-500 hover:text-yellow-600 transition"
                   >
                     <font-awesome-icon icon="pen-to-square" />
                   </button>
                   <button
                     @click="openDeleteModal(product)"
-                    class="text-red-500 hover:text-red-700 cursor-pointer"
+                    class="text-red-500 hover:text-red-700 transition"
                   >
                     <font-awesome-icon icon="trash" />
                   </button>
@@ -93,14 +110,19 @@
             </tbody>
           </table>
         </div>
-        <Pagination
-          :page="page"
-          :totalPages="totalPages"
-          @update:page="page = $event"
-        />
+
+        <!-- Pagination -->
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <Pagination
+            :page="page"
+            :totalPages="totalPages"
+            @update:page="page = $event"
+          />
+        </div>
       </div>
     </div>
   </template>
+
   <!-- Delete Modal -->
   <ActionDelete
     :showDeleteModal="showDeleteModal"
@@ -114,7 +136,7 @@
 import ButtonBack from "@/components/shared/ButtonBack.vue";
 import Loader from "@/components/shared/Loader.vue";
 import Pagination from "@/components/shared/Pagination.vue";
-import { get } from "@/js/helper/api.js";
+import { get, remove } from "@/js/helper/api.js";
 import { getImageUrl } from "@/js/helper/displayImage";
 import ActionDelete from "@/modal/ActionDelete.vue";
 import { computed, onMounted, ref } from "vue";
@@ -126,19 +148,14 @@ const { t } = useI18n();
 
 const products = ref([]);
 const user = JSON.parse(localStorage.getItem("user"));
-// message alert
 const showAlert = ref(false);
 const alertType = ref("success");
 const alertMessage = ref("");
-
 const showDeleteModal = ref(false);
 const productToDelete = ref(null);
-
 const page = ref(1);
 const perPage = 12;
-
 const router = useRouter();
-
 const isLoading = ref(true);
 
 onMounted(async () => {
@@ -147,12 +164,10 @@ onMounted(async () => {
 });
 
 const handleView = (product) => {
-  console.log("View product", product);
   router.push({ name: "product.view", params: { id: product.id } });
 };
 
 const handleEdit = (product) => {
-  console.log("Edit product", product);
   router.push({ name: "user.product.edit", params: { id: product.id } });
 };
 
@@ -168,7 +183,7 @@ const fetchProducts = async () => {
     const response = await get(`products/${userId}`);
     products.value = response.data;
   } catch (err) {
-    console.error("Error fetching users:", err.message);
+    console.error("Error fetching products:", err.message);
   } finally {
     isLoading.value = false;
   }
@@ -191,7 +206,6 @@ const confirmDelete = async () => {
     );
     showDeleteModal.value = false;
     productToDelete.value = null;
-
     alertType.value = "success";
     alertMessage.value = t("product_success_delete");
     showAlert.value = true;
