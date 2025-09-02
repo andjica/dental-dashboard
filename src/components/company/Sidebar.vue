@@ -72,7 +72,7 @@
     </aside>
   </transition>
 </template>
-
+ 
 <script setup>
 import { ref, provide, onMounted, onBeforeUnmount, computed } from "vue";
 import { get } from "@/js/helper/api.js";
