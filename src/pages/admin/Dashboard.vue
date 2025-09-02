@@ -140,15 +140,13 @@ onMounted(() => {
 
 const fetchAll = () => {
   get("admin/inactive/companies")
-    .then((data) => {
-      allData.value = data.data.map(item => ({
-        ...item,
-        status: "",
-      }));
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  .then((data) => {
+    console.log("inactive companies response:", data);
+    allData.value = (data?.data?.data ?? []).map(item => ({
+      ...item,
+      status: "",
+    }));
+  })
 };
 
 const activeCompany = (companyId) => {
