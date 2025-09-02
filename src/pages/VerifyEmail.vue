@@ -69,7 +69,7 @@ const goToNextRoute = () => {
   const query = window.location.search;
   loading.value = true;
 
-  fetch(`http://localhost:8000/api/email/verify/${id}/${hash}${query}`, {
+  fetch(`http://164.92.209.125:8000/api/email/verify/${id}/${hash}${query}`, {
     method: "GET",
     headers: { Accept: "application/json" },
   })
@@ -113,7 +113,7 @@ const resendEmail = () => {
   loading.value = true;
   const token = localStorage.getItem("token");
 
-  fetch("http://localhost:8000/api/email/verification-notification", {
+  fetch("http://164.92.209.125:8000/api/email/verification-notification", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

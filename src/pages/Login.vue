@@ -179,7 +179,7 @@ const handleLogin = async () => {
 
   try {
     // Login request
-    const loginResponse = await fetch("http://localhost:8000/api/login", {
+    const loginResponse = await fetch("http://164.92.209.125:8000/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -218,7 +218,7 @@ const handleLogin = async () => {
     if (baseUser.role_id === 2 || baseUser.role_id === 1) {
       try {
         const companyResponse = await fetch(
-          "http://localhost:8000/api/company",
+          "http://164.92.209.125:8000/api/company",
           {
             method: "GET",
             headers: {
@@ -245,7 +245,7 @@ const handleLogin = async () => {
     } else {
       try {
         const userResponse = await fetch(
-          "http://localhost:8000/api/user-info",
+          "http://164.92.209.125:8000/api/user-info",
           {
             method: "GET",
             headers: {
@@ -282,7 +282,7 @@ const handleLogin = async () => {
         router.push("/verify-email");
 
         // Pošalji zahtev za verifikaciju emaila
-        fetch("http://localhost:8000/api/email/verification-notification", {
+        fetch("http://164.92.209.125:8000/api/email/verification-notification", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

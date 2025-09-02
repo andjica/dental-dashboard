@@ -384,7 +384,7 @@ const handleImageUpload = (event) => {
 const fetchCity = (countryId) => {
   if (!countryId) return Promise.resolve();
 
-  return fetch(`http://localhost:8000/api/cities/${countryId}`, {
+  return fetch(`http://164.92.209.125:8000/api/cities/${countryId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -406,7 +406,7 @@ const fetchCity = (countryId) => {
 };
 // Fetch Country
 const fetchCountry = () => {
-  fetch("http://localhost:8000/api/countries", {
+  fetch("http://164.92.209.125:8000/api/countries", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -434,7 +434,7 @@ const fetchCountry = () => {
 // fetch phone code in dependent on selected country
 const fetchPhoneCode = (countryId) => {
   if (!countryId) return;
-  fetch(`http://localhost:8000/api/country/${countryId}/phone-code`, {
+  fetch(`http://164.92.209.125:8000/api/country/${countryId}/phone-code`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -510,7 +510,7 @@ const handleSubmit = () => {
     formData.append("logo", logo.value);
   }
 
-  fetch("http://localhost:8000/api/company/update", {
+  fetch("http://164.92.209.125:8000/api/company/update", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -561,7 +561,7 @@ const handleSubmit = () => {
 
 const fetchCompany = () => {
   const token = localStorage.getItem("token");
-  fetch("http://localhost:8000/api/company", {
+  fetch("http://164.92.209.125:8000/api/company", {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -590,7 +590,7 @@ const fetchCompany = () => {
       companyPost.value = company.postal_code || "";
 
       if (company.logo) {
-        companyLogoFile.value = `http://localhost:8000/${company.logo}`;
+        companyLogoFile.value = `http://164.92.209.125:8000/${company.logo}`;
       }
 
       originalValues.value = {

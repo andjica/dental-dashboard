@@ -174,7 +174,7 @@ const handleRegister = async () => {
 
   try {
     isLoading.value = true;
-    const response = await fetch("http://localhost:8000/api/register", {
+    const response = await fetch("http://164.92.209.125:8000/api/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

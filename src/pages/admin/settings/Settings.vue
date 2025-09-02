@@ -258,7 +258,7 @@ const validatePhoneNumber = () => {
 // === Fetch Functions ===
 const fetchCountry = async () => {
   try {
-    const res = await fetch("http://localhost:8000/api/countries");
+    const res = await fetch("http://164.92.209.125:8000/api/countries");
     if (!res.ok) throw new Error("Failed to fetch countries");
     const data = await res.json();
 
@@ -276,7 +276,7 @@ const fetchCountry = async () => {
 const fetchCity = async (countryId) => {
   if (!countryId) return;
   try {
-    const res = await fetch(`http://localhost:8000/api/cities/${countryId}`);
+    const res = await fetch(`http://164.92.209.125:8000/api/cities/${countryId}`);
     if (!res.ok) throw new Error("Failed to fetch cities");
     const data = await res.json();
     cities.value = data.cities || [];
@@ -288,7 +288,7 @@ const fetchCity = async (countryId) => {
 const fetchPhoneCode = async (countryId) => {
   if (!countryId) return;
   try {
-    const res = await fetch(`http://localhost:8000/api/country/${countryId}/phone-code`);
+    const res = await fetch(`http://164.92.209.125:8000/api/country/${countryId}/phone-code`);
     if (!res.ok) throw new Error("Failed to fetch phone code");
     const data = await res.json();
     phoneCode.value = data.phoneCode;
@@ -302,7 +302,7 @@ const fetchCompany = async () => {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch("http://localhost:8000/api/company", {
+    const res = await fetch("http://164.92.209.125:8000/api/company", {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
@@ -327,7 +327,7 @@ const fetchCompany = async () => {
     selectedCity.value = cityExists ? company.city_id : "";
 
     if (company.logo) {
-      companyLogoFile.value = `http://localhost:8000/${company.logo}`;
+      companyLogoFile.value = `http://164.92.209.125:8000/${company.logo}`;
     }
 
     // Sačuvaj originalne vrednosti
@@ -404,7 +404,7 @@ const handleSubmit = async () => {
   }
 
   try {
-    const res = await fetch("http://localhost:8000/api/company/update", {
+    const res = await fetch("http://164.92.209.125:8000/api/company/update", {
       method: "POST",
       headers: {
         Accept: "application/json",

@@ -20,7 +20,7 @@ const API = (url, method = "GET", body = null) => {
     }
   }
 
-  return fetch(`http://localhost:8000/api/${url}`, options).then(
+  return fetch(`http://164.92.209.125:8000/api/${url}`, options).then(
     async (res) => {
       if (res.status === 401) {
         window.dispatchEvent(new Event("tokenExpired"));
