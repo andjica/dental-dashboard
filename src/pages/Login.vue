@@ -123,7 +123,7 @@ const handleGoogleLoginCallback = async (response) => {
   try {
     const idToken = response.credential;
 
-    const res = await fetch("http://localhost:8000/api/auth/google", {
+    const res = await fetch("http://164.92.209.125:8000/api/auth/google", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -147,7 +147,7 @@ const handleGoogleLoginCallback = async (response) => {
     // 👇 isto kao kod običnog logina
     if (baseUser.role_id === 1 || baseUser.role_id === 2) {
       try {
-        const companyResponse = await fetch("http://localhost:8000/api/company", {
+        const companyResponse = await fetch("http://164.92.209.125:8000/api/company", {
           method: "GET",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         });
@@ -163,7 +163,7 @@ const handleGoogleLoginCallback = async (response) => {
       }
     } else {
       try {
-        const userResponse = await fetch("http://localhost:8000/api/user-info", {
+        const userResponse = await fetch("http://164.92.209.125:8000/api/user-info", {
           method: "GET",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         });

@@ -134,7 +134,7 @@ const handleGoogleCallback = async (response) => {
   try {
     const idToken = response.credential;
     console.log("andjica", idToken);
-    const res = await fetch("http://localhost:8000/api/auth/google", {
+    const res = await fetch("http://164.92.209.125:8000/api/auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({ token: idToken }),
